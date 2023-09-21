@@ -1,6 +1,7 @@
 //Method prefix : PSR
 
 #include <stdio.h>
+#include <malloc.h>
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
@@ -53,7 +54,32 @@ void PSR_parse(char* s, short grid[9][9])
     }
 }
 
-void print(short m[9][9])
+char* PSR_unparse(short grid[9][9])
+{
+    char* s = malloc(112 * sizeof(char));//how to free memory? @Taliayaya
+    size_t index = 0;
+
+    for (size_t j = 0; j < 9; j++)
+    {
+        for (size_t i = 0; i < 9; i++)
+        {
+            s[index] = (grid[i][j] > 9) ? '.' : (grid[i][j] + '0');//if grid[i][j] is larger than 9 then the cell hasn't been solved yet
+            index += 1;
+            if (i % 3 == 2 && i != 8)//i == 8 <=> end of line (no trailing spaces)
+                s[index++] = ' ';
+        }
+        if (j % 3 == 2)
+            s[index++] = '\n';
+        s[index++] = '\n';
+    }
+
+    s[index] = '\0';
+
+    return s;
+}
+
+//Print sudoku grid
+/*void print(short m[9][9])
 {
     for (size_t j = 0; j < 9; j++)
     {
@@ -70,12 +96,11 @@ void print(short m[9][9])
         if (j % 3 == 2)
             printf("\n");
     }
-}
+}*/
 
 int main()
 {
     short m[9][9];
     PSR_parse("... ..4 58.\n... 721 ..3\n4.3 ... ...\n\n21. .67 ..4\n.7. ... 2..\n63. .49 ..1\n3.6 ... ...\n\n... 158 ..6\n... ..6 95.\0", m);
-
-    print(m);
+    printf("%s\n", PSR_unparse(m));
 }
