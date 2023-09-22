@@ -1,10 +1,10 @@
 //Method prefix : PSR
 
-#include <stdio.h>
 #include <malloc.h>
+#include <string.h>
+#include <stdio.h>
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
-
 
 void PSR_parse(char* s, short grid[9][9])
 {
@@ -17,7 +17,7 @@ void PSR_parse(char* s, short grid[9][9])
         if (s[index] == '\n')
         {
             //Ignore consecutive \n's
-            while (s[index] == '\n')
+            while (s[index] == '\n' || s[index] == '\r')
                 index += 1;
 
             //Next line
@@ -32,9 +32,13 @@ void PSR_parse(char* s, short grid[9][9])
 
         if (c != ' ' && c != '.' && (c < '1' || c > '9'))
         {
-            printf("The given string was not a valid format (only dots, spaces, numbers and new lines are allowed), found %c (ascii %i)\n", c, c);
-            return;
-            //errx(EXIT_FAILURE, "The given string was not a valid format (only dots, spaces, numbers and new lines are allowed), found %c (ascii %i)\n", c, c);
+            printf("The given string was not a valid format (only dots, spaces, numbers and new lines are allowed),"
+                   "found %c (ascii %i)\n", c, c);
+
+            //Continue and no error because there are some things like \r's at end of lines and things like that :/
+            continue;
+            //errx(EXIT_FAILURE, "The given string was not a valid format (only dots, spaces, numbers and new lines are
+            // allowed), found %c (ascii %i)\n", c, c);
         }
 
         if (c == '.')
@@ -54,16 +58,42 @@ void PSR_parse(char* s, short grid[9][9])
     }
 }
 
+void PSR_parse_file(char* file, short grid[9][9])
+{
+    FILE* f = fopen(file, "r");
+    if (!f)
+    {
+        printf("File not found!\n");
+        return;
+    }
+
+
+    char* text = malloc(112);
+    char c;
+
+    size_t i = 0;
+    do
+    {
+        c = fgetc(f);//Get next character in string
+        text[i] = c;
+        i += 1;
+    } while (c != EOF);//EOF == end of file
+
+    PSR_parse(text, grid);
+    fclose(f);
+}
+
 char* PSR_unparse(short grid[9][9])
 {
-    char* s = malloc(112 * sizeof(char));//how to free memory? @Taliayaya
+    char* s = malloc(112);//how to free memory? @Taliayaya. 112 bcs that should be the length of the text
     size_t index = 0;
 
     for (size_t j = 0; j < 9; j++)
     {
         for (size_t i = 0; i < 9; i++)
         {
-            s[index] = (grid[i][j] > 9) ? '.' : (grid[i][j] + '0');//if grid[i][j] is larger than 9 then the cell hasn't been solved yet
+            //if grid[i][j] is larger than 9 then the cell hasn't been solved yet
+            s[index] = (grid[i][j] > 9) ? '.' : (grid[i][j] + '0');
             index += 1;
             if (i % 3 == 2 && i != 8)//i == 8 <=> end of line (no trailing spaces)
                 s[index++] = ' ';
@@ -79,7 +109,7 @@ char* PSR_unparse(short grid[9][9])
 }
 
 //Print sudoku grid
-/*void print(short m[9][9])
+void print(short m[9][9])
 {
     for (size_t j = 0; j < 9; j++)
     {
@@ -96,11 +126,4 @@ char* PSR_unparse(short grid[9][9])
         if (j % 3 == 2)
             printf("\n");
     }
-}*/
-
-int main()
-{
-    short m[9][9];
-    PSR_parse("... ..4 58.\n... 721 ..3\n4.3 ... ...\n\n21. .67 ..4\n.7. ... 2..\n63. .49 ..1\n3.6 ... ...\n\n... 158 ..6\n... ..6 95.\0", m);
-    printf("%s\n", PSR_unparse(m));
 }
