@@ -1,3 +1,7 @@
+// IMGC FILE
+// === IMAGE COLOR LIBRARY
+
+
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
 #include <err.h>
@@ -71,6 +75,9 @@ void IMGC_surface_to_grayscale(SDL_Surface* surface)
     SDL_UnlockSurface(surface);
 }
 
+/** 
+  * From the given input image file, export it to its grayscale version
+  */
 void IMGC_to_grayscale(const char* input_path, const char* output_path)
 {
     SDL_Surface* surface = IMGC_Load(input_path);
