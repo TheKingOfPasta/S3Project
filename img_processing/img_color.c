@@ -2,11 +2,14 @@
 // === IMAGE COLOR LIBRARY
 
 
+#include "img_color.h"
+#include "img_utils.h"
+
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
 #include <err.h>
 
-#include "img_color.h"
+
 
 int main(int argc, char** argv)
 {
@@ -15,26 +18,6 @@ int main(int argc, char** argv)
 
     IMGC_to_grayscale(argv[1], argv[2]);
     return 0;
-}
-
-/**
- * Loads the image into a surface in the RGB888 format
- * and return it
- * <path>: The image path to load
-  */
-SDL_Surface* IMGC_Load(const char* path)
-{
-    SDL_Surface* tmp = IMG_Load(path);
-
-    if (tmp == NULL)
-        errx(EXIT_FAILURE, "%s",  SDL_GetError());
-
-    SDL_Surface* surface = SDL_ConvertSurfaceFormat(tmp, SDL_PIXELFORMAT_RGB888,
-            0);
-
-    SDL_FreeSurface(tmp);
-
-    return surface;
 }
 
 /**
@@ -80,7 +63,7 @@ void IMGC_surface_to_grayscale(SDL_Surface* surface)
   */
 void IMGC_to_grayscale(const char* input_path, const char* output_path)
 {
-    SDL_Surface* surface = IMGC_Load(input_path);
+    SDL_Surface* surface = IMGU_Load(input_path);
     IMGC_surface_to_grayscale(surface);
 
     SDL_SaveBMP(surface, output_path);
