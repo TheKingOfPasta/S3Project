@@ -8,7 +8,6 @@
 
 void SLV_collapse_grid(short grid[9][9], int x, int y, short val);
 short SLV_get_collapsed_value(short cell_val);
-void print(short grid[9][9]);
 void printUnsolved(short x);
 
 #define IsNotSolved(x) (x>>13)
