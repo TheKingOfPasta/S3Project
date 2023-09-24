@@ -13,3 +13,4 @@ void IMGC_to_binary(const char* input_path, const char* output_path, int
         threshold);
 
 void IMGC_surface_to_binary(SDL_Surface*, int threshold);
+
