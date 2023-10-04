@@ -23,10 +23,6 @@ typedef struct NN_Neuron
     // neuron
     double *weights;
 
-
-    // Container for the value calculated by the Neuron
-    double output;
-
 } NN_Neuron;
 
 
