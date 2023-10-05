@@ -1,5 +1,6 @@
 # include <stdlib.h>
 # include <math.h>
+# include "helper.h"
 
 
 /**
@@ -74,4 +75,9 @@ NN_Neuron* NN_create_neuron(int num_inputs)
     neuron->bias = random_value(); // same
 
     return neuron;
+}
+
+double sigmoid_of_neuron(const double *inputs, const NN_Neuron *neuron, size_t n)
+{
+    return sigmoid(inputs, n, neuron->weights, neuron->bias);
 }
