@@ -1,3 +1,4 @@
+# pragma once
 # include "neuron.h"
 # include <stdlib.h>
 # include <math.h>
@@ -6,7 +7,8 @@ typedef struct NN_Layer
 {
     size_t num_neurons;
 
-    NN_Neuron *neurons;
+    // array of pointers of neurons
+    NN_Neuron **neurons;
 } NN_Layer;
 
 
@@ -33,3 +35,18 @@ NN_Layer *NN_create_layer(size_t num_neurons, int num_inputs)
     return layer;
 }
 
+void NN_print_layer(NN_Layer *layer)
+{
+    if (layer == NULL) 
+        return; // should crash?
+
+    printf("Layer:\n"
+            "   - num_neurons = %zi\n"
+            "   - neurons {\n", layer->num_neurons);
+    for (size_t i = 0; i < layer->num_neurons; ++i)
+    {
+        printf("(%zi) ", i);
+        NN_print_neuron(layer->neurons[i]);
+    }
+    printf("}\n");
+}

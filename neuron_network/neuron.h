@@ -1,3 +1,5 @@
+# pragma once 
+
 # include <stdlib.h>
 # include <math.h>
 # include "helper.h"
@@ -27,12 +29,6 @@ typedef struct NN_Neuron
 } NN_Neuron;
 
 
-
-
-double random_value()
-{
-    return (2.0 * rand() / RAND_MAX) - 1.0;
-}
 
 /**
   * Neurons and weights are created with malloc and MUST be freed before being
@@ -75,6 +71,21 @@ NN_Neuron* NN_create_neuron(int num_inputs)
     neuron->bias = random_value(); // same
 
     return neuron;
+}
+
+void NN_print_neuron(NN_Neuron *neuron)
+{
+    if (neuron == NULL) // should it crash instead?
+        return;
+    printf("Neuron:\n"
+            "   - num_inputs = %zi\n"
+            "   - bias = %f\n"
+            "   - weights = { ", neuron->num_inputs, neuron->bias);
+    for (size_t i = 0; i < neuron->num_inputs; ++i)
+    {
+        printf("%f ", neuron->weights[i]);
+    }
+    printf("}\n");
 }
 
 double sigmoid_of_neuron(const double *inputs, const NN_Neuron *neuron, size_t n)

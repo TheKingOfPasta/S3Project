@@ -14,4 +14,4 @@ testsuite: testsuite.o
 
 .PHONY: clean
 
-clean: rm ${OBJ}
+clean: ${RM} ${OBJ}
