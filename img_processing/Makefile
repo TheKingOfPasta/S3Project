@@ -15,4 +15,7 @@ img_action:img_utils.o  img_action.o
 
 .PHONY: clean
 
-clean: ${RM} ${OBJ}
+clean:
+	rm *.o
+	rm img_action
+	rm img_color

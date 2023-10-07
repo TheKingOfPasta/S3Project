@@ -2,12 +2,14 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include <stdio.h>
+#include <math.h>
 
 #include "img_utils.h"
 
 SDL_Surface* IMGA_Rotate_auto(char* path);//remove me
 double FindSkew(SDL_Surface* surface);//remove me
 double GetSkewFromFile(char* path);//remove me
+SDL_Surface* IMGA_Rotate_from(char* path, const double angle);//remove me
 
 int main(int argc, char** argv)
 {
@@ -24,6 +26,10 @@ int main(int argc, char** argv)
     char* endptr;
     double angle = strtod(argv[3], &endptr);
 
+    printf("Attempting to rotate image from %s\n", path_in);
+    IMG_SavePNG(IMGA_Rotate_from(path_in, angle), path_out);
+    printf("Successfully saved the new image at path %s\n", path_out);
+
     return EXIT_SUCCESS;
 }
 
@@ -38,15 +44,49 @@ int main(int argc, char** argv)
     if (error)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 }*/
-SDL_Surface* IMGA_Rotate(SDL_Surface* surface, const double angle)
+SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 {
-    //augus help
+    SDL_Surface* newS =
+        SDL_CreateRGBSurface(0, sqrt(2) * surface->w, sqrt(2) * surface->h, 32,0,0,0,0);
+    double angleRad = /*angle * */10*3.141592 / 180;//Having angle breaks it apparently???????????
+    int size = newS->w * newS->h;
+    SDL_LockSurface(surface);
+
+    for (int x = -surface->w/2; x <= surface->w/2; x+=1)
+    {
+        for (int y = -surface->h/2; y <= surface->h/2; y+=1)
+        {
+            double cosine = cos(angleRad);
+            double sine = sin(angleRad);
+            int newX = (int)(x * cosine - y * sine) + newS->w/2;
+            int newY = (int)(y * cosine + x * sine) + newS->h/2;
+
+            
+            if ((newX * newS->h + newY < size) &&
+               (newX * newS->h + newY>=0) &&
+               (x * surface->h + y>=0) &&
+               (x * surface->h + y < surface->w * surface->h))
+            {
+                ((Uint32*)(newS->pixels))[newX * newS->h + newY] =
+                    ((Uint32*)(surface->pixels))[x * surface->h + y];
+            }
+
+                //printf("%i, %i  =  %i, %i\n", newX, newY, x, y);
+        }
+    }
+
+    printf("returning\n");
+    SDL_FreeSurface(surface);
+
+    return newS;
 }
 
 
-void IMGA_Rotate_from(char* path, const double angle)
+SDL_Surface* IMGA_Rotate_from(char* path, const double angle)
 {
-    // TODO
+    SDL_Surface* s = IMG_Load(path);
+    printf("Sucessfully loaded the image\n");
+    return IMGA_Rotate(s, angle);
 }
 
 Uint32 GetPixel(SDL_Surface* surface, int x, int y)
@@ -107,7 +147,7 @@ SDL_Surface* IMGA_Rotate_auto(char* path)
 {
     SDL_Surface* surface = IMG_Load(path);
  
-    double skewLeft = FindSkew(IMGA_Rotate(surface, 10));
+    double skewLeft = FindSkew(IMGA_Rotate(surface, 10.0));
     double currentSkew = FindSkew(surface);
 
     SDL_Surface* max = surface;
