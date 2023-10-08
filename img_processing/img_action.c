@@ -3,13 +3,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <math.h>
-
-#include "img_utils.h"
-
-SDL_Surface* IMGA_Rotate_auto(char* path);//remove me
-double FindSkew(SDL_Surface* surface);//remove me
-double GetSkewFromFile(char* path);//remove me
-SDL_Surface* IMGA_Rotate_from(char* path, const double angle);//remove me
+#include "img_action.h"
 
 int main(int argc, char** argv)
 {
