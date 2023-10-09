@@ -1,9 +1,9 @@
-# include "helper.h"
 # include <stdlib.h>
 # include <stdio.h>
 # include <err.h>
 # include <string.h>
 # include "neuron.h"
+# include "helper.h"
 # include "layer.h"
 # include "network.h"
 
@@ -15,6 +15,7 @@ void print_help()
             "       --neuron:       all the neuron struct relative test\n"
             "       --layer:        all the layer struct relative tests\n"
             "       --network:      all the network struct relative tests\n"
+            "       --feedforward:  all the feedforward function tests\n"
             );
 
 }
@@ -64,6 +65,34 @@ void test_layer()
     NN_free_layer(layer);
 }
 
+void test_feedforward()
+{
+    size_t n = 10;
+    double input[10] = {0,};
+
+    double bias = 0;
+    double *weights[10] = {0,};
+    
+    double s = sigmoid(input, n, weights, bias);
+    printf("Sigmoid is %f", s);
+    
+
+    int neurons[] = {10, 15, 5};
+    NN_Network *network = NN_create_network(3, 10, neurons);
+    NN_print_network(network);
+
+    double *output = NN_feedforward(network, input);
+
+    printf("output: { ");
+    for (size_t i = 0; i < 5; ++i)
+        printf("%f ", output[i]);
+    printf("}");
+
+
+    NN_free_network(network);
+
+}
+
 
 void all()
 {
@@ -71,6 +100,7 @@ void all()
     test_neuron();
     test_layer();
     test_network();
+    test_feedforward();
 }
 
 
@@ -99,6 +129,8 @@ int main(int argc, char **argv)
         test_layer();
     else if (strcmp(argv[1], "--network") == 0)
         test_network();
+    else if (strcmp(argv[1], "--feedforward") == 0)
+        test_feedforward();
 
     return EXIT_SUCCESS;
 }
