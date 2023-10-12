@@ -13,6 +13,8 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface)
     Uint32* pixels = (Uint32*)(surface->pixels);
     Uint32* newPixels = (Uint32*)(newS->pixels);
 
+
+
     int gaussianWeights[5][5] =
     {
         {1,4,7,4,1},

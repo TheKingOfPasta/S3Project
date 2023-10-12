@@ -52,9 +52,9 @@ SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
                     &g,
                     &b);
 
-            printf("%i <> %i\n", r, average);
+            //printf("%i <> %i\n", r, average);
             newPixels[(i + k) * surface->h + j + l] =
-                (r < average) ?
+					(r >= average) ?
                 SDL_MapRGB(newS->format, 0, 0, 0) :
                 SDL_MapRGB(newS->format, 255, 255, 255);
         }

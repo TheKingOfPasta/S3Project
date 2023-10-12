@@ -2,144 +2,12 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include "img_action.h"
 #include "gaussian_blur.h"
 #include "adaptive_thresholding.h"
 
-//Sowwy Ilan the include doesn't work (idk how to make it work)
-SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface)
-{
-    SDL_Surface* newS =
-        SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
-
-    SDL_LockSurface(surface);
-
-    Uint32* pixels = (Uint32*)(surface->pixels);
-    Uint32* newPixels = (Uint32*)(newS->pixels);
-
-    int gaussianWeights[5][5] =
-    {
-        {1,4,7,4,1},
-        {4,16,26,16,4},
-        {7,26,41,26,7},
-        {4,16,26,16,4},
-        {1,4,7,4,1}
-    };
-
-    for (int i = 0; i < surface->w; i++)
-    for (int j = 0; j < surface->h; j++)
-    {
-        Uint8 r;
-        Uint8 g;
-        Uint8 b;
-
-        size_t total = 0;
-        size_t totalWeight = 0;
-        
-        for (int k = -2; k <= 2; k++)
-        for (int l = -2; l <= 2; l++)
-        {
-            if (i + k >= 0 &&
-                i + k < surface->w &&
-                j + l >= 0 &&
-                j + l < surface->h)
-            {
-                //printf("%i/%i %i/%i\n", i, surface->w, j, surface->h);
-                SDL_GetRGB(
-                    pixels[i * surface->h + k + j + l],
-                    surface->format,
-                    &r,
-                    &g,
-                    &b);
-                //printf("%i/%i %i/%i\n\n", i, surface->w, j, surface->h);
-				//r = pixels[(i+k) * surface->h + j + l] & 0b11111111000000000000000000000000;//always 0 lol
-                
-                //size_t weight = 1<<(10 - abs(k) - abs(l));
-                size_t weight = gaussianWeights[k + 2][l + 2];
-                
-                totalWeight += weight;
-                total += weight * r;//Since r = b = g (grayscale)
-
-            }
-        }
-        
-        //printf("%zu / %zu == %zu\n", total, totalWeight, total/totalWeight);
-
-        newPixels[i * newS->h + j] =
-            SDL_MapRGB(newS->format,
-                        total / totalWeight,
-                        total / totalWeight,
-                        total / totalWeight);
-        
-    }
-
-    SDL_FreeSurface(surface);
-
-	return newS;
-}
-SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
-{
-    SDL_Surface* newS =
-        SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
-
-    int splitSize = 21;
-
-    SDL_LockSurface(surface);
-
-    Uint32* pixels = (Uint32*)(surface->pixels);
-    Uint32* newPixels = (Uint32*)(newS->pixels);
-
-    Uint8 r,g,b;
-
-    for (int i = 0; i < surface->w; i += splitSize)
-    for (int j = 0; j < surface->h; j += splitSize)
-    {
-        int count = splitSize * splitSize;
-        int sum = 0;
-        for (int k = 0; k < splitSize; k++)
-        for (int l = 0; l < splitSize; l++)
-        {
-            if (i + k >= surface->w || j + l >= surface->h)
-                continue;
-            
-            SDL_GetRGB(
-                    pixels[(i + k) * surface->h + j + l],
-                    surface->format,
-                    &r,
-                    &g,
-                    &b);
-            
-            sum += r;
-        }
-
-        Uint32 average = sum/count - threshold;
-
-        for (int k = 0; k < splitSize; k++)
-        for (int l = 0; l < splitSize; l++)
-        {
-            if (i + k >= surface->w || j + l >= surface->h)
-                continue;
-            
-            SDL_GetRGB(
-                    pixels[(i + k) * surface->h + j + l],
-                    surface->format,
-                    &r,
-                    &g,
-                    &b);
-
-            printf("%i <> %i\n", r, average);
-            newPixels[(i + k) * surface->h + j + l] =
-                (r < average) ?
-                SDL_MapRGB(newS->format, 0, 0, 0) :
-                SDL_MapRGB(newS->format, 255, 255, 255);
-        }
-    }
-
-    SDL_FreeSurface(surface);
-
-    return newS;
-}
 
 //1 -> a==b
 //0 -> a!=b
@@ -181,7 +49,7 @@ int main(int argc, char** argv)
         if (argc != 5)
             errx(EXIT_FAILURE, "-r/--rotate : rotate at path (path_in path_out angle)\n");
         char* endptr;
-        double angle = strtod(argv[4], &endptr);
+          double angle = strtod(argv[4], &endptr);
 
         printf("Attempting to rotate image from %s\n", path_in);
         IMG_SavePNG(IMGA_Rotate_from(path_in, angle), path_out);
@@ -189,14 +57,23 @@ int main(int argc, char** argv)
     }
     else if (CompareStrings(argv[1], "-t") || CompareStrings(argv[1], "--threshold"))
     {
-        if (argc != 5)
-            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in path_out threshold)\n");
+        if (argc != 5 && argc != 6)
+            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in folder_path_out threshold m) (m is optional : apply thresholds from 0 to n)\n");
 
         char* endptr;
         double threshold = strtod(argv[4], &endptr);
 
+		char* str;
+
         printf("Attempting to apply thresholding image from %s\n", path_in);
-        IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), threshold), path_out);
+		if (argc == 5)
+			IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), threshold), path_out);
+		else
+		for (int i = 0; i <= threshold; i++)
+		{
+			asprintf(&str, "%s/thresholded_%i.png", path_out, i);	
+			IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), i), str);
+		}
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else
