@@ -37,11 +37,15 @@ int main(int argc, char** argv)
 
     if (CompareStrings(argv[1], "-b") || CompareStrings(argv[1], "--blur"))
     {
-        if (argc != 4)
-            errx(EXIT_FAILURE, "-b/--blur : gaussian blur (path_in path_out)\n");
+        if (argc != 6)
+            errx(EXIT_FAILURE, "-b/--blur : gaussian blur (path_in path_out size sigma)\n");
         
+		char* endptr;
+		int size = atoi(argv[4]);
+		double sigma = strtod(argv[5], &endptr);
+
         printf("Attempting to blur image from %s\n", path_in);
-        IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(path_in)), path_out);
+        IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(path_in), size, sigma), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-r") || CompareStrings(argv[1], "--rotate"))
@@ -49,7 +53,7 @@ int main(int argc, char** argv)
         if (argc != 5)
             errx(EXIT_FAILURE, "-r/--rotate : rotate at path (path_in path_out angle)\n");
         char* endptr;
-          double angle = strtod(argv[4], &endptr);
+        double angle = strtod(argv[4], &endptr);
 
         printf("Attempting to rotate image from %s\n", path_in);
         IMG_SavePNG(IMGA_Rotate_from(path_in, angle), path_out);
@@ -95,35 +99,39 @@ int main(int argc, char** argv)
 }*/
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 {
-    angle += 1;
+	size_t imgNewSize = (size_t)sqrt(surface->w * surface->w + surface->h * surface->h);
     SDL_Surface* newS =
-        SDL_CreateRGBSurface(0, sqrt(2) * surface->w, sqrt(2) * surface->h, 32,0,0,0,0);
-    double angleRad = /*angle * */10*3.141592 / 180;//Having angle breaks it apparently???????????
-    int size = newS->w * newS->h;
+        SDL_CreateRGBSurface(0, imgNewSize, imgNewSize, 32,0,0,0,0);
+
+	for (int i = 0; i < newS->w; i++)
+		for (int j = 0; j < newS->h; j++)
+			((Uint32*)newS->pixels)[j * newS->h + i] = SDL_MapRGB(newS->format, 255, 255, 255);
+
+    double angleRad = angle * 3.141592 / 180;
+	int size = newS->w * newS->h;
     SDL_LockSurface(surface);
 
-    for (int x = -surface->w/2; x <= surface->w/2; x+=1)
+    for (int x = 0; x < newS->w; x+=1)
     {
-        for (int y = -surface->h/2; y <= surface->h/2; y+=1)
+        for (int y = 0; y < newS->h; y+=1)
         {
             double cosine = cos(angleRad);
             double sine = sin(angleRad);
-            int newX = (int)(x * cosine - y * sine) + newS->w/2;
-            int newY = (int)(y * cosine + x * sine) + newS->h/2;
 
-            
-            if ((newX * newS->h + newY < size) &&
-               (newX * newS->h + newY>=0) &&
-               (x * surface->h + y>=0) &&
-               (x * surface->h + y < surface->w * surface->h))
-            {
-                ((Uint32*)(newS->pixels))[newX * newS->h + newY] =
-                    ((Uint32*)(surface->pixels))[x * surface->h + y];
-            }
+			int x2 = x - newS->w / 2;
+			int y2 = y - newS->h / 2;
 
-                //printf("%i, %i  =  %i, %i\n", newX, newY, x, y);
+            int newX = (int)(x2 * cosine - y2 * sine) + surface->w / 2;
+            int newY = (int)(y2 * cosine + x2 * sine) + surface->h / 2;
+
+			int indexNew = newY * surface->w + newX;
+			int indexOld = y * newS->w + x;
+
+			if (indexOld >= 0 && indexOld < size && indexNew >= 0 && indexNew < surface->h * surface->w)
+			((Uint32*)newS->pixels)[indexOld] =
+				((Uint32*)surface->pixels)[indexNew];	
         }
-    }
+	}
 
     printf("returning\n");
     SDL_FreeSurface(surface);

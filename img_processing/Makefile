@@ -1,8 +1,8 @@
 CC = gcc
 CPPFLAGS =
-CFLAGS = -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
+CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
 LDFLAGS =
-LDLIBS = `pkg-config --libs sdl2 SDL2_image`
+LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
 
 SRC = img_utils.c img_color.c img_action.c adaptive_thresholding.c gaussian_blur.c
 OBJ = ${SRC:.c=.o}
