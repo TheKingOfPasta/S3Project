@@ -99,42 +99,37 @@ int main(int argc, char** argv)
 }*/
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 {
-	size_t imgNewSize = (size_t)sqrt(surface->w * surface->w + surface->h * surface->h);
-    SDL_Surface* newS =
-        SDL_CreateRGBSurface(0, imgNewSize, imgNewSize, 32,0,0,0,0);
-
-	for (int i = 0; i < newS->w; i++)
-		for (int j = 0; j < newS->h; j++)
-			((Uint32*)newS->pixels)[j * newS->h + i] = SDL_MapRGB(newS->format, 255, 255, 255);
-
     double angleRad = angle * 3.141592 / 180;
-	int size = newS->w * newS->h;
+    double cosine = cos(angleRad);
+    double sine = sin(angleRad);
+	
+
+	SDL_Surface* newS = SDL_CreateRGBSurface(0,
+							surface->h*sine+surface->w*cosine,
+							surface->w*sine+surface->h*cosine, 32,0,0,0,0);
+
     SDL_LockSurface(surface);
 
     for (int x = 0; x < newS->w; x+=1)
     {
+		int x2 = x - newS->w / 2;
         for (int y = 0; y < newS->h; y+=1)
         {
-            double cosine = cos(angleRad);
-            double sine = sin(angleRad);
-
-			int x2 = x - newS->w / 2;
 			int y2 = y - newS->h / 2;
 
             int newX = (int)(x2 * cosine - y2 * sine) + surface->w / 2;
             int newY = (int)(y2 * cosine + x2 * sine) + surface->h / 2;
 
-			int indexNew = newY * surface->w + newX;
-			int indexOld = y * newS->w + x;
-
-			if (indexOld >= 0 && indexOld < size && indexNew >= 0 && indexNew < surface->h * surface->w)
-			((Uint32*)newS->pixels)[indexOld] =
-				((Uint32*)surface->pixels)[indexNew];	
+			((Uint32*)newS->pixels)[y*newS->w+x] = 
+			 	( newX >= 0 && newX<surface->w && newY >= 0 && newY < surface->h)?
+				((Uint32*)surface->pixels)[newY*surface->w+newX]:
+				SDL_MapRGB(newS->format,255,255,255);
         }
 	}
 
     printf("returning\n");
     SDL_FreeSurface(surface);
+	SDL_UnlockSurface(surface);
 
     return newS;
 }
