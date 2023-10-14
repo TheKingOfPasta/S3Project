@@ -3,6 +3,7 @@
 #include "button.h"
 #include <err.h>
 #include <stdio.h>
+#include "draw_interface.h"
 
 #define DEFAULT_WIDTH 160
 #define DEFAULT_HEIGHT 90//the default resolution of the screen,
@@ -13,7 +14,11 @@ void CallSDLError()
 	errx(EXIT_FAILURE, "%s", SDL_GetError());
 }
 
-void Draw(SDL_Renderer* renderer, button* list, size_t len, int width, int height)
+void Draw(SDL_Renderer* renderer, 
+			button* list,
+			size_t len,
+			int width,
+			int height)
 {
 	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_RenderClear(renderer);
@@ -51,7 +56,7 @@ int main()
 {
 	SDL_Window* window =
 		SDL_CreateWindow(
-				"Sudoku solving by Nord En Face",
+				"Sudoku OCR by Nord En Face",
 				SDL_WINDOWPOS_CENTERED,
 				SDL_WINDOWPOS_CENTERED,
 				DEFAULT_WIDTH,
@@ -61,7 +66,8 @@ int main()
 	if (!window)
 		CallSDLError();
 
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer* renderer =
+			SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (!renderer)
 		CallSDLError();
 
@@ -72,8 +78,9 @@ int main()
 	SDL_GetWindowSize(window, &width, &height);
 
 	int arraySize = 1;
-	button buttonArray[arraySize];
-	buttonArray[0] = Button(50, 20, 60, 50, "Click me!", &print);
+	button buttonArray[arraySize];//Don't put buttons which go further than
+		// 130 in x (that space is used to show the files you can choose from)
+	buttonArray[0] = Button(50, 20, 60, 50, "Click me!", &DrawInterface);
 
 	Draw(renderer, buttonArray, arraySize, width, height);
 
@@ -94,11 +101,12 @@ int main()
 				if (x >= b.x && x <= b.x + b.width &&
 						y >= b.y && y <= b.y + b.height)
 				{
-					(b.func)();//Calls the function stored in the button
+					(b.func)(renderer, width, height);//Calls the function stored in the button
 				}
 			}
 		}
-		else if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_RESIZED)
+		else if (event.type == SDL_WINDOWEVENT &&
+				 event.window.event == SDL_WINDOWEVENT_RESIZED)
 		{
 		
 			SDL_GetWindowSize(window, &width, &height);
