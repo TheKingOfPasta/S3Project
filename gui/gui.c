@@ -47,11 +47,6 @@ void Draw(SDL_Renderer* renderer,
 	SDL_RenderPresent(renderer);
 }
 
-void print()
-{
-	printf("Button has been pressed\n");
-}
-
 int main()
 {
 	SDL_Window* window =
@@ -59,8 +54,8 @@ int main()
 				"Sudoku OCR by Nord En Face",
 				SDL_WINDOWPOS_CENTERED,
 				SDL_WINDOWPOS_CENTERED,
-				DEFAULT_WIDTH,
-				DEFAULT_HEIGHT,
+				5*DEFAULT_WIDTH,
+				5*DEFAULT_HEIGHT,
 				SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	if (!window)

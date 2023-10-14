@@ -8,7 +8,7 @@
 void DrawText(SDL_Renderer* renderer, int x, int y, char* text, int width, int height)
 {
     x *= width / DEFAULT_WIDTH;
-    y *= height / DEFAULT_HEIGHT;
+    y *= height / DEFAULT_HEIGHT;//Convert to absolute positions
 
 //Implement something like SDL_DrawText or whatever here when I learn how to
 }
