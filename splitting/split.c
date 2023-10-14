@@ -1,9 +1,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <err.h>
+#include <stdlib.h>
 
-void Split(char* path)
+//Fills 'folder_out' with 81 new images
+void Split(char* path_in, char* folder_out)
 {
-    SDL_Surface* surface = IMG_Load(path);
+    SDL_Surface* surface = IMG_Load(path_in);
     Uint32* pixels = surface->pixels;
 
     SDL_LockSurface(surface);//Avoid random stuff while accessing the pixels
@@ -27,7 +30,7 @@ void Split(char* path)
             }
 
             char* str;
-            asprintf(&str, "split_%02i.png", fileIndex);
+            asprintf(&str, "%s/split_%02i.png", folder_out, fileIndex);
             IMG_SavePNG(newS, str);
             fileIndex += 1;
         }
@@ -38,10 +41,10 @@ void Split(char* path)
 
 int main(int argc, char** argv)
 {
-    if (argc != 2)
-        return 1;
+    if (argc != 3)
+        errx(EXIT_FAILURE, "Usage : path_in folder_out");
 
-    Split(argv[1]);
+    Split(argv[1], argv[2]);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
