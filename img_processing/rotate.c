@@ -32,13 +32,16 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
             int surfaceX = (int)(x2 * cosine - y2 * sine) + surface->w / 2;
             int surfaceY = (int)(y2 * cosine + x2 * sine) + surface->h / 2;
 
-            if (surfaceX >= 0 && surfaceX < surface->w && surfaceY >= 0 && surfaceY < surface->h)
+            if (surfaceX >= 0 && surfaceX < surface->w &&
+                surfaceY >= 0 && surfaceY < surface->h)
             {
-			    newPixels[y * newS->w + x] = pixels[surfaceY * surface->w + surfaceX];
+			    newPixels[y * newS->w + x] =
+                    pixels[surfaceY * surface->w + surfaceX];
             }
 			else //Out of bounds
             {
-                newPixels[y * newS->w + x] = SDL_MapRGB(newS->format,255,255,255);
+                newPixels[y * newS->w + x] =
+                    SDL_MapRGB(newS->format,255,255,255);
             }
         }
 	}
@@ -64,10 +67,8 @@ Uint32 GetPixel(SDL_Surface* surface, int x, int y)
 }
 
 //A high value for well rotated images and a low value for badly rotated ones
-//If you see this then ping me for now idk what the "high)and "low" values will be but I plan on completing this function comment with those
 double FindSkew(SDL_Surface* surface)
 {
-    //TODO : this will probably break if there are too many random black lines/points on the side
     SDL_LockSurface(surface);
 
     double coef = 0;

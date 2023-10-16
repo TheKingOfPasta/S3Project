@@ -26,11 +26,11 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
     Uint32* pixels = (Uint32*)(surface->pixels);
     Uint32* newPixels = (Uint32*)(newS->pixels);
 
-	double gaussianWeights[size][size];
+	double gaussianWeights[size + 1][size + 1];
 
-	for (int j = 0; j < size; j++)
+	for (int j = 0; j <= size; j++)
 	{
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i <= size; i++)
 		{
 			double i2 = i - size / 2;
 			double j2 = j - size / 2;
@@ -40,7 +40,7 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 		}
 	}
 
-	size/=2;
+	size /= 2;
     for (int i = 0; i < surface->w; i++)
     for (int j = 0; j < surface->h; j++)
     {
@@ -55,12 +55,12 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
         for (int l = -size; l <= size; l++)
         {
             if (i + k >= 0 &&
-                i + k < surface->w &&
+                i + k <= surface->w &&
                 j + l >= 0 &&
-                j + l < surface->h)
+                j + l <= surface->h)
             {
                 SDL_GetRGB(
-                    pixels[(i+k)* surface->h  + j + l],
+                    pixels[i + k + (j + l) * surface->w],
                     surface->format,
                     &r,
                     &g,
@@ -74,7 +74,7 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
             }
         }
         
-        newPixels[i * newS->h + j] =
+        newPixels[i + j * newS->w] =
             SDL_MapRGB(newS->format,
                         total / totalWeight,
                         total / totalWeight,
