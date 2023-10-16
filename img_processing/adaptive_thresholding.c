@@ -7,12 +7,56 @@ SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
     SDL_Surface* newS =
         SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
 
-    int splitSize = 50;//TODO : resolution dependent size
+    int splitSize = 3;//TODO : resolution dependent size
 
-    SDL_LockSurface(surface);
+    SDL_LockSurface(newS);
 
     Uint32* pixels = (Uint32*)(surface->pixels);
     Uint32* newPixels = (Uint32*)(newS->pixels);
+    Uint8 r,g,b;
+
+    //new new code , slower , but who cares ? (it actually works)
+    
+    for (int i = 0; i < surface->w; i ++)
+    for (int j = 0; j < surface->h; j ++)
+    {
+        int count = 0;
+        Uint32 sum = 0;
+        for (int k = -splitSize/2; k <= splitSize/2; k++)
+        for (int l = -splitSize/2; l <= splitSize/2; l++)
+        {
+            int dx = i+k;
+            int dy = j+l;
+            if (dx >=0 && dx<surface->w && dy>=0 && dy<surface->h)
+            {
+                SDL_GetRGB(
+                    pixels[dx + (dy) * surface->w],
+                    surface->format,
+                    &r,
+                    &g,
+                    &b);
+                sum += r;
+                count++;
+            }
+        }
+
+        int average = sum/count;
+
+        SDL_GetRGB(
+            pixels[i + (j) * surface->w],
+            surface->format,
+            &r,
+            &g,
+            &b);
+        newPixels[i+j*surface->w] = 
+            r< threshold +average-3 ?  
+            SDL_MapRGB(surface->format, 255, 255, 255) :
+            0;
+    }
+
+    SDL_UnlockSurface(newS);
+    SDL_FreeSurface(surface);
+    return newS;
 
 
     //New code probably worse (didn't think that was possible but hey, just look at it)
@@ -56,7 +100,6 @@ SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
 
     //Old code wierd as heck
 
-    Uint8 r,g,b;
 
     for (int i = 0; i < surface->w; i += splitSize)
     for (int j = 0; j < surface->h; j += splitSize)
