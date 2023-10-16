@@ -25,7 +25,7 @@ int CompareStrings(char* a, char* b)
 
 void ErrorMessage()
 {
-    errx(EXIT_FAILURE, "Usage: -r/--rotate\n                   -b/--blur\n                   -t/--threshold\n");
+    errx(EXIT_FAILURE, "Usage: -r/--rotate\n                   -ra/--rotateauto\n                   -b/--blur\n                   -t/--threshold\n");
 }
 
 int main(int argc, char** argv)
@@ -58,6 +58,15 @@ int main(int argc, char** argv)
 
         printf("Attempting to rotate image from %s\n", path_in);
         IMG_SavePNG(IMGA_Rotate_from(path_in, angle), path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+    else if (CompareStrings(argv[1], "-ra") || CompareStrings(argv[1], "--rotateauto"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-ra/--rotateauto : rotate automatically at path (path_in path_out)\n");
+
+        printf("Attempting to automatically rotate image from %s\n", path_in);
+        IMG_SavePNG(IMGA_Rotate_auto(path_in), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-t") || CompareStrings(argv[1], "--threshold"))

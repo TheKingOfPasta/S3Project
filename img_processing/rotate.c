@@ -6,13 +6,7 @@
   * Rotate the texture with the given angle (from the center)
   *
   */
-/*void IMGA_Rotate(SDL_Renderer* r, SDL_Texture* tex, const double angle)
-{
-    int error = SDL_RenderCopyEx(r, tex, NULL, NULL, angle, NULL,
-            SDL_FLIP_NONE);
-    if (error)
-        errx(EXIT_FAILURE, "%s", SDL_GetError());
-}*/
+
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 {
     double angleRad = angle * 3.141592 / 180;
@@ -25,26 +19,30 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 							surface->w*sine+surface->h*cosine, 32,0,0,0,0);
 
     SDL_LockSurface(surface);
+    Uint32* pixels = surface->pixels;
+    Uint32* newPixels = newS->pixels;
 
-    for (int x = 0; x < newS->w; x+=1)
+    for (int x = 0; x < newS->w; x++)
     {
 		int x2 = x - newS->w / 2;
-        for (int y = 0; y < newS->h; y+=1)
+        for (int y = 0; y < newS->h; y++)
         {
 			int y2 = y - newS->h / 2;
 
-            int newX = (int)(x2 * cosine - y2 * sine) + surface->w / 2;
-            int newY = (int)(y2 * cosine + x2 * sine) + surface->h / 2;
+            int surfaceX = (int)(x2 * cosine - y2 * sine) + surface->w / 2;
+            int surfaceY = (int)(y2 * cosine + x2 * sine) + surface->h / 2;
 
-			((Uint32*)newS->pixels)[y*newS->w+x] = 
-			 	( newX >= 0 && newX<surface->w && newY >= 0 && newY < surface->h)?
-				((Uint32*)surface->pixels)[newY*surface->w+newX]:
-				SDL_MapRGB(newS->format,255,255,255);
+            if (surfaceX >= 0 && surfaceX < surface->w && surfaceY >= 0 && surfaceY < surface->h)
+            {
+			    newPixels[y * newS->w + x] = pixels[surfaceY * surface->w + surfaceX];
+            }
+			else //Out of bounds
+            {
+                newPixels[y * newS->w + x] = SDL_MapRGB(newS->format,255,255,255);
+            }
         }
 	}
 
-    printf("returning\n");
-    SDL_FreeSurface(surface);
 	SDL_UnlockSurface(surface);
 
     return newS;

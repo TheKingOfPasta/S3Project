@@ -119,7 +119,7 @@ void IMGC_to_binary(const char* input_path, const char* output_path, int
     IMGC_surface_to_grayscale(surface);
     IMGC_surface_to_binary(surface, threshold);
 
-    SDL_SaveBMP(surface, output_path);
+    IMG_SavePNG(surface, output_path);
 
     SDL_FreeSurface(surface);
 
@@ -134,10 +134,7 @@ void IMGC_to_grayscale(const char* input_path, const char* output_path)
     SDL_Surface* surface = IMGU_Load(input_path);
     IMGC_surface_to_grayscale(surface);
 
-    SDL_SaveBMP(surface, output_path);
+    IMG_SavePNG(surface, output_path);
 
     SDL_FreeSurface(surface);
-
 }
-
-
