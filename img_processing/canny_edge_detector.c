@@ -3,7 +3,8 @@
 #include <math.h>
 #include "canny_edge_detector.h"
 
-SDL_Surface* sobel_gradient(SDL_Surface* input,int threshold){
+SDL_Surface* sobel_gradient(SDL_Surface* input, int threshold)
+{
 	SDL_Surface* output =
 	   	SDL_CreateRGBSurface(0,input->w,input->h,32,0,0,0,0);
 
