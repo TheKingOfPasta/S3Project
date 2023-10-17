@@ -164,7 +164,7 @@ int main(int argc, char** argv)
         if (argc != 4)
             errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold>sobel (path_in folder_path_out)\n");
 
-        IMG_SavePNG(sobel_gradient(IMGU_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0))), path_out);
+        IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0))), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
 
