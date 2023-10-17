@@ -9,6 +9,8 @@
 #include "rotate.h"
 #include "canny_edge_detector.h"
 
+
+
 //1 -> a==b
 //0 -> a!=b
 int CompareStrings(char* a, char* b)
@@ -29,6 +31,39 @@ void ErrorMessage()
            "                   -b/--blur\n"
            "                   -t/--threshold\n"
            "                   -s/--sobel\n");
+}
+
+SDL_Surface* IMGA_Erosion(SDL_Surface* input){
+	SDL_Surface* output =
+	   	SDL_CreateRGBSurface(0,input->w,input->h,32,0,0,0,0);
+
+    SDL_LockSurface(output);
+
+    Uint32* inpPixels = (Uint32*)(input->pixels);
+    Uint32* outPixels = (Uint32*)(output->pixels);
+
+	int sumWhite;
+	for (int i = 1; i < input->w-1; i++)
+	for (int j = 1; j < input->h-1; j++)
+	{
+        sumWhite =0;
+		for (int k =-1; k <= 1; k++)
+		for (int l =-1; l <= 1; l++)
+		{
+            if (inpPixels[i + k + (j + l) * input->w])
+                sumWhite++;           
+		}
+
+		Uint32* outpxl = (Uint32*)outPixels + j*output->w + i;
+
+		*outpxl = ( sumWhite< 3) ? 
+            SDL_MapRGB(output->format,   0,   0,   0) :
+            SDL_MapRGB(output->format, 255, 255, 255);
+	}
+
+	SDL_UnlockSurface(output);
+	SDL_FreeSurface(input);
+	return output;
 }
 
 int main(int argc, char** argv)
@@ -129,7 +164,7 @@ int main(int argc, char** argv)
         if (argc != 4)
             errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold>sobel (path_in folder_path_out)\n");
 
-        IMG_SavePNG(sobel_gradient(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0)), path_out);
+        IMG_SavePNG(sobel_gradient(IMGU_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0))), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
 
