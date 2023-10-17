@@ -92,7 +92,7 @@ int main(int argc, char** argv)
     {
         if (argc == 4)
         {
-            IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), 0.5), path_out);
+            IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), 0), path_out);
             return EXIT_SUCCESS;
         }
 
@@ -118,15 +118,22 @@ int main(int argc, char** argv)
     }
     else if (CompareStrings(argv[1], "-s") || CompareStrings(argv[1], "--sobel"))
     {
-        if (argc != 5)
-            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in folder_path_out threshold)\n");
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in folder_path_out )\n");
 
-        char* endptr;
-        double threshold = strtod(argv[4], &endptr);
-
-        IMG_SavePNG(sobel_gradient(IMG_Load(path_in), threshold), path_out);
+        IMG_SavePNG(sobel_gradient(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
+    else if (CompareStrings(argv[1], "-bts") || CompareStrings(argv[1], "--blur>threshold>sobel"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold>sobel (path_in folder_path_out)\n");
+
+        IMG_SavePNG(sobel_gradient(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0)), path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+
+
     else
         ErrorMessage();
 
