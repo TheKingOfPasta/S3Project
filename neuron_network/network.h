@@ -1,28 +1,62 @@
 # pragma once
-# include <stdlib.h>
+# include <stddef.h>
 # include "helper.h"
-# include "neuron.h"
-# include "layer.h"
 
 typedef struct NN_Network
 {
     size_t num_layers;
 
-    NN_Layer **layers;
+    // contains the number of neurons in the respective layers
+    size_t *sizes;
+
+    // A bias for each neuron in each layer in the network
+    // a matrice [layer, neuron, singleton]. Singleton is a list of length 1
+    // (for matrix multiplication purpose)
+    double ***biases;
+
+    // A weight for each neuron in each layer in the network
+    // a matrice [layer, neuron, weights]
+    double ***weights;
 } NN_Network;
 
-void NN_free_network(NN_Network *network);
+NN_Network *NN_create_network(size_t *sizes, size_t num_layers);
 
-/**
-  * Create a network from the given inputs
-  * - num_layers: the number of layers the network has
-  * - num_inputs: the number of inputs coming for the input layer
-  * - num_neurons: an array containing the number of neurons in each layer
+
+void NN_print_biases(NN_Network *network);
+void NN_print_weights(NN_Network *network);
+
+void NN_free_network(NN_Network* network);
+
+double **NN_feedforward(NN_Network *network, double **inputs);
+
+
+/*
+**
+  * Cross the network to calculate the output at each level
+  * returns the final output
+  * free the inputs
   *
-  */
-NN_Network *NN_create_network(size_t num_layers, int num_inputs, int
-        *num_neurons);
+double *NN_feedforward(NN_Network *network, double *inputs)
+{
 
-void NN_print_network(NN_Network *network);
+    for (int layer = 0; layer < network->num_layers; ++layer)
+    {
+        double *b = network->biases[layer];
+        double **w = network->weights[layer];
 
-double *NN_feedforward(NN_Network *network, double *inputs);
+        int nb_neurons = network->sizes[num_layers];
+
+        double *new_input = malloc(nb_neurons * sizeof(double));
+
+        for (int i = 0; i < nb_neurons; ++i)
+        {
+            new_input[i] = sigmoid(inputs, n, w[i], b[i]);
+        }
+        free(inputs);
+        inputs = new_input;
+    }
+    return inputs;
+
+
+}
+*/

@@ -1,20 +1,19 @@
 CC = gcc
 CPPFLAGS =
-CFLAGS = -Wall -Wextra -O3 -g
-LDFLAGS = -lm
+CFLAGS = -Wall -Wextra -O3 -g -fsanitize=address
+LDFLAGS = -lm -fsanitize=address
 LDLIBS =
 
-SRC = network.c testsuite.c layer.c neuron.c helper.c
+SRC = test.c network.c test.c helper.c
 OBJ = ${SRC:.c=.o}
+EXE = ${SRC:.c=}
 
-all: testsuite
+all: test
 
-testsuite: testsuite.o network.o layer.o neuron.o helper.o
-
-network: network.o
+test: test.o network.o helper.o
 
 
 .PHONY: clean
 
 clean: 
-	${RM} ${OBJ}
+	${RM} ${OBJ} ${EXE}

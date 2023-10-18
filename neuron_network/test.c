@@ -2,7 +2,7 @@
 # include <stdio.h>
 # include <err.h>
 # include <string.h>
-# include "network_old.h"
+# include "network.h"
 # include <time.h>
 
 # define SEED time(NULL)
