@@ -1,67 +1,41 @@
+# pragma once
 # include <stddef.h>
 # include "helper.h"
 
 typedef struct NN_Network
 {
-    int num_layers;
+    size_t num_layers;
 
     // contains the number of neurons in the respective layers
-    int *sizes;
+    size_t *sizes;
 
     // A bias for each neuron in each layer in the network
-    // a matrice [layer, neuron]
-    double **biases;
+    // a matrice [layer, neuron, singleton]. Singleton is a list of length 1
+    // (for matrix multiplication purpose)
+    double ***biases;
 
     // A weight for each neuron in each layer in the network
     // a matrice [layer, neuron, weights]
     double ***weights;
 } NN_Network;
 
-NN_Network *NN_create_network(int *sizes, int num_layers)
-{
-    NN_Network *network = (NN_Network *)malloc(sizeof(NN_Network));
-    
-    if (network == NULL)
-        errx(EXIT_FAILURE, "[NN_create_network]: Failed to allocate memory for "
-                "NN_Network");
-
-    network->num_layers = num_layers;
-    network->sizes = sizes;
-    network->biases = malloc(num_layers * sizeof(double));
-    network->weights = malloc(num_layers * sizeof(double));
-
-    for (int i = 0; i < num_layers; ++i)
-    {
-        double *layer_bias = malloc(sizes[i] * sizeof(double));        
-        for (size_t j = 0; j < sizes[i]; ++j)
-            layer_bias[j] = random_value();
-        biases[i] = layer_bias;
-    }
-
-    // TODO: handle weights
-}
-
-void NN_free_network(NN_Network* network)
-{
-
-    for (int i = 0; i < network->num_layers; ++i)
-    {
-        free(network->biases[i]);
-    }
-    free(network->biases);
-    free(network->weights);
+NN_Network *NN_create_network(size_t *sizes, size_t num_layers);
 
 
-    free(network->sizes);
-    free(network);
-}
+void NN_print_biases(NN_Network *network);
+void NN_print_weights(NN_Network *network);
+
+void NN_free_network(NN_Network* network);
+
+double **NN_feedforward(NN_Network *network, double **inputs);
 
 
-/**
+/*
+**
   * Cross the network to calculate the output at each level
   * returns the final output
   * free the inputs
-  */
+  *
 double *NN_feedforward(NN_Network *network, double *inputs)
 {
 
@@ -85,3 +59,4 @@ double *NN_feedforward(NN_Network *network, double *inputs)
 
 
 }
+*/
