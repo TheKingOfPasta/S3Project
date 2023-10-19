@@ -34,7 +34,7 @@ typedef struct Matrix
   * A a matrix of dim (m * 1)
   */
 void sigmoid_prime(double **a, size_t m);
-
+void sigmoid_prime2(Matrix *a);
 
 double sigmoid(double x);
 
@@ -46,13 +46,15 @@ double random_value();
   * A is modified and holds the computation
   */
 void sigmoid_of_matrix(double **a, double **biases, size_t m);
-
+void sigmoid_of_matrix2(Matrix *a, Matrix *b);
 
 /**
   * Similare to sigmoid_of_matrix but we assume
   * that the biases were already added.
   */
 void sigmoid_matrix(double **a, size_t m);
+void sigmoid_matrix2(Matrix *a);
+
 
 /**
   * Calculate vector product
@@ -72,6 +74,7 @@ double *dot_1d(const double *a, const double *b, size_t n);
   */
 double **dot_2d(double **a, size_t m, size_t n, double **b, size_t
         p);
+Matrix *dot_2d2(Matrix *a, Matrix *b);
 
 void swap(void *a, void *b, size_t data_size);
 
@@ -79,42 +82,47 @@ void swap(void *a, void *b, size_t data_size);
 void shuffle(void* a, size_t n, size_t data_size);
 
 void print_matrix(double **a, size_t m, size_t n);
-
+void print_matrix2(Matrix *a);
 
 /**
   * Allocate the transposed of the given matrix of size m * n
   * Result, a matrix of size n * m
   */
 double **transpose(double **a, size_t m, size_t n);
+Matrix *transpose2(Matrix *a);
 
 /**
   * Create and heap allocate a matrix of size m * n
   * Accessible with matrix[m][n]
   */
 double **init_matrix(size_t m, size_t n);
+Matrix *init_matrix2(size_t m, size_t n);
 
 /**
   * Free a matrix created by init_matrix of size m
   */
 void free_matrix(double **a, size_t m);
+void free_matrix2(Matrix *a);
 
 /**
   * Add to matrices A and B of same dimensions m * n
   * The result is saved in A
   */
 void add_matrix(double **a, double **b, size_t m, size_t n);
-
+void add_matrix2(Matrix *a, Matrix *b);
 /**
   * Subtract B to A, matrices A and B of same dimensions m * n
   * The result is saved in A
   */
 void sub_matrix(double **a, double **b, size_t m, size_t n);
+void sub_matrix2(Matrix *a, Matrix *b);
 
 /**
   * Same as add_matrix but instead, A and B are not modified
   * and a new matrix holding the sum result is allocated (m * n)
   */
 double **add_matrix_heap(double **a, double **b, size_t m, size_t n);
+Matrix *add_matrix_heap2(Matrix *a, Matrix *b);
 
 /**
   * Copy an allocate a new heap matrix of dimension m * n
@@ -128,4 +136,4 @@ double **copy_matrix(double **a, size_t m, size_t n);
   * Result in A
   */
 void mul_matrix(double **a, double **b, size_t m, size_t n);
-
+void mul_matrix2(Matrix *a, Matrix *b);

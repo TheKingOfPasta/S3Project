@@ -4,6 +4,7 @@
 # include <math.h>
 # include <assert.h>
 # include <string.h>
+# include <err.h>
 
 /**
   * The Sigmoid function used to scale down x to a value between ]-1; 1[
@@ -12,6 +13,12 @@
 double sigmoid(double x)
 {
     return 1 / (1 + exp(-x));
+}
+
+
+void sigmoid_of_matrix2(Matrix *a, Matrix *b)
+{
+    sigmoid_of_matrix(a->matrix, b->matrix, a->m);
 }
 
 /**
@@ -27,6 +34,11 @@ void sigmoid_of_matrix(double **a, double **biases, size_t m)
     }
 }
 
+
+void sigmoid_matrix2(Matrix *a)
+{
+    sigmoid_matrix(a->matrix, a->m);
+}
 /**
   * Similare to sigmoid_of_matrix but we assume
   * that the biases were already added.
@@ -37,6 +49,11 @@ void sigmoid_matrix(double **a, size_t m)
         a[i][0] = sigmoid(a[i][0]);
 }
 
+
+void sigmoid_prime2(Matrix *a)
+{
+    sigmoid_prime(a->matrix, a->m);
+}
 /**
   * Derivative of the sigmoid function
   * A a matrix of dim (m * 1)
@@ -55,40 +72,6 @@ double random_value()
     return (2.0 * rand() / RAND_MAX) - 1.0;
 }
 
-
-///**
-//  * Compute the sum of weight * input - bias
-//  * <inputs> the array coming from the previous layer
-//  * <n> the size of inputs and weights
-//  * <weights> the weights of the links to this neuron
-//  * <bias> the bias of the neuron
-//  */
-//double sum(const double *inputs, size_t n, const double *weights, double bias)
-//{
-//
-//    double s = 0;
-//
-//    for (size_t i = 0; i < n; ++i)
-//        s += inputs[i] * weights[i] - bias;
-//    return s;
-//}
-//
-//
-//double sigmoid(const double *inputs, size_t n, const double *weights, double
-//        bias)
-//{
-//    double result = sum(inputs, n, weights, bias);
-//    return sigmoid_sum(result);
-//}
-//
-//double sigmoid_prime(const double *inputs, size_t n, const double *weights,
-//        double bias)
-//{
-//    double sig = sigmoid(inputs, n, weights, bias);
-//    return sig * (1 - sig);
-//}
-
-
 /**
   * Calculate vector product
   * If both a and b are 1-D arrays, it is inner product of vectors
@@ -106,6 +89,15 @@ double *dot_1d(const double *a, const double *b, size_t n)
         dot[i] = a[i] * b[i];
     }
     return dot;
+}
+
+Matrix *dot_2d2(Matrix *a, Matrix *b)
+{
+    Matrix *product = malloc(sizeof(Matrix));
+    product->matrix = dot_2d(a->matrix, a->m, a->n, b->matrix, b->n);
+    product->m = a->m;
+    product->n = b->n;
+    return product;
 }
 
 /**
@@ -143,6 +135,13 @@ void mul_matrix(double **a, double **b, size_t m, size_t n)
         for (size_t j = 0; j < n; ++j)
             a[i][j] *= b[i][j];
 }
+void mul_matrix2(Matrix *a, Matrix *b)
+{
+    if (a->m != b->m || a->n != b->n)
+        errx(EXIT_FAILURE, "a (%zu x %zu) and b (%zu x %zu) dimensions does not"
+                "match", a->m, a->n, b->m, b->n);
+    mul_matrix(a->matrix, b->matrix, a->m, a->n);
+}
 
 /**
   * Free a matrix created by init_matrix of size m
@@ -153,6 +152,12 @@ void free_matrix(double **a, size_t m)
     {
         free(a[i]);
     }
+    free(a);
+}
+
+void free_matrix2(Matrix *a)
+{
+    free_matrix(a->matrix, a->m);
     free(a);
 }
 
@@ -167,6 +172,14 @@ void add_matrix(double **a, double **b, size_t m, size_t n)
             a[i][j] += b[i][j];
 }
 
+void add_matrix2(Matrix *a, Matrix *b)
+{
+    if (a->m != b->m || a->n != b->n)
+        errx(EXIT_FAILURE, "a (%zu x %zu) and b (%zu x %zu) dimensions does not"
+                "match", a->m, a->n, b->m, b->n);
+    add_matrix(a->matrix, b->matrix, a->m, a->n);
+}
+
 /**
   * Subtract B to A, matrices A and B of same dimensions m * n
   * The result is saved in A
@@ -176,6 +189,15 @@ void sub_matrix(double **a, double **b, size_t m, size_t n)
     for (size_t i = 0; i < m; ++i)
         for (size_t j = 0; j < n; ++j)
             a[i][j] -= b[i][j];
+}
+
+void sub_matrix2(Matrix *a, Matrix *b)
+{
+    if (a->m != b->m || a->n != b->n)
+        errx(EXIT_FAILURE, "a (%zu x %zu) and b (%zu x %zu) dimensions does not"
+                "match", a->m, a->n, b->m, b->n);
+
+    sub_matrix(a->matrix, b->matrix, a->m, a->n);
 }
 
 /**
@@ -188,6 +210,17 @@ double **add_matrix_heap(double **a, double **b, size_t m, size_t n)
     for (size_t i = 0; i < m; ++i)
         for (size_t j = 0; j < n; ++j)
             sum[i][j] = a[i][j] + b[i][j];
+    return sum;
+}
+Matrix *add_matrix_heap2(Matrix *a, Matrix *b)
+{
+    if (a->m != b->m || a->n != b->n)
+        errx(EXIT_FAILURE, "a (%zu x %zu) and b (%zu x %zu) dimensions does not"
+                "match", a->m, a->n, b->m, b->n);
+    Matrix *sum = malloc(sizeof(Matrix));
+    sum->matrix = add_matrix_heap(a->matrix, b->matrix, a->m, a->n);
+    sum->m = a->m;
+    sum->n = a->n;
     return sum;
 }
 
@@ -204,6 +237,15 @@ double **init_matrix(size_t m, size_t n)
         assert(matrix[j] != NULL);
     }
     return matrix;
+}
+
+Matrix *init_matrix2(size_t m, size_t n)
+{
+    Matrix *a = malloc(sizeof(Matrix));
+    a->matrix = init_matrix(m, n);
+    a->m = m;
+    a->n = n;
+    return a;
 }
 
 /**
@@ -232,6 +274,15 @@ double **transpose(double **a, size_t m, size_t n)
     return transposed;
 }
 
+Matrix *transpose2(Matrix *a)
+{
+    Matrix *aT = malloc(sizeof(Matrix));
+    aT->matrix = transpose(a->matrix, a->n, a->m);
+    aT->m = a->n;
+    aT->n = a->m;
+    return aT;
+}
+
 void print_matrix(double **a, size_t m, size_t n)
 {
     printf("[\n");
@@ -243,6 +294,11 @@ void print_matrix(double **a, size_t m, size_t n)
         printf("]\n");
     }
     printf("]\n");
+}
+
+void print_matrix2(Matrix *a)
+{
+    print_matrix(a->matrix, a->m, a->n);
 }
 
 void swap(void *a, void *b, size_t data_size)
