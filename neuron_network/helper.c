@@ -27,6 +27,29 @@ void sigmoid_of_matrix(double **a, double **biases, size_t m)
     }
 }
 
+/**
+  * Similare to sigmoid_of_matrix but we assume
+  * that the biases were already added.
+  */
+void sigmoid_matrix(double **a, size_t m)
+{
+    for (size_t i = 0; i < m; ++i)
+        a[i][0] = sigmoid(a[i][0]);
+}
+
+/**
+  * Derivative of the sigmoid function
+  * A a matrix of dim (m * 1)
+  */
+void sigmoid_prime(double **a, size_t m)
+{
+    for (size_t i = 0; i < m; ++i)
+    {
+        double sig = sigmoid(a[i][0]);
+        a[i][0] = sig * (1 - sig);
+    }
+}
+
 double random_value()
 {
     return (2.0 * rand() / RAND_MAX) - 1.0;
@@ -93,12 +116,9 @@ double *dot_1d(const double *a, const double *b, size_t n)
   * AB is allocated in the memory
   * 1d array as 2d
   */
-// TODO: understand how to do a matrix multiplication with my 2D arrays of
-// malloc (especially who is m and n)
 double **dot_2d(double **a, size_t m, size_t n, double **b, size_t
         p)
 {
-    print_matrix(a, m, n);
     double **product = init_matrix(m, p);
     for (size_t i = 0; i < m; ++i)
     {
@@ -110,6 +130,18 @@ double **dot_2d(double **a, size_t m, size_t n, double **b, size_t
     }
     return product;
 
+}
+
+/**
+  * Simply perform the product of a[i][j] with b[i][j]
+  * A and B two matrices of same dimension m x n
+  * Result in A
+  */
+void mul_matrix(double **a, double **b, size_t m, size_t n)
+{
+    for (size_t i = 0; i < m; ++i)
+        for (size_t j = 0; j < n; ++j)
+            a[i][j] *= b[i][j];
 }
 
 /**
@@ -125,6 +157,41 @@ void free_matrix(double **a, size_t m)
 }
 
 /**
+  * Add to matrices A and B of same dimensions m * n
+  * The result is saved in A
+  */
+void add_matrix(double **a, double **b, size_t m, size_t n)
+{
+    for (size_t i = 0; i < m; ++i)
+        for (size_t j = 0; j < n; ++j)
+            a[i][j] += b[i][j];
+}
+
+/**
+  * Subtract B to A, matrices A and B of same dimensions m * n
+  * The result is saved in A
+  */
+void sub_matrix(double **a, double **b, size_t m, size_t n)
+{
+    for (size_t i = 0; i < m; ++i)
+        for (size_t j = 0; j < n; ++j)
+            a[i][j] -= b[i][j];
+}
+
+/**
+  * Same as add_matrix but instead, A and B are not modified
+  * and a new matrix holding the sum result is allocated (m * n)
+  */
+double **add_matrix_heap(double **a, double **b, size_t m, size_t n)
+{
+    double **sum = init_matrix(m, n);
+    for (size_t i = 0; i < m; ++i)
+        for (size_t j = 0; j < n; ++j)
+            sum[i][j] = a[i][j] + b[i][j];
+    return sum;
+}
+
+/**
   * Create and heap allocate a matrix of size m * n
   * Accessible with matrix[m][n]
   */
@@ -137,6 +204,19 @@ double **init_matrix(size_t m, size_t n)
         assert(matrix[j] != NULL);
     }
     return matrix;
+}
+
+/**
+  * Copy an allocate a new heap matrix of dimension m * n
+  * from a given matrix A of dim (m * n)
+  */
+double **copy_matrix(double **a, size_t m, size_t n)
+{
+    double **copy = init_matrix(m, n);    
+    for (size_t i = 0; i < m; ++i)
+        for (size_t j = 0; j < n; ++j)
+            copy[i][j] = a[i][j];
+    return copy;
 }
 
 /**
@@ -204,4 +284,3 @@ double cost_function(double const *output,  double const*expected, size_t n)
     }
     return cost;
 }
-

@@ -29,6 +29,9 @@ void NN_free_network(NN_Network* network);
 
 double **NN_feedforward(NN_Network *network, double **inputs);
 
+double ***NN_feedforward_save(NN_Network *network, double **inputs, double
+        ****zs);
+
 
 /*
 **
@@ -60,3 +63,5 @@ double *NN_feedforward(NN_Network *network, double *inputs)
 
 }
 */
+
+void backprop(NN_Network *network, TrainingData *data);

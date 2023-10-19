@@ -11,18 +11,29 @@
 typedef struct TrainingData
 {
     // An array of pixels (28 * 28) = 784
-    int *image;
+    double **image;
 
     // what the image represents
     // here, an array of 10, each index, the number
     // 0 should be {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}
     // 8 should be {0, 0, 0, 0, 0, 0, 0, 0, 1, 0}
-    int *expected;
+    double **expected;
     
 } TrainingData;
 
-double sigmoid_prime(const double *inputs, size_t n, const double *weights,
-        double bias);
+// represent a matrix of size m x n
+typedef struct Matrix
+{
+    double **matrix;
+    size_t m;
+    size_t n;
+} Matrix;
+
+/**
+  * Derivative of the sigmoid function
+  * A a matrix of dim (m * 1)
+  */
+void sigmoid_prime(double **a, size_t m);
 
 
 double sigmoid(double x);
@@ -37,6 +48,11 @@ double random_value();
 void sigmoid_of_matrix(double **a, double **biases, size_t m);
 
 
+/**
+  * Similare to sigmoid_of_matrix but we assume
+  * that the biases were already added.
+  */
+void sigmoid_matrix(double **a, size_t m);
 
 /**
   * Calculate vector product
@@ -67,7 +83,7 @@ void print_matrix(double **a, size_t m, size_t n);
 
 /**
   * Allocate the transposed of the given matrix of size m * n
-  *
+  * Result, a matrix of size n * m
   */
 double **transpose(double **a, size_t m, size_t n);
 
@@ -81,4 +97,35 @@ double **init_matrix(size_t m, size_t n);
   * Free a matrix created by init_matrix of size m
   */
 void free_matrix(double **a, size_t m);
+
+/**
+  * Add to matrices A and B of same dimensions m * n
+  * The result is saved in A
+  */
+void add_matrix(double **a, double **b, size_t m, size_t n);
+
+/**
+  * Subtract B to A, matrices A and B of same dimensions m * n
+  * The result is saved in A
+  */
+void sub_matrix(double **a, double **b, size_t m, size_t n);
+
+/**
+  * Same as add_matrix but instead, A and B are not modified
+  * and a new matrix holding the sum result is allocated (m * n)
+  */
+double **add_matrix_heap(double **a, double **b, size_t m, size_t n);
+
+/**
+  * Copy an allocate a new heap matrix of dimension m * n
+  * from a given matrix A of dim (m * n)
+  */
+double **copy_matrix(double **a, size_t m, size_t n);
+
+/**
+  * Simply perform the product of a[i][j] with b[i][j]
+  * A and B two matrices of same dimension m x n
+  * Result in A
+  */
+void mul_matrix(double **a, double **b, size_t m, size_t n);
 
