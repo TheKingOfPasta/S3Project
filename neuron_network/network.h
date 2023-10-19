@@ -12,10 +12,12 @@ typedef struct NN_Network
     // A bias for each neuron in each layer in the network
     // a matrice [layer, neuron, singleton]. Singleton is a list of length 1
     // (for matrix multiplication purpose)
+    Matrix **biases2;
     double ***biases;
 
     // A weight for each neuron in each layer in the network
     // a matrice [layer, neuron, weights]
+    Matrix **weights2;
     double ***weights;
 } NN_Network;
 
@@ -27,10 +29,12 @@ void NN_print_weights(NN_Network *network);
 
 void NN_free_network(NN_Network* network);
 
-double **NN_feedforward(NN_Network *network, double **inputs);
+//double **NN_feedforward(NN_Network *network, double **inputs);
+Matrix *NN_feedforward(NN_Network *network, Matrix *inputs);
 
-double ***NN_feedforward_save(NN_Network *network, double **inputs, double
-        ****zs);
+
+Matrix **NN_feedforward_save(NN_Network *network, Matrix *input, Matrix
+        ***zs);
 
 
 /*

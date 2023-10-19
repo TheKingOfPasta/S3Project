@@ -8,19 +8,6 @@
 # include <stdio.h>
 
 
-typedef struct TrainingData
-{
-    // An array of pixels (28 * 28) = 784
-    double **image;
-
-    // what the image represents
-    // here, an array of 10, each index, the number
-    // 0 should be {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-    // 8 should be {0, 0, 0, 0, 0, 0, 0, 0, 1, 0}
-    double **expected;
-    
-} TrainingData;
-
 // represent a matrix of size m x n
 typedef struct Matrix
 {
@@ -28,6 +15,20 @@ typedef struct Matrix
     size_t m;
     size_t n;
 } Matrix;
+
+typedef struct TrainingData
+{
+    // An array of pixels (28 * 28) = 784
+    Matrix *image;
+
+    // what the image represents
+    // here, an array of 10, each index, the number
+    // 0 should be {1, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+    // 8 should be {0, 0, 0, 0, 0, 0, 0, 0, 1, 0}
+    Matrix *expected;
+    
+} TrainingData;
+
 
 /**
   * Derivative of the sigmoid function
@@ -129,7 +130,7 @@ Matrix *add_matrix_heap2(Matrix *a, Matrix *b);
   * from a given matrix A of dim (m * n)
   */
 double **copy_matrix(double **a, size_t m, size_t n);
-
+Matrix *copy_matrix2(Matrix *a);
 /**
   * Simply perform the product of a[i][j] with b[i][j]
   * A and B two matrices of same dimension m x n

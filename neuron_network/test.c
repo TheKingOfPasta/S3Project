@@ -23,19 +23,18 @@ void test_feedforward()
     size_t neurons[] = {4, 8, 2, 5};
     NN_Network *network = NN_create_network(neurons, 4);
 
-    double **input = malloc(4 * sizeof(double *));
+    Matrix *input = init_matrix2(4, 1);
+
     for (size_t i = 0; i < 4; ++i)
-    {
-        input[i] = malloc(1 * sizeof(double));
         for (size_t j = 0; j < 1; ++j)
-            input[i][j] = i;
-    }
-    print_matrix(input, 4, 1);
-    double **output = NN_feedforward(network, input);
+            input->matrix[i][j] = i;
+
+    print_matrix2(input);
+    Matrix *output = NN_feedforward(network, input);
 
     printf("output: \n");
-    print_matrix(output, 5, 1);
-    free_matrix(output, 5);
+    print_matrix2(output);
+    free_matrix2(output);
 
     NN_free_network(network);
 }
@@ -46,28 +45,23 @@ void test_ffs()
     size_t neurons[] = {4, 8, 2, 5};
     NN_Network *network = NN_create_network(neurons, 4);
 
-    double **input = malloc(4 * sizeof(double *));
+    Matrix *input = init_matrix2(4, 1);
+
     for (size_t i = 0; i < 4; ++i)
-    {
-        input[i] = malloc(1 * sizeof(double));
         for (size_t j = 0; j < 1; ++j)
-            input[i][j] = i;
-    }
-    print_matrix(input, 4, 1);
-    double ***zs;
-    double ***output = NN_feedforward_save(network, input, &zs);
+            input->matrix[i][j] = i;
+
+    print_matrix2(input);
+    Matrix **zs;
+    Matrix **output = NN_feedforward_save(network, input, &zs);
 
     printf("printing output: \n");
     for (size_t i = 0; i < 4; ++i)
-    {
-        print_matrix(output[i], network->sizes[i], 1);
-    }
-    printf("printing zs: \n");
+        print_matrix2(output[i]);
 
+    printf("printing zs: \n");
     for (size_t i = 0; i < 3; ++i)
-    {
-        print_matrix(zs[i], network->sizes[i + 1], 1);
-    }
+        print_matrix2(zs[i]);
 
     NN_free_network(network);
 
@@ -78,20 +72,17 @@ void test_backprop()
     size_t neurons[] = {4, 8, 2, 5};
     NN_Network *network = NN_create_network(neurons, 4);
 
-    double **input = malloc(4 * sizeof(double *));
+    Matrix *input = init_matrix2(4, 1);
+
     for (size_t i = 0; i < 4; ++i)
-    {
-        input[i] = malloc(1 * sizeof(double));
         for (size_t j = 0; j < 1; ++j)
-            input[i][j] = i;
-    }
-    double **output = malloc(5 * sizeof(double *));
+            input->matrix[i][j] = i;
+
+    Matrix *output = init_matrix2(5, 1);
     for (size_t i = 0; i < 5; ++i)
-    {
-        output[i] = malloc(1 * sizeof(double));
         for (size_t j = 0; j < 1; ++j)
-            output[i][j] = i;
-    }
+            output->matrix[i][j] = i;
+
     TrainingData data = {input, output};
     backprop(network, &data);
     NN_free_network(network);
@@ -100,7 +91,7 @@ void test_backprop()
 void test_network()
 {
     size_t neurons[] = {4, 8, 2, 5};
-    NN_Network *network = NN_create_network(neurons, 3);
+    NN_Network *network = NN_create_network(neurons, 4);
     NN_print_biases(network);
     NN_print_weights(network);
 

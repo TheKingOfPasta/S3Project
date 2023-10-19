@@ -261,6 +261,15 @@ double **copy_matrix(double **a, size_t m, size_t n)
     return copy;
 }
 
+Matrix *copy_matrix2(Matrix *a)
+{
+    Matrix *copy = malloc(sizeof(Matrix));
+    copy->matrix = copy_matrix(a->matrix, a->m, a->n);
+    copy->m = a->m;
+    copy->n = a->n;
+    return copy;
+}
+
 /**
   * Allocate the transposed of the given matrix of size m * n
   *
@@ -277,7 +286,7 @@ double **transpose(double **a, size_t m, size_t n)
 Matrix *transpose2(Matrix *a)
 {
     Matrix *aT = malloc(sizeof(Matrix));
-    aT->matrix = transpose(a->matrix, a->n, a->m);
+    aT->matrix = transpose(a->matrix, a->m, a->n);
     aT->m = a->n;
     aT->n = a->m;
     return aT;
