@@ -6,6 +6,8 @@
 # include <string.h>
 # include <err.h>
 
+static size_t id = 0;
+
 /**
   * The Sigmoid function used to scale down x to a value between ]-1; 1[
   * <x> is the sum of the product of the weight and input minus the bias.
@@ -97,6 +99,7 @@ Matrix *dot_2d2(Matrix *a, Matrix *b)
     product->matrix = dot_2d(a->matrix, a->m, a->n, b->matrix, b->n);
     product->m = a->m;
     product->n = b->n;
+    product->id = id++;
     return product;
 }
 
@@ -143,6 +146,13 @@ void mul_matrix2(Matrix *a, Matrix *b)
     mul_matrix(a->matrix, b->matrix, a->m, a->n);
 }
 
+void mul_matrix_scalar(Matrix *a, double scalar)
+{
+    for (size_t i = 0; i < a->m; ++i)
+        for (size_t j = 0; j < a->n; ++j)
+            a->matrix[i][j] *= scalar;
+}
+
 /**
   * Free a matrix created by init_matrix of size m
   */
@@ -180,6 +190,13 @@ void add_matrix2(Matrix *a, Matrix *b)
     add_matrix(a->matrix, b->matrix, a->m, a->n);
 }
 
+void add_matrix_double(Matrix *a, double b)
+{
+    for (size_t i = 0; i < a->m; ++i)
+        for (size_t j = 0; j < a->n; ++j)
+            a->matrix[i][j] += b;
+}
+
 /**
   * Subtract B to A, matrices A and B of same dimensions m * n
   * The result is saved in A
@@ -199,6 +216,7 @@ void sub_matrix2(Matrix *a, Matrix *b)
 
     sub_matrix(a->matrix, b->matrix, a->m, a->n);
 }
+
 
 /**
   * Same as add_matrix but instead, A and B are not modified
@@ -221,6 +239,7 @@ Matrix *add_matrix_heap2(Matrix *a, Matrix *b)
     sum->matrix = add_matrix_heap(a->matrix, b->matrix, a->m, a->n);
     sum->m = a->m;
     sum->n = a->n;
+    sum->id = id++;
     return sum;
 }
 
@@ -245,6 +264,7 @@ Matrix *init_matrix2(size_t m, size_t n)
     a->matrix = init_matrix(m, n);
     a->m = m;
     a->n = n;
+    a->id = id++;
     return a;
 }
 
@@ -267,6 +287,7 @@ Matrix *copy_matrix2(Matrix *a)
     copy->matrix = copy_matrix(a->matrix, a->m, a->n);
     copy->m = a->m;
     copy->n = a->n;
+    copy->id = id++;
     return copy;
 }
 
@@ -289,6 +310,7 @@ Matrix *transpose2(Matrix *a)
     aT->matrix = transpose(a->matrix, a->m, a->n);
     aT->m = a->n;
     aT->n = a->m;
+    aT->id = id++;
     return aT;
 }
 
@@ -330,7 +352,6 @@ void shuffle(void* a, size_t n, size_t data_size)
     }
 }
 
-
 /**
   * Compute the cost function between two layers output:
   * - the output: what the neuron network gave back at this state
@@ -349,3 +370,45 @@ double cost_function(double const *output,  double const*expected, size_t n)
     }
     return cost;
 }
+
+/**
+  * Returns the index of the maximum of a (m x 1) matrix
+  */
+int argmax(Matrix *a)
+{
+    if (a->n != 1)
+        errx(EXIT_FAILURE, "argmax() is expecting a matrix (%zux1), received"
+                "(%zux%zu)\n", a->m, a->n, a->n);
+    int index = 0;
+    for (size_t i = 1; i < a->m; ++i)
+        if (a->matrix[i][0] > a->matrix[index][0])
+            index = i;
+    return index;
+}
+
+/**
+  * Returns a heap list of size n the indexes of the maximums of a (m x 1) matrix,
+  * where m could be various sizes.
+  */
+
+int *argmax_matrices(Matrix **l, size_t n)
+{
+    int *list = malloc(n * sizeof(int));
+    for (size_t i = 0; i < n; ++i)
+        list[i] = argmax(l[i]);
+    return list;
+}
+
+void free_training_data(TrainingData *data)
+{
+    free_matrix2(data->expected);
+    free_matrix2(data->image);
+    free(data);
+}
+
+//Matrix *broadcast_matrix(Matrix *a, Matrix *b)
+//{
+//    size_t 
+//    if (a->m == 1)
+//    Matrix *b = init_matrix
+//}

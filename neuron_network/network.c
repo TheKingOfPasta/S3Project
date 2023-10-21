@@ -1,6 +1,7 @@
 # include "network.h"
 # include <err.h>
 # include <stdio.h>
+# include <mcheck.h>
 
 NN_Network *NN_create_network(size_t *sizes, size_t num_layers)
 {
@@ -102,28 +103,25 @@ Matrix *NN_feedforward(NN_Network *network, Matrix *inputs)
     // n x 1
     for (size_t i = 1; i < network->num_layers; ++i)
     {
-        printf("==========Layer %zu/%zu===========\n", i, network->num_layers -
-                1);
-        size_t m = network->sizes[i];
-        size_t n = network->sizes[i - 1];
-
+        //printf("==========Layer %zu/%zu===========\n", i, network->num_layers -
+        //        1);
         // array of size (num_neurons of layer, 1)
         // m x n
         Matrix *b = network->biases2[i - 1];
         // array of size (num_neurons of previous layer, num_neurons of layer)
         Matrix *w = network->weights2[i - 1];
 
-        printf("inputs: ");
-        print_matrix2(inputs);
-        printf("weights: ");
-        print_matrix2(w);
+        //printf("inputs: ");
+        //print_matrix2(inputs);
+        //printf("weights: ");
+        //print_matrix2(w);
         // array of size (num_neurons of layer, 1)
         Matrix *a = dot_2d2(w, inputs);
         free_matrix2(inputs);
         sigmoid_of_matrix2(a, b);
         inputs = a;
         //printf("output of %zu/%zu\n", i, network->num_layers - 1);
-        print_matrix2(a);
+        //print_matrix2(a);
     }
     return inputs;
 }
@@ -148,21 +146,18 @@ Matrix **NN_feedforward_save(NN_Network *network, Matrix *inputs, Matrix
     activations[0] = inputs;
     for (size_t i = 1; i < network->num_layers; ++i)
     {
-        printf("==========Layer %zu/%zu===========\n", i, network->num_layers -
-                1);
-        size_t m = network->sizes[i];
-        size_t n = network->sizes[i - 1];
-
+        //printf("FFS() ==========Layer %zu/%zu===========\n", i, network->num_layers -
+        //        1);
         // array of size (num_neurons of layer, 1)
         // m x n
         Matrix *b = network->biases2[i - 1];
         // array of size (num_neurons of previous layer, num_neurons of layer)
         Matrix *w = network->weights2[i - 1];
 
-        printf("inputs: ");
-        print_matrix2(inputs);
-        printf("weights: ");
-        print_matrix2(w);
+        //printf("inputs: ");
+        //print_matrix2(inputs);
+        //printf("weights: ");
+        //print_matrix2(w);
         // array of size (num_neurons of layer, 1)
         Matrix *a = dot_2d2(w, inputs);
         add_matrix2(a, b);
@@ -177,8 +172,8 @@ Matrix **NN_feedforward_save(NN_Network *network, Matrix *inputs, Matrix
 
         inputs = activation;
         //printf("output of %zu/%zu\n", i, network->num_layers - 1);
-        printf("matrix output:\n");
-        print_matrix2(a);
+        //printf("matrix output:\n");
+        //print_matrix2(a);
     }
     return activations;
 
@@ -189,63 +184,58 @@ void cost_derivative(Matrix *output_activation, Matrix *expected)
     sub_matrix2(output_activation, expected);
 }
 
-void init_nabla(NN_Network *network, Matrix ***nabla_b, Matrix ***nabla_w)
-{
-    *nabla_b = malloc((network->num_layers - 1) * sizeof(Matrix *));
-    *nabla_w = malloc((network->num_layers - 1) * sizeof(Matrix*));
-
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-    {
-        (*nabla_b)[i] = init_matrix2(network->sizes[i + 1], 1);
-        (*nabla_w)[i] = init_matrix2(network->sizes[i + 1], network->sizes[i]);
-    }
-}
-
-void backprop(NN_Network *network, TrainingData *data)
+void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
+        Matrix ***in_nabla_w)
 {
     Matrix **activations, **zs;
     Matrix **nabla_b, **nabla_w;
-    init_nabla(network, &nabla_b, &nabla_w);
+    nabla_b = malloc((network->num_layers - 1) * sizeof(Matrix *));
+    nabla_w = malloc((network->num_layers - 1) * sizeof(Matrix*));
 
+    *in_nabla_w = nabla_w;
+    *in_nabla_b = nabla_b;
+    Matrix *input = copy_matrix2(data->image);
+
+    // feedforward =========
     size_t n_lay = network->num_layers;
-    size_t size = network->sizes[n_lay - 1];
-    size_t prev_size = network->sizes[n_lay - 2];
-
-    activations = NN_feedforward_save(network, data->image, &zs);
-
+    activations = NN_feedforward_save(network, input, &zs);
 
     // backward ============
     // activ[-1]
     cost_derivative(activations[n_lay - 1], data->expected);
-
     // zn[-1]
     sigmoid_prime2(zs[n_lay - 2]);
     mul_matrix2(activations[n_lay - 1], zs[n_lay - 2]);
+    // this zs no longer useful from here
+    free_matrix2(zs[n_lay - 2]);
+
     // matrix of dim sizes[n_lay - 1]x1
     Matrix *delta = activations[n_lay - 1];
     nabla_b[n_lay - 2] = delta;
 
     // now matrix of dim 1 x sizes[n_lay - 2]
     Matrix *actiT = transpose2(activations[n_lay - 2]);
+    // activation no longer useful from here
+    free_matrix2(activations[n_lay - 2]);
+
     // result matrix of dim sizes[n_lay - 1] x sizes[n_lay - 2]
     // nabla_w[-1]
     nabla_w[n_lay - 2] = dot_2d2(delta, actiT);
-    printf("result nabla_w: \n");
-    print_matrix2(nabla_w[n_lay - 2]);
-    printf("result nabla_b:\n");
-    print_matrix2(nabla_b[n_lay - 2]);
+    // actiT no longer useful
+    free_matrix2(actiT);
+    //printf("result nabla_w: \n");
+    //print_matrix2(nabla_w[n_lay - 2]);
+    //printf("result nabla_b:\n");
+    //print_matrix2(nabla_b[n_lay - 2]);
 
 
     for (ssize_t i = n_lay - 2; i > 0; --i)
     {
-        printf("Loop %zu/%zu\n", i, n_lay - 1);
-        // TODO: structure should be good, but index are 100% wrong
-        size_t next_size = network->sizes[i + 1];
-        size = network->sizes[i];
-        prev_size = network->sizes[i - 1];
+        //printf("Loop %zu/%zu\n", i, n_lay - 1);
+        //size_t next_size = network->sizes[i + 1];
+        //size = network->sizes[i];
+        //prev_size = network->sizes[i - 1];
         Matrix *z = zs[i - 1];
-        printf("z: %zu", size);
-        print_matrix2(z);
         sigmoid_prime2(z);
 
         // sizes[i-1] x sizes[i]
@@ -255,16 +245,115 @@ void backprop(NN_Network *network, TrainingData *data)
 
         delta = dot_2d2(weightT, delta);
         mul_matrix2(delta, z);
+        // z and weightT no longer useful from here
+        free_matrix2(z);
+        free_matrix2(weightT);
         nabla_b[i - 1] = delta;
-        printf("result nabla_b:\n");
-        print_matrix2(delta);
+        //printf("result nabla_b:\n");
+        //print_matrix2(delta);
 
         actiT = transpose2(activations[i - 1]);
         //print_matrix(actiT, 1, prev_size);
         //print_matrix(delta, size, 1);
         nabla_w[i - 1] = dot_2d2(delta, actiT);
-        printf("result nabla_w:\n");
-        print_matrix2(nabla_w[i - 1]);
+        // both no longer useful
+        free_matrix2(actiT);
+        free_matrix2(activations[i - 1]);
+        //printf("result nabla_w:\n");
+        //print_matrix2(nabla_w[i - 1]);
+    }
+    free(activations);
+    free(zs);
+}
+void update_mini_batch(NN_Network *network, TrainingData **data, size_t k, size_t
+        k_max, double eta)
+{
+    Matrix **nabla_b, **nabla_w;
+    // i = k
+    backprop(network, data[k], &nabla_b, &nabla_w);
+    for (size_t i = k + 1; i < k_max; ++i)
+    {
+        Matrix **delta_nabla_b, **delta_nabla_w;
+        backprop(network, data[i], &delta_nabla_b, &delta_nabla_w);
+
+        // add the delta togethers for this batch
+        for (size_t j = 0; j < network->num_layers - 1; ++j)
+        {
+            add_matrix2(nabla_b[j], delta_nabla_b[j]);
+            add_matrix2(nabla_w[j], delta_nabla_w[j]);
+            free_matrix2(delta_nabla_b[j]);
+            free_matrix2(delta_nabla_w[j]);
+        }
+        free(delta_nabla_b);
+        free(delta_nabla_w);
     }
 
+    double d_eta = eta / (k_max - k);
+    //printf("\n\nbefore \n\n");
+    //NN_print_biases(network);
+    //NN_print_weights(network);
+
+    for (size_t i = 0; i < network->num_layers - 1; ++i)
+    {
+        // could be optimised
+        // compute the new weights for this layer from the delta
+        mul_matrix_scalar(nabla_w[i], d_eta);
+        sub_matrix2(network->weights2[i], nabla_w[i]);
+        free_matrix2(nabla_w[i]);
+
+        mul_matrix_scalar(nabla_b[i], d_eta);
+        sub_matrix2(network->biases2[i], nabla_b[i]);
+        free_matrix2(nabla_b[i]);
+    }
+    printf("\nafter\n");
+    NN_print_biases(network);
+    NN_print_weights(network);
+    free(nabla_b);
+    free(nabla_w);
 }
+
+void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size_t batch_size,
+        double eta, TrainingData **test_data, size_t n_test)
+{
+    for (size_t i = 0; i < epochs; ++i)
+    {
+        shuffle(data, n, sizeof(data[i]));
+
+        for (size_t k = 0; k < n; k += batch_size)
+        {
+            size_t k_max = k + batch_size;
+            if (k_max > n)
+                k_max = n;
+            update_mini_batch(network, data, k, k_max, eta);
+        }
+        if (test_data != NULL)
+        {
+            int positive = evaluate(network, test_data, n_test);
+            printf("========Epoch %zu/%zu, %02.2f%% (%i / %zu)=========\n", i,
+                    epochs - 1, ((double)positive) / n_test * 100, positive, n_test);
+        }
+        else
+            printf("========Epoch %zu/%zu=========\n", i, epochs - 1);
+    }
+}
+
+int evaluate(NN_Network *network, TrainingData **test_data, size_t n_test)
+{
+    int sum = 0;
+    for (size_t i = 0; i < n_test; ++i)
+    {
+        Matrix *input = copy_matrix2(test_data[i]->image);
+
+        print_matrix2(input);
+        Matrix *output = NN_feedforward(network, input);
+        int my_result = argmax(output);
+        int my_expect = argmax(test_data[i]->expected);
+        printf("Expected %i but %i\n", my_expect, my_result);
+        if (my_result == my_expect)
+            sum++;
+
+        free_matrix2(output);
+    }
+    return sum;
+}
+

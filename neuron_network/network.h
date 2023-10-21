@@ -13,12 +13,9 @@ typedef struct NN_Network
     // a matrice [layer, neuron, singleton]. Singleton is a list of length 1
     // (for matrix multiplication purpose)
     Matrix **biases2;
-    double ***biases;
-
     // A weight for each neuron in each layer in the network
     // a matrice [layer, neuron, weights]
     Matrix **weights2;
-    double ***weights;
 } NN_Network;
 
 NN_Network *NN_create_network(size_t *sizes, size_t num_layers);
@@ -67,5 +64,12 @@ double *NN_feedforward(NN_Network *network, double *inputs)
 
 }
 */
+void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
+        Matrix ***in_nabla_w);
+void update_mini_batch(NN_Network * network, TrainingData **data, size_t k, size_t
+        k_max, double eta);
+void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size_t batch_size,
+        double eta, TrainingData **test_data, size_t n_test);
 
-void backprop(NN_Network *network, TrainingData *data);
+int evaluate(NN_Network *network, TrainingData **test_data, size_t n_test);
+

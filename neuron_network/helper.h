@@ -14,6 +14,7 @@ typedef struct Matrix
     double **matrix;
     size_t m;
     size_t n;
+    size_t id;
 } Matrix;
 
 typedef struct TrainingData
@@ -111,13 +112,14 @@ void free_matrix2(Matrix *a);
   */
 void add_matrix(double **a, double **b, size_t m, size_t n);
 void add_matrix2(Matrix *a, Matrix *b);
+void add_matrix_double(Matrix *a, double b);
+
 /**
   * Subtract B to A, matrices A and B of same dimensions m * n
   * The result is saved in A
   */
 void sub_matrix(double **a, double **b, size_t m, size_t n);
 void sub_matrix2(Matrix *a, Matrix *b);
-
 /**
   * Same as add_matrix but instead, A and B are not modified
   * and a new matrix holding the sum result is allocated (m * n)
@@ -138,3 +140,21 @@ Matrix *copy_matrix2(Matrix *a);
   */
 void mul_matrix(double **a, double **b, size_t m, size_t n);
 void mul_matrix2(Matrix *a, Matrix *b);
+void mul_matrix_scalar(Matrix *a, double scalar);
+
+
+/**
+  * Returns the index of the maximum of a (m x 1) matrix
+  */
+int argmax(Matrix *a);
+
+/**
+  * Returns a heap list of size n the indexes of the maximums of a (m x 1) matrix,
+  * where m could be various sizes.
+  */
+int *argmax_matrices(Matrix **l, size_t n);
+
+
+void free_training_data(TrainingData *data);
+
+
