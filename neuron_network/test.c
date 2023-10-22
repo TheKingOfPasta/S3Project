@@ -2,9 +2,11 @@
 # include <stdio.h>
 # include <err.h>
 # include <string.h>
-# include "network.h"
 # include <time.h>
 # include <mcheck.h>
+
+# include "network.h"
+# include "mnist_reader.h"
 
 # define SEED time(NULL)
 # define ETA 0.5 // best value : 0.5
@@ -19,6 +21,8 @@ void print_help()
             "       --feedforward:  all the feedforward method relative tests\n"
             "       --ffs:          all the feedforward_save relative tests\n"
             "       --umb:          all the mini_batch relative tests\n"
+            "       --xor:          try to teach the network the XOR function\n"
+            "       --mnist:        try to import the mnist dataset\n"
             );
 
 }
@@ -242,6 +246,13 @@ void test_xor()
     NN_free_network(network);
 }
 
+void test_mnist_reader()
+{
+    TrainingData **data;
+    size_t n = load_images(TRAINING_SET_IMAGE, TRAINING_SET_LABEL, &data);
+    free_all_training_data(data, n);
+}
+
 
 void all()
 {
@@ -279,6 +290,10 @@ int main(int argc, char **argv)
         test_umb();
     else if (strcmp(argv[1], "--xor") == 0)
         test_xor();
+    else if (strcmp(argv[1], "--mnist") == 0)
+        test_mnist_reader();
+    else
+        print_help();
 
     return EXIT_SUCCESS;
 }
