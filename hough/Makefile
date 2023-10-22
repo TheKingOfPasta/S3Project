@@ -1,18 +1,19 @@
+# Makefile
+
 CC = gcc
-CPPFLAGS =
 CFLAGS = -Wall -Wextra -O3 -lm -ldl `pkg-config --cflags sdl2 SDL2_image`
 LDFLAGS =
-LDLIBS =-lm -ldl `pkg-config --libs sdl2 SDL2_image`
+LDLIBS = -lm -ldl `pkg-config --libs sdl2 SDL2_image`
 
-SRC = hough.c
-OBJ = ${SRC:.c=.o}
+EXE = hough GPT
 
-all: hough
+all: $(EXE)
 
-split: hough.o
+$(foreach f, $(EXE), $(eval $(f):))
 
 .PHONY: clean
 
 clean:
-	rm *.o
-	rm hough
+	${RM} $(EXE)
+
+# END
