@@ -3,6 +3,8 @@
 #include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 typedef struct button
 {
@@ -14,11 +16,11 @@ typedef struct button
 
 	char* text;
 
-	void (*func)();//The function which will be called on click
+	SDL_Surface* (*func)();//The function which will be called on click
 } button;
 
 
-button Button(int x, int y, int width, int height, char* text, void (*func)())//Constuctor
+button Button(int x, int y, char* text, SDL_Surface* (*func)())//Constuctor
 {
 	if (func == NULL)
 		errx(EXIT_FAILURE, "Creating button without function associated");
@@ -26,8 +28,8 @@ button Button(int x, int y, int width, int height, char* text, void (*func)())//
 	button b;
 	b.x = x;
 	b.y = y;
-	b.height = height;
-	b.width = width;
+	b.height = 20;
+	b.width = 1 + 2 * strlen(text) * 16 / 9;
 	b.text = text;
 	b.func = func;
 
