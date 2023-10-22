@@ -5,40 +5,53 @@
 #include <math.h>
 #include <err.h>
 
-void MyDrawLine(SDL_Surface* s, int x, int y, int x2, int y2)
+
+#define distance(xa,ya,xb,yb) (sqrt((xa-xb)*(xa-xb)+(ya-yb)*(ya-yb)))
+
+
+void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2)
 {
-    double vx = x2 - x;
-    double vy = y2 - y;
-    double len = sqrt(vx * vx + vy * vy);
-    if (!len)
-        return;//drawing from same point to same point
+	//printf("trying to draw : w=%i h=%i ||x0 : %i  y0 : %i  x1 : %i  y1 : %i\n", s->w,s->h,x,y,x2,y2);
 
-    vx /= len;
-    vy /= len;
-    double posX = x;
-    double posY = y;
+	int dx = abs(x2 - x1);
+    int dy = abs(y2 - y1);
+    int sx = x1 < x2 ? 1 : -1;
+    int sy = y1 < y2 ? 1 : -1;
 
-    Uint32* pixels = s->pixels;
+    int err = (dx > dy ? dx : -dy) >>1;
+    int e2;
 
-    while (len)
-    {
-        pixels[(int)(posX + posY * s->w)] = SDL_MapRGB(s->format, 255, 0, 0);
-        posX += vx;
-        posY += vy;
-
-        len -= 1;
+    while (x1 < s->w && x1>0 && y1 < s->h && y1>0)  {
+        Uint32* pixel = (Uint32*)((Uint8*)s->pixels + y1 * s->pitch + x1 * s->format->BytesPerPixel);
+        *pixel = SDL_MapRGB(s->format, 255,  255,  255);
+        e2 = err;
+        if (e2 > -dx) {
+            err -= dy;
+            x1 += sx;
+        }
+        if (e2 < dy) {
+            err += dx;
+            y1 += sy;
+        }
+    }
+	
+	while (x2 < s->w && x2>0 && y2 < s->h && y2>0) {
+        Uint32* pixel = (Uint32*)((Uint8*)s->pixels + y2 * s->pitch + x2 * s->format->BytesPerPixel);
+        *pixel = SDL_MapRGB(s->format, 255,  255,  255);
+        e2 = err;
+        if (e2 > -dx) {
+            err -= dy;
+            x2 -= sx;
+        }
+        if (e2 < dy) {
+            err += dx;
+            y2 -= sy;
+        }
     }
 }
 
-void Visualize_Acc(int acc[][180] , int rmax){
-	int maxacc = 0;
-	for (int i = 0; i < rmax; i++)
-    for (int j = 0; j < 180; j++)
-	{
-		if (acc[i][j]>maxacc) maxacc = acc[i][j];
- 	}
+void Visualize_Acc(int acc[][180] , int rmax, int maxacc){
 
-	
 	SDL_Surface* newS =SDL_CreateRGBSurface(0,rmax, 180, 32,0,0,0,0);
 	SDL_LockSurface(newS);
 	Uint32* pixels = (Uint32*)(newS->pixels);
@@ -50,9 +63,10 @@ void Visualize_Acc(int acc[][180] , int rmax){
 	}
 	SDL_UnlockSurface(newS);
 	IMG_SavePNG(newS,"e.png");
+	SDL_FreeSurface(newS);
 }
 
-int** Fill_Matrix_Line(SDL_Surface* input,int threshold,int* nbLines){
+SDL_Surface* Fill_Matrix_Line(SDL_Surface* input){
 	//Determine the range of rho and theta :
 	int rmax = (int)sqrt((input->w*input->w) + (input->h*input->h));
 
@@ -88,33 +102,40 @@ int** Fill_Matrix_Line(SDL_Surface* input,int threshold,int* nbLines){
 		}
 	}
 
-	Visualize_Acc(acc , rmax);
-	
-	int** m = malloc(20*sizeof(int*));
+	int maxacc = 0;
+	for (int i = 0; i < rmax; i++)
+    for (int j = 0; j < 180; j++)
+	{
+		if (acc[i][j]>maxacc) maxacc = acc[i][j];
+ 	}
+
+	Visualize_Acc(acc , rmax,maxacc);
+
+	SDL_Surface* newS =SDL_CreateRGBSurface(0,input->w, input->h, 32,0,0,0,0);
+	SDL_LockSurface(newS);
+	//Uint32* pixels = (Uint32*)(newS->pixels);
+	int width = newS->w;
+	int height = newS->h;
 	int t = 0;
-	int max = 20;
-	for(int i = 0; i<(int)rmax; i++)
-		for(int j = 0; j<180;j++)
+	for(int i = 0; i<width; i++)
+		for(int j = 0; j<height;j++)
 		{
-			if (acc[i][j] > threshold)
+			if (acc[i][j] > maxacc*0.8)
 			{
-				if (t == max) {
-					//int** p  = m;
-					m = realloc(m,(max+10)*sizeof(int*));
-					//free(p);
-					max += 10;
-				}
-				m[t] = malloc(2*sizeof(int));
-				m[t][0] = i;
-				m[t][1] = j;
 				t++;
-			}	
+				double radians = t * M_PI/180.0;
+				int x0 = (int)(acc[i][0] * cos(radians));
+                int y0 = (int)(acc[i][0] * sin(radians));
+                int x1 = x0 + 100 * (-sin(radians));
+                int y1 = y0 + 100 * (cos(radians));
+                if (x1 >= 0 && x1 < width && y1 >= 0 && y1 < height) {
+                   	MyDrawLine(newS, x0 + width / 2, y0 + height / 2, x1 + width / 2, y1 + height / 2);
+				}
+
+			}
 		}
-	//int** p = m;
-	*nbLines = t;
-	m = realloc(m,t*sizeof(int*));
-	//free(p);
-	return m;
+
+	return newS;
 }
 
 SDL_Surface* load_image(const char* path)
@@ -158,12 +179,11 @@ void draw_lines(SDL_Surface* sur, int** acc, int nbLines) {
 
 int main(int argc, char** argv){
 	if (argc != 3)
-		errx(1,"first param : path\nsecond param: threshold\n");
+		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
-	int nbLines;
-	int** acc = Fill_Matrix_Line(input,Str_to_Int(argv[2]),&nbLines);
-	printf("NbLines: %i\n",nbLines);
-	draw_lines(input,acc,nbLines);
+	SDL_Surface* output  =Fill_Matrix_Line(input);
+	IMG_SavePNG( output,argv[2]);
 	SDL_FreeSurface(input);
+	SDL_FreeSurface(output);
 	return 0;
 }
