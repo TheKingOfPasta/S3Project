@@ -12,6 +12,6 @@ How to use:
 
 
 Using the GUI:
-  On the left are the functions you can execute, on the right are the files of your system.
-  Simply click on a file to choose it, or click on a folder to go into the folder.
-  To go back, click on the .. button from the list
+ - On the left are the functions you can execute, on the right are the files of your system.
+ - Simply click on a file to choose it, or click on a folder to go into the folder.
+ - To go back, click on the .. button from the list
