@@ -1,6 +1,6 @@
 CC = gcc
 CPPFLAGS =
-CFLAGS = -Wall -Wextra -O3 -g -fsanitize=address
+CFLAGS = -Wall -Wextra -O3 -g -lbsd -fsanitize=address
 LDFLAGS = -lm -fsanitize=address
 LDLIBS =
 
