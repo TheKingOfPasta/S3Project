@@ -30,6 +30,28 @@ void MyDrawLine(SDL_Surface* s, int x, int y, int x2, int y2)
     }
 }
 
+void Visualize_Acc(int acc[][180] , int rmax){
+	int maxacc = 0;
+	for (int i = 0; i < rmax; i++)
+    for (int j = 0; j < 180; j++)
+	{
+		if (acc[i][j]>maxacc) maxacc = acc[i][j];
+ 	}
+
+	
+	SDL_Surface* newS =SDL_CreateRGBSurface(0,rmax, 180, 32,0,0,0,0);
+	SDL_LockSurface(newS);
+	Uint32* pixels = (Uint32*)(newS->pixels);
+	for (int i = 0; i < newS->w; i++)
+    for (int j = 0; j < newS->h; j++)
+	{
+		Uint32 value = (Uint32) ((((float)acc[i][j])/maxacc)*255);
+		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value ,  value,  value);
+	}
+	SDL_UnlockSurface(newS);
+	IMG_SavePNG(newS,"e.png");
+}
+
 int** Fill_Matrix_Line(SDL_Surface* input,int threshold,int* nbLines){
 	//Determine the range of rho and theta :
 	int rmax = (int)sqrt((input->w*input->w) + (input->h*input->h));
@@ -51,7 +73,7 @@ int** Fill_Matrix_Line(SDL_Surface* input,int threshold,int* nbLines){
 		for(int x = 0; x<input->h;x++)
 		{
 			Uint8 pixel = ((Uint8*)input->pixels)[y * input->pitch + x];
-            		if (pixel > 128) {
+            	if (pixel > 128) {
 				//loop over all the possible values of theta
 				for(int theta = 0; theta < 180; theta++) //(0<=theta<Pi)
 				{
@@ -65,6 +87,9 @@ int** Fill_Matrix_Line(SDL_Surface* input,int threshold,int* nbLines){
 			}
 		}
 	}
+
+	Visualize_Acc(acc , rmax);
+	
 	int** m = malloc(20*sizeof(int*));
 	int t = 0;
 	int max = 20;
@@ -136,7 +161,7 @@ int main(int argc, char** argv){
 		errx(1,"first param : path\nsecond param: threshold\n");
 	SDL_Surface* input = load_image(argv[1]);
 	int nbLines;
-	int** acc = Fill_Matrix_Line(input,argv[2],&nbLines);
+	int** acc = Fill_Matrix_Line(input,Str_to_Int(argv[2]),&nbLines);
 	printf("NbLines: %i\n",nbLines);
 	draw_lines(input,acc,nbLines);
 	SDL_FreeSurface(input);
