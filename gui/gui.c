@@ -175,10 +175,10 @@ int main()
 	button buttonArray[arraySize];//Don't put buttons which go further than
 		// 130 in x (that space is used to show the files you can choose from)
 	buttonArray[0] = Button(0, 0, "Gaussian blur", "Blur");
-	buttonArray[1] = Button(0, 20, "Thresholding", "Threshold");
-	buttonArray[2] = Button(0, 40, "Sobel gradient", "Sobel");
-	buttonArray[3] = Button(0, 60, "Rotate 15°", "Rotate");
-	buttonArray[4] = Button(0, 80, "Split image", "Split");
+	buttonArray[1] = Button(0, 10, "Thresholding", "Threshold");
+	buttonArray[2] = Button(0, 20, "Sobel gradient", "Sobel");
+	buttonArray[3] = Button(0, 30, "Rotate 15°", "Rotate");
+	buttonArray[4] = Button(0, 40, "Split image", "Split");
 
 	int scrollY = 0;
 	char* path = malloc(4);

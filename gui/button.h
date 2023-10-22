@@ -25,7 +25,7 @@ button Button(int x, int y, char* text, char* func)//Constuctor
 	button b;
 	b.x = x;
 	b.y = y;
-	b.height = 20;
+	b.height = 10;
 	b.width = 1 + 2 * strlen(text) * 16 / 9;
 	b.text = text;
 	b.func = func;
