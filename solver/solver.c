@@ -181,10 +181,11 @@ void SLV_solve(short grid[9][9]){
 
 
 
-void main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-	if (argc!=2) {
-		errx(EXIT_FAILURE, "misuse of solver 1 param only");
+	if (argc != 2)
+    {
+		errx(EXIT_FAILURE, "misuse of solver 1 param only : ./solver 'path'");
 	}
 
 
@@ -195,7 +196,9 @@ void main(int argc, char *argv[])
     print(m);
 
     SLV_solve(m);
-    printf("\nwwwwwwwwwwwwwwwwwwwwwwwwwwww\n");
+    printf("\n-------------\n");
     print(m);
+
+    return EXIT_SUCCESS;
 }
 
