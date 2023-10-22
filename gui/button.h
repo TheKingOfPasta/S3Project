@@ -16,15 +16,12 @@ typedef struct button
 
 	char* text;
 
-	SDL_Surface* (*func)();//The function which will be called on click
+	char* func;//The function which will be called on click
 } button;
 
 
-button Button(int x, int y, char* text, SDL_Surface* (*func)())//Constuctor
-{
-	if (func == NULL)
-		errx(EXIT_FAILURE, "Creating button without function associated");
-	
+button Button(int x, int y, char* text, char* func)//Constuctor
+{	
 	button b;
 	b.x = x;
 	b.y = y;

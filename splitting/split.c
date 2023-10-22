@@ -14,7 +14,7 @@ void Split(char* path_in, char* folder_out)
     int w9 = surface->w / 9;
     int h9 = surface->h / 9;
 
-    int fileIndex = 0;
+    int fileIndex = 1;
 
     for (int j = 0; j < surface->h; j += h9)
     {
@@ -37,14 +37,4 @@ void Split(char* path_in, char* folder_out)
     }
 
     SDL_FreeSurface(surface);
-}
-
-int main(int argc, char** argv)
-{
-    if (argc != 3)
-        errx(EXIT_FAILURE, "Usage : path_in folder_out");
-
-    Split(argv[1], argv[2]);
-
-    return EXIT_SUCCESS;
 }

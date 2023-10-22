@@ -12,6 +12,7 @@
 #include "../img_processing/canny_edge_detector.h"
 #include "../img_processing/gaussian_blur.h"
 #include "../img_processing/rotate.h"
+#include "../splitting/split.h"
 
 #define DEFAULT_WIDTH 160
 #define DEFAULT_HEIGHT 90//the default resolution of the screen,
@@ -126,6 +127,17 @@ char* my_cat(char *str1, const char *str2)
     return str1;
 }
 
+int strequ(char* a, char* b)
+{
+	for (; *a == *b && *a;)
+	{
+		a += 1;
+		b += 1;
+	}
+
+	return !*a;
+}
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -159,13 +171,14 @@ int main()
 	selectingText[0] = '.';
 	selectingText[1] = '\0';
 
-	int arraySize = 4;
+	int arraySize = 5;
 	button buttonArray[arraySize];//Don't put buttons which go further than
 		// 130 in x (that space is used to show the files you can choose from)
-	buttonArray[0] = Button(0, 0, "Gaussian blur", &IMGA_GaussianBlur);
-	buttonArray[1] = Button(0, 20, "Thresholding", &IMGA_ApplyThreshold);
-	buttonArray[2] = Button(0, 40, "Canny edge detection", &sobel_gradient);
-	buttonArray[3] = Button(0, 60, "Rotate 15°", &IMGA_Rotate);
+	buttonArray[0] = Button(0, 0, "Gaussian blur", "Blur");
+	buttonArray[1] = Button(0, 20, "Thresholding", "Threshold");
+	buttonArray[2] = Button(0, 40, "Sobel gradient", "Sobel");
+	buttonArray[3] = Button(0, 60, "Rotate 15°", "Rotate");
+	buttonArray[4] = Button(0, 80, "Split image", "Split");
 
 	int scrollY = 0;
 	char* path = malloc(4);
@@ -230,25 +243,30 @@ int main()
 						y >= b.y * height / DEFAULT_HEIGHT && y <= (b.y + b.height) * height / DEFAULT_HEIGHT)
 				{
 					//Dumb i know but multi params are annoying
-					if (b.func == &IMGA_GaussianBlur)
+					if (strequ(b.func, "Blur"))
 					{
-						IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(selectingText), 11, 1.5), "../output.png");
-						printf("Saved into root/output.png\n");
+						IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(selectingText), 11, 1.5), "../guioutputs/output.png");
+						printf("Saved into root/guioutputs/output.png\n");
 					}
-					else if (b.func == &IMGA_ApplyThreshold)
+					else if (strequ(b.func, "Threshold"))
 					{
-						IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(selectingText), 0), "../output.png");
-						printf("Saved into root/output.png\n");
+						IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(selectingText), 0), "../guioutputs/output.png");
+						printf("Saved into root/guioutputs/output.png\n");
 					}
-					else if (b.func == &sobel_gradient)
+					else if (strequ(b.func, "Sobel"))
 					{
-						IMG_SavePNG(sobel_gradient(IMG_Load(selectingText)), "../output.png");
-						printf("Saved into root/output.png\n");
+						IMG_SavePNG(sobel_gradient(IMG_Load(selectingText)), "../guioutputs/output.png");
+						printf("Saved into root/guioutputs/output.png\n");
 					}
-					else if (b.func == &IMGA_Rotate)
+					else if (strequ(b.func, "Rotate"))
 					{
-						IMG_SavePNG(IMGA_Rotate(IMG_Load(selectingText), 15), "../output.png");
-						printf("Saved into root/output.png\n");
+						IMG_SavePNG(IMGA_Rotate(IMG_Load(selectingText), 15), "../guioutputs/output.png");
+						printf("Saved into root/guioutputs/output.png\n");
+					}
+					else if (strequ(b.func, "Split"))
+					{
+						Split(selectingText, "../guioutputs/");
+						printf("Saved into root/guioutputs/split[01-81].png\n");
 					}
 					//Calls the function stored in the button
 				}
