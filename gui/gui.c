@@ -108,8 +108,8 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
             SDL_Color color;
         
             if (dir->d_type == 4)//Folder
-                color = (SDL_Color){0, 255, 0, 255};
-            else//File
+                color = (SDL_Color){0, 0, 255, 255};
+            else//File (not folder)
                 color = (SDL_Color){255, 255, 255, 255};
 
             int x = 110 * width / DEFAULT_WIDTH;
@@ -249,6 +249,7 @@ int main()
 								path = my_cat(path, "/");
 								path = my_cat(path, dir->d_name);
 								scrollY = 0;
+								selecting = -1;
 							}
 							Draw(renderer, buttonArray, arraySize, width, height, scrollY, path, selecting);
 							break;
@@ -261,12 +262,15 @@ int main()
 			}
 
 
+			if (selecting != -1)//If you've never selected anything before
 			for (int i = 0; i < arraySize; i++)
 			{
 				button b = buttonArray[i];
 
-				if (x >= b.x * width / DEFAULT_WIDTH && x <= (b.x + b.width) * width / DEFAULT_WIDTH &&
-						y >= b.y * height / DEFAULT_HEIGHT && y <= (b.y + b.height) * height / DEFAULT_HEIGHT)
+				if (	x >= b.x * width / DEFAULT_WIDTH &&
+						x < (b.x + b.width) * width / DEFAULT_WIDTH &&
+						y >= b.y * height / DEFAULT_HEIGHT &&
+						y < (b.y + b.height) * height / DEFAULT_HEIGHT)
 				{
 					//Dumb i know but multi params are annoying
 					if (strequ(b.func, "Blur"))
