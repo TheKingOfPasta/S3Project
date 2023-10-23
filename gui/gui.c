@@ -6,7 +6,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "draw_text.h"
-#include <dirent.h>
+#include <dirent.h>//Used to get directory list
+
+#include <unistd.h>
 
 #include "../img_processing/adaptive_thresholding.h"
 #include "../img_processing/canny_edge_detector.h"
@@ -71,6 +73,22 @@ void Draw(
     SDL_RenderPresent(renderer);
 }
 
+//Returns 1 if the str ends with .png, 0 else
+int IsPng(char* str)
+{
+	if (!*str || !*(str + 1) || !*(str + 2) || !*(str + 3))
+		return 1;//Not enough for .png, but show it anyways
+
+//Very opti
+	for (; *str &&
+		!(*str == '.' &&
+		*(str + 1) == 'p' &&
+		*(str + 2) == 'n' &&
+		*(str + 3) == 'g'); str++)
+	{}
+
+	return *str == '.';
+}
 
 void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, char* path, int selecting)
 {
@@ -78,12 +96,15 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
     // don't blame me if it's ugly (*cough cough* loop condition)
 	DIR* d = opendir(path);
 
-    struct dirent* dir;
-
     if (d)
     {
+    	struct dirent* dir;
+		int heightIndex = 0;
         for(int i = 0; (dir = readdir(d)) != NULL; i++)
         {
+			if (dir->d_type != 4 && !IsPng(dir->d_name))
+				continue;
+
             SDL_Color color;
         
             if (dir->d_type == 4)//Folder
@@ -91,13 +112,13 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
             else//File
                 color = (SDL_Color){255, 255, 255, 255};
 
-            int x = 130 * width / DEFAULT_WIDTH;
-            int y = 10 * (i + scrollY) * height / DEFAULT_HEIGHT;
-            int w = 30 * width / DEFAULT_WIDTH;
+            int x = 110 * width / DEFAULT_WIDTH;
+            int y = 10 * (heightIndex + scrollY) * height / DEFAULT_HEIGHT;
+            int w = 50 * width / DEFAULT_WIDTH;
             int h = 10 * height / DEFAULT_HEIGHT;
 			if (i == selecting)
 			{//Draw cool arrow
-				SDL_RenderDrawLine(renderer, 120 * width / DEFAULT_WIDTH, y + h/2, x, y + h/2);
+				SDL_RenderDrawLine(renderer, 100 * width / DEFAULT_WIDTH, y + h/2, x, y + h/2);
 				SDL_RenderDrawLine(renderer, x, y + h/2, x - 3 * width / DEFAULT_WIDTH, y - 3 * height / DEFAULT_HEIGHT + h/2);
 				SDL_RenderDrawLine(renderer, x, y + h/2, x - 3 * width / DEFAULT_WIDTH, y + 3 * height / DEFAULT_HEIGHT + h/2);
 			}
@@ -108,6 +129,7 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
             SDL_RenderDrawLine(renderer, x, y, x, y + h);
             SDL_RenderDrawLine(renderer, x + w, y + h, x + w, y);
             SDL_RenderDrawLine(renderer, x + w, y + h, x, y + h);
+			heightIndex += 1;
         }
 
         closedir(d);
@@ -173,7 +195,7 @@ int main()
 
 	int arraySize = 5;
 	button buttonArray[arraySize];//Don't put buttons which go further than
-		// 130 in x (that space is used to show the files you can choose from)
+		// 110 in x (that space is used to show the files you can choose from)
 	buttonArray[0] = Button(0, 0, "Gaussian blur", "Blur");
 	buttonArray[1] = Button(0, 10, "Thresholding", "Threshold");
 	buttonArray[2] = Button(0, 20, "Sobel gradient", "Sobel");
@@ -200,7 +222,7 @@ int main()
 			int x = event.button.x;
 			int y = event.button.y;
 
-			if (x >= 130 * width / DEFAULT_WIDTH)
+			if (x >= 110 * width / DEFAULT_WIDTH)
 			{
 				DIR* d = opendir(path);
 
@@ -208,9 +230,12 @@ int main()
 
 				if (d)
 				{
+					int heightIndex = 0;
 					for(size_t i = 0; (dir = readdir(d)) != NULL; i++)
 					{
-						if (y > (int)(10 * (i + scrollY) * height / DEFAULT_HEIGHT) && y <= (int)(10 * (i + scrollY) * height / DEFAULT_HEIGHT + 10 * height / DEFAULT_HEIGHT))
+						if (dir->d_type != 4 && !IsPng(dir->d_name))
+							continue;
+						if (y >= (int)10 * (heightIndex + scrollY) * height / DEFAULT_HEIGHT && y < (int)(10 * (heightIndex + scrollY + 1) * height / DEFAULT_HEIGHT))
 						{
 							if (dir->d_type == 8)//File
 							{
@@ -228,6 +253,7 @@ int main()
 							Draw(renderer, buttonArray, arraySize, width, height, scrollY, path, selecting);
 							break;
 						}
+						heightIndex += 1;
 					}
 				}
 
@@ -292,5 +318,8 @@ int main()
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 
+	char* argv[2] = {"./gui", NULL};
+	fork();
+	execvp("./gui", argv);
 	return EXIT_SUCCESS;
 }
