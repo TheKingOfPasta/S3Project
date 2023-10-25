@@ -406,6 +406,16 @@ void free_training_data(TrainingData *data)
     free(data);
 }
 
+double* NormArray(double* array, int size) {
+	double *dist = malloc(size*sizeof(double));
+	for(int i = 0; i<size; i++) {
+		dist[i] = exp(-(array[i]*array[i])/2)/sqrt(2*M_PI);
+		if (array[i] < 0)
+			dist[i] = -dist[i];
+	}
+	return dist;
+}
+
 //Matrix *broadcast_matrix(Matrix *a, Matrix *b)
 //{
 //    size_t 

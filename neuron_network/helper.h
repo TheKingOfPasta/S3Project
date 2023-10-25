@@ -157,4 +157,4 @@ int *argmax_matrices(Matrix **l, size_t n);
 
 void free_training_data(TrainingData *data);
 
-
+double* NormArray(double* array, int size); 
