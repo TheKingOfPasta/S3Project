@@ -3,6 +3,8 @@
 #include <err.h>
 #include <stdio.h>
 #include <math.h>
+
+#include "invert_colors.h"
 #include "img_action.h"
 #include "gaussian_blur.h"
 #include "adaptive_thresholding.h"
@@ -30,7 +32,8 @@ void ErrorMessage()
            "                   -ra/--rotateauto\n"
            "                   -b/--blur\n"
            "                   -t/--threshold\n"
-           "                   -s/--sobel\n");
+           "                   -s/--sobel\n"
+           "                   -i/--inverse\n");
 }
 
 SDL_Surface* IMGA_Erosion(SDL_Surface* input){
@@ -170,12 +173,22 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-bt") || CompareStrings(argv[1], "--blur>threshold"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold (path_in folder_path_out)\n");
+            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in folder_path_out)\n");
 
         IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-
+    else if (CompareStrings(argv[1], "-i") || CompareStrings(argv[1], "--invert"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-i/--invert : inverts the colors of the image"
+                "only if it needs to be inverted at path"
+                "(path_in path_out)\n");
+        
+        printf("Attempting to rotate image from %s\n", path_in);
+        IMG_SavePNG(CheckInvert(IMG_Load(path_in)), path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
     else
         ErrorMessage();
 
