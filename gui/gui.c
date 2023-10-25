@@ -322,8 +322,5 @@ int main()
 	SDL_DestroyWindow(window);
 	SDL_Quit();
 
-	char* argv[2] = {"./gui", NULL};
-	fork();
-	execvp("./gui", argv);
 	return EXIT_SUCCESS;
 }
