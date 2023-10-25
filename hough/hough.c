@@ -81,13 +81,15 @@ SDL_Surface* Fill_Matrix_Line(SDL_Surface* input){
 		}
 	}
 
+
+	int maxacc = 0;
 	//check each pixel on the edge picture
 	for(int y = 0; y<input->w;y++)
 	{
 		for(int x = 0; x<input->h;x++)
 		{
 			Uint8 pixel = ((Uint8*)input->pixels)[y * input->pitch + x];
-            	if (pixel > 128) {
+            if (pixel > 128) {
 				//loop over all the possible values of theta
 				for(int theta = 0; theta < 180; theta++) //(0<=theta<Pi)
 				{
@@ -96,13 +98,13 @@ SDL_Surface* Fill_Matrix_Line(SDL_Surface* input){
 					int rho = (int)(x*sin(radians) + y*cos(radians));
 					if (rho > 0 && rho <rmax)
 					//locate the theta and rho index in the accumulator and increment
-						acc[rho][theta] += 1;
+						if((++acc[rho][theta])>maxacc) maxacc = acc[rho][theta];
+						
 				}
 			}
 		}
 	}
 
-	int maxacc = 0;
 	for (int i = 0; i < rmax; i++)
     for (int j = 0; j < 180; j++)
 	{
