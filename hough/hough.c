@@ -6,7 +6,16 @@
 #include <err.h>
 
 
-#define distance(xa,ya,xb,yb) (sqrt((xa-xb)*(xa-xb)+(ya-yb)*(ya-yb)))
+typedef struct NodeLine{
+	struct NodeLine * next;
+	double rho;
+	int theta;
+} NodeLine;
+
+typedef struct ListLine {
+	struct NodeLine* head;
+	int size;
+} ListLine;
 
 void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2)
 {
@@ -70,7 +79,7 @@ void spread_arr(int size, double min, double max, double step, double* array)
     }
 }
 
-SDL_Surface* HoughLine(SDL_Surface* img)
+SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 {
 	int width = img->w;
 	int height = img->h;
@@ -92,20 +101,16 @@ SDL_Surface* HoughLine(SDL_Surface* img)
 	for (int j = 0; j < 180; j++)
 		accumulator[i][j] = 0u;
 	
-
 	// Accumulator calculation
 	for (int i = 0; i < width; i += 1)
 	for (int j = 0; j < height; j += 1)
 	{
 		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
-		if (pixel < 127)
-			continue;
-
+		if (pixel < 127)continue;
 
 		for (int angle = 0; angle < 180; angle += 1)
 		{
 			int rho = round(i * cos_t[angle] + j * sin_t[angle]) + diag_len;
-
 			accumulator[rho][angle] += 1;
 		}
 	}
@@ -167,14 +172,23 @@ SDL_Surface* HoughLine(SDL_Surface* img)
 		if (val < line_threshold)
 			continue;
 
-		double rho = rhos[maxRho];
+		//drawing the lines on a surface
+		double rho = maxRho - diag_len/2;
+
+		NodeLine *nd = malloc(sizeof(NodeLine));
+		
+		nd->next = line_list->head;
+		nd->rho = rho;
+		nd->theta = maxTheta;
+		line_list->head = nd;
+		line_list->size++;
 
 		double c = cos_t[maxTheta];
 		double s = sin_t[maxTheta];
 
 		int x0 = rho * c;
 		int y0 = rho * s;
-
+		
 		int x1 = x0 - diag_len * s;
 		int y1 = y0 + diag_len * c;
 
@@ -199,13 +213,34 @@ SDL_Surface* load_image(const char* path)
     return surface;
 }
 
+
+void printList(ListLine* l){
+	printf("size list %i\n", l->size);
+	NodeLine* temp = l->head;
+	if(!temp) printf("empty\n");
+	int i =1;
+	while(temp->next){
+		printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
+		i++;
+		temp = temp->next;
+	}
+	printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
+}
+
+
 int main(int argc, char** argv){
 	if (argc != 3)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
-	SDL_Surface* output = HoughLine(input);
+	ListLine list = {NULL,0};
+
+	SDL_Surface* output = HoughLine(input,&list);
 	IMG_SavePNG(output, argv[2]);
 	SDL_FreeSurface(input);
 	SDL_FreeSurface(output);
+	
+	printf("\n\n");
+	printList(&list);
+	
 	return 0;
 }
