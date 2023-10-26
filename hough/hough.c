@@ -46,13 +46,13 @@ void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2)
 
 void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc)
 {
-	SDL_Surface* newS = SDL_CreateRGBSurface(0, 180, 360, 32,0,0,0,0);
+	SDL_Surface* newS = SDL_CreateRGBSurface(0, 180, 200, 32,0,0,0,0);
 	SDL_LockSurface(newS);
 	Uint32* pixels = (Uint32*)(newS->pixels);
 	for (int i = 0; i < newS->w; i++)
     for (int j = 0; j < newS->h; j++)
 	{
-		Uint8 value = (Uint8) ((((float)acc[j * rmax / (180 * 2)][i])/maxacc)*255);
+		Uint8 value = (Uint8) ((((float)acc[j * rmax / (200)][i])/maxacc)*255);
 		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value * 3, value * 3, value * 3);
 	}
 	SDL_UnlockSurface(newS);
@@ -95,139 +95,94 @@ SDL_Surface* HoughLine(SDL_Surface* img)
 
 	// Accumulator calculation
 	for (int i = 0; i < width; i += 1)
+	for (int j = 0; j < height; j += 1)
 	{
-		for (int j = 0; j < height; j += 1)
+		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
+		if (pixel < 127)
+			continue;
+
+
+		for (int angle = 0; angle < 180; angle += 1)
 		{
-			int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
-			if (pixel < 127)
-				continue;
+			int rho = round(i * cos_t[angle] + j * sin_t[angle]) + diag_len;
 
-
-			for (int angle = 0; angle < 180; angle += 1)
-			{
-				int rho = round(i * cos_t[angle] + j * sin_t[angle]) + diag_len;
-
-				accumulator[rho][angle] += 1;
-			}
+			accumulator[rho][angle] += 1;
 		}
 	}
 
-	SDL_Surface* newS = SDL_CreateRGBSurface(0,img->w, img->h, 32,0,0,0,0);
+
+	SDL_Surface* newS = SDL_CreateRGBSurface(0,width, height, 32,0,0,0,0);
 
 	unsigned int maxVal = 0;
 
 	for (int i = 0; i < diag_len * 2; i++)
+	for (int j = 0; j < 180; j++)
 	{
-		for (int j = 0; j < 180; j++)
-		{
-			if (accumulator[i][j] > maxVal)
-				maxVal = accumulator[i][j];
-		}
+		if (accumulator[i][j] > maxVal)
+			maxVal = accumulator[i][j];
 	}
-	
 
+	
 	SDL_LockSurface(newS);
 
-	double diag = sqrt(width * width + height * height);
-
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
-    printf("   👆 Maximum: %i\n", maxVal);
 
-    // 2. Computing threshold
-    unsigned int line_threshold = maxVal / 4;//line threshold %
-
-    printf("   👈 Threshold: %u\n", line_threshold);
-
-    // 3. Fiding coordinates of the edges in the accumulator using the
-    // threshold
+    unsigned int line_threshold = maxVal / 2;//line threshold %
 
     int maxTheta = 0, maxRho = 0;
     int step = diag_len*2 / 60;
 
-	double rho_min = -diag, rho_max = diag, rho_num = (diag * 2),
+	double rho_min = -diag_len, rho_max = diag_len, rho_num = (diag_len * 2),
            rho_step = (rho_max - rho_min) / rho_num;
 
 	double rhos[(int)(rho_num + 1)];
 	
     spread_arr(rho_num + 1, rho_min, rho_max, rho_step, rhos);
 
-    // Creating the theta array
-    double theta_min = -90, theta_max = 90, theta_num = rho_num,
-           theta_step = (theta_max - theta_min) / theta_num;
-
+	for (int t = 0; t < 180; t += step)
     for (int r = 0; r <= diag_len*2; r += step)
 	{
-		for (int t = 0; t < 180; t += step)
+		unsigned int val = accumulator[r][t];
+		
+		maxRho = r;
+		maxTheta = t;
+
+		for (int i = 0; i < step; i++)
+		for (int j = 0; j < step; j++)
 		{
-			unsigned int val = accumulator[r][t];
-			
-			maxRho = r;
-			maxTheta = t;
+			int x = r + i;
+			int y = t + j;
 
-			// Looking for the maximum in a 10*10 window
-			for (int i = 0; i < step; i++)
-			{
-				for (int j = 0; j < step; j++)
-				{
-					int x = r + i;
-					int y = t + j;
-
-					if (x >= diag_len*2 || y >= 180)
-						continue;
-
-					if (accumulator[x][y] > val)
-					{
-						val = accumulator[x][y];
-						maxRho = x;
-						maxTheta = y;
-					}
-				}
-			}
-
-			if (val < line_threshold)
+			if (x >= diag_len*2 || y >= 180)
 				continue;
 
-			double rho = rhos[maxRho];
-
-			double c = cos_t[maxTheta];
-			double s = sin_t[maxTheta];
-
-			int x0 = rho * c;
-			int y0 = rho * s;
-
-			int x1 = x0 - diag * s;
-			int y1 = y0 + diag * c;
-
-			int x2 = x0 + diag * s;
-			int y2 = y0 - diag * c;
-
-			// 4. Draw edges on output
-			MyDrawLine(newS, x1, y1, x2, y2);
+			if (accumulator[x][y] > val)
+			{
+				val = accumulator[x][y];
+				maxRho = x;
+				maxTheta = y;
+			}
 		}
+
+		if (val < line_threshold)
+			continue;
+
+		double rho = rhos[maxRho];
+
+		double c = cos_t[maxTheta];
+		double s = sin_t[maxTheta];
+
+		int x0 = rho * c;
+		int y0 = rho * s;
+
+		int x1 = x0 - diag_len * s;
+		int y1 = y0 + diag_len * c;
+
+		int x2 = x0 + diag_len * s;
+		int y2 = y0 - diag_len * c;
+
+		MyDrawLine(newS, x1, y1, x2, y2);
 	}
-
-
-
-
-	/*for(int i = 0; i<diag_len*2; i++)
-	for(int j = 0; j<180;j++)
-	{
-		if (accumulator[i][j] > maxVal*0.8)
-		{
-			int x0 = (int)(accumulator[i][j] * cos_t[j]);
-			int y0 = (int)(accumulator[i][j] * sin_t[j]);
-
-			int x1 = x0 + 100 * (-cos_t[j]);
-			if (!(x1 >= 0 && x1 < width))
-				x1 = x0 - 100 * (-cos_t[j]);
-			
-			int y1 = y0 + 100 * (sin_t[j]);
-			if (!(y1 >= 0 && y1 < height))//Put into bounds again
-				y1 = y0 - 100 * (sin_t[j]);
-			printf("%i %i %i %i \n", x0 + width / 2, y0 + height / 2, x1 + width / 2, y1 + height / 2);
-			MyDrawLine(newS, x0 + width / 2, y0 + height / 2, x1 + width / 2, y1 + height / 2);
-		}
-	}*/
 
 	return newS;
 }
