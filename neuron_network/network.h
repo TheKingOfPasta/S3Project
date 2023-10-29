@@ -67,9 +67,9 @@ double *NN_feedforward(NN_Network *network, double *inputs)
 void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
         Matrix ***in_nabla_w);
 void update_mini_batch(NN_Network * network, TrainingData **data, size_t k, size_t
-        k_max, double eta);
+        k_max, double eta, double lambda);
 void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size_t batch_size,
-        double eta, TrainingData **test_data, size_t n_test);
+        double eta, TrainingData **test_data, size_t n_test, double lambda);
 
 int evaluate(NN_Network *network, TrainingData **test_data, size_t n_test);
 

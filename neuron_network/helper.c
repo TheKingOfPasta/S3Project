@@ -406,14 +406,23 @@ void free_training_data(TrainingData *data)
     free(data);
 }
 
-double* NormArray(double* array, int size) {
-	double *dist = malloc(size*sizeof(double));
-	for(int i = 0; i<size; i++) {
-		dist[i] = exp(-(array[i]*array[i])/2)/sqrt(2*M_PI);
-		if (array[i] < 0)
-			dist[i] = -dist[i];
-	}
-	return dist;
+void norm_matrix(double** matrix, size_t m, size_t n)
+{
+    for (size_t i = 0; i < m; i++)
+    {
+        for (size_t j = 0; j < n; ++j)
+        {
+	    double tmp = exp(-(matrix[i][j]*matrix[i][j])/2)/sqrt(2*M_PI);
+	    if (matrix[i][j] < 0)
+		tmp = -tmp;
+            matrix[i][j] = tmp / sqrt(n);
+        }
+    }
+}
+
+void norm_matrix2(Matrix *a)
+{
+    norm_matrix(a->matrix, a->m, a->n);
 }
 
 //Matrix *broadcast_matrix(Matrix *a, Matrix *b)

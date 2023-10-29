@@ -73,16 +73,16 @@ int check_header(int img_fd, int lbl_fd)
 }
 
 /**
-  * Print a matrix as an image:
+  * Print a linear matrix as an image:
   * When a value is more than 0, it is considering as an existing pixel,
   * otherwise an empty one.
   */
 void print_image(Matrix *a)
 {
-    for (size_t i = 0; i < a->m; ++i)
+    for (size_t i = 0; i < IMG_WIDTH; ++i)
     {
-        for (size_t j = 0; j < a->n; ++j)
-            if (a->matrix[i][j] > 0)
+        for (size_t j = 0; j < IMG_HEIGHT; ++j)
+            if (a->matrix[i * IMG_HEIGHT + j][0] > 0)
                 printf("@ ");
             else
                 printf(". ");
@@ -92,7 +92,7 @@ void print_image(Matrix *a)
 
 /**
   * Read the image file descriptor to read the IMG_WIDTH*IMG_HEIGHT bytes to fill the
-  * matrix a of the same dimension. The byte value is put between 0 and 1
+  * matrix a of size (IMG_WIDTH*IMG_HEIGHTx1). The byte value is put between 0 and 1
   */
 void load_image(int img_fd, Matrix *image)
 {
@@ -100,10 +100,10 @@ void load_image(int img_fd, Matrix *image)
     if (read(img_fd, buffer, IMG_WIDTH * IMG_HEIGHT) != IMG_WIDTH * IMG_HEIGHT)
         errx(EXIT_FAILURE, "load_image() couldn't read the entire image");
 
-    for (size_t i = 0; i < IMG_WIDTH; ++i)
-        for (size_t j = 0; j < IMG_HEIGHT; ++j)
-            image->matrix[i][j] = (double)(buffer[i * IMG_HEIGHT + j]) / MAX_BLACK;
-    print_image(image);
+    for (size_t i = 0; i < IMG_WIDTH * IMG_HEIGHT; ++i)
+    {
+        image->matrix[i][0] = (double)(buffer[i]) / MAX_BLACK;
+    }
 }
 
 /**
@@ -117,7 +117,6 @@ void load_label(int lbl_fd, Matrix *expected)
     if (read(lbl_fd, &label, sizeof(label)) != sizeof(label))
         errx(EXIT_FAILURE, "load_label() couldn't read the label");
     expected->matrix[(size_t)label][0] = 1;
-    print_matrix2(expected);
 }
 
 /**
@@ -127,7 +126,7 @@ void load_label(int lbl_fd, Matrix *expected)
 TrainingData *load_image_label(int img_fd, int lbl_fd)
 {
     TrainingData *data = malloc(sizeof(TrainingData));
-    data->image = init_matrix2(IMG_WIDTH, IMG_HEIGHT);
+    data->image = init_matrix2(IMG_WIDTH * IMG_HEIGHT, 1);
     data->expected = init_matrix2(NUMBER_DIGIT, 1);
     load_image(img_fd, data->image);
     load_label(lbl_fd, data->expected);

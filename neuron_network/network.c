@@ -2,6 +2,8 @@
 # include <err.h>
 # include <stdio.h>
 # include <mcheck.h>
+# include "cross_entropy_cost.h"
+# include <pthread.h>
 
 NN_Network *NN_create_network(size_t *sizes, size_t num_layers)
 {
@@ -20,33 +22,21 @@ NN_Network *NN_create_network(size_t *sizes, size_t num_layers)
     // for each layers, set its weight and biases
     for (size_t i = 1; i < num_layers; ++i)
     {
-        double **layer_bias = malloc(sizes[i] * sizeof(double *));        
-        // each neurons of a layers contains an array of weights
-        double **layer_weights = malloc(sizes[i] * sizeof(double *));
-
-
-        Matrix *bias_m = malloc(sizeof(Matrix));
+        Matrix *weights_m = init_matrix2(sizes[i], sizes[i - 1]);
+        Matrix *bias_m = init_matrix2(sizes[i], 1);
+        
         network->biases2[i - 1] = bias_m;
-        Matrix *weights_m = malloc(sizeof(Matrix));
         network->weights2[i - 1] = weights_m;
-        bias_m->matrix = layer_bias;
-        bias_m->m = sizes[i];
-        bias_m->n = 1;
-        weights_m->matrix = layer_weights;
-        weights_m->m = sizes[i];
-        weights_m->n = sizes[i - 1];
         for (size_t j = 0; j < sizes[i]; ++j)
         {
-            double *bias = malloc(sizeof(double));
-            *bias = random_value();
-            layer_bias[j] = bias;
-            double *weights = malloc(sizes[i - 1] * sizeof(double));
+            bias_m->matrix[j][0] = random_value();
             for (size_t k = 0; k < sizes[i - 1]; ++k)
             {
-                weights[k] = random_value();
+                weights_m->matrix[j][k] = random_value();
             }
-            layer_weights[j] = weights;
         }
+        norm_matrix2(weights_m);
+        norm_matrix2(bias_m);
     }
 
     return network;
@@ -203,14 +193,16 @@ void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
     // backward ============
     // activ[-1]
     cost_derivative(activations[n_lay - 1], data->expected);
-    // zn[-1]
+    //// zn[-1]
     sigmoid_prime2(zs[n_lay - 2]);
     mul_matrix2(activations[n_lay - 1], zs[n_lay - 2]);
-    // this zs no longer useful from here
+    //// this zs no longer useful from here
+
     free_matrix2(zs[n_lay - 2]);
 
     // matrix of dim sizes[n_lay - 1]x1
     Matrix *delta = activations[n_lay - 1];
+    //cross_entropy_delta(delta, data->expected);
     nabla_b[n_lay - 2] = delta;
 
     // now matrix of dim 1 x sizes[n_lay - 2]
@@ -265,8 +257,41 @@ void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
     free(activations);
     free(zs);
 }
+
+void update_weight(Matrix *weights, Matrix *nabla_w, double d_eta, double d_weights_eta)
+{
+    for (size_t i = 0; i < weights->m; ++i)
+    {
+        for (size_t j = 0; j < weights->n; ++j)
+        {
+            double wxw_eta = weights->matrix[i][j]; //d_weights_eta * 
+            double nw_eta = nabla_w->matrix[i][j] * d_eta;
+            weights->matrix[i][j] = wxw_eta - nw_eta;
+        }
+    }
+}
+
+void update_bias(Matrix *bias, Matrix *nabla_b, double d_eta)
+{
+    for (size_t i = 0; i < bias->m; ++i)
+    {
+        for (size_t j = 0; j < bias->n; ++j)
+        {
+            double b_eta = nabla_b->matrix[i][j] * d_eta;
+            bias->matrix[i][j] -= b_eta;
+        }
+    }
+}
+/**
+  * Update the network's weights and biases by applying gradient
+  * descent using backpropagation to a single mini batch.
+  * - "eta" is the  learning rate
+  * - "lambda" is the regularization parameter
+  * - "k" is the starting index of the data"
+  * - "k_max" is the excluded end index of the data
+  */
 void update_mini_batch(NN_Network *network, TrainingData **data, size_t k, size_t
-        k_max, double eta)
+        k_max, double eta, double lambda)
 {
     Matrix **nabla_b, **nabla_w;
     // i = k
@@ -289,6 +314,7 @@ void update_mini_batch(NN_Network *network, TrainingData **data, size_t k, size_
     }
 
     double d_eta = eta / (k_max - k);
+    double d_weights_eta = 1 - eta * (lambda / (k_max - k));
     //printf("\n\nbefore \n\n");
     //NN_print_biases(network);
     //NN_print_weights(network);
@@ -297,23 +323,21 @@ void update_mini_batch(NN_Network *network, TrainingData **data, size_t k, size_
     {
         // could be optimised
         // compute the new weights for this layer from the delta
-        mul_matrix_scalar(nabla_w[i], d_eta);
-        sub_matrix2(network->weights2[i], nabla_w[i]);
+        update_weight(network->weights2[i], nabla_w[i], d_eta, d_weights_eta);
         free_matrix2(nabla_w[i]);
 
-        mul_matrix_scalar(nabla_b[i], d_eta);
-        sub_matrix2(network->biases2[i], nabla_b[i]);
+        update_bias(network->biases2[i], nabla_b[i], d_eta);
         free_matrix2(nabla_b[i]);
     }
-    printf("\nafter\n");
-    NN_print_biases(network);
-    NN_print_weights(network);
+    //printf("\nafter\n");
+    //NN_print_biases(network);
+    //NN_print_weights(network);
     free(nabla_b);
     free(nabla_w);
 }
 
 void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size_t batch_size,
-        double eta, TrainingData **test_data, size_t n_test)
+        double eta, TrainingData **test_data, size_t n_test, double lambda)
 {
     for (size_t i = 0; i < epochs; ++i)
     {
@@ -324,7 +348,7 @@ void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size
             size_t k_max = k + batch_size;
             if (k_max > n)
                 k_max = n;
-            update_mini_batch(network, data, k, k_max, eta);
+            update_mini_batch(network, data, k, k_max, eta, lambda);
         }
         if (test_data != NULL)
         {
@@ -344,11 +368,11 @@ int evaluate(NN_Network *network, TrainingData **test_data, size_t n_test)
     {
         Matrix *input = copy_matrix2(test_data[i]->image);
 
-        print_matrix2(input);
+        //print_matrix2(input);
         Matrix *output = NN_feedforward(network, input);
         int my_result = argmax(output);
         int my_expect = argmax(test_data[i]->expected);
-        printf("Expected %i but %i\n", my_expect, my_result);
+        //printf("Expected %i but %i\n", my_expect, my_result);
         if (my_result == my_expect)
             sum++;
 

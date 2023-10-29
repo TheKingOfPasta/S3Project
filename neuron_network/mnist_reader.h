@@ -8,6 +8,8 @@
 
 # define TRAINING_SET_IMAGE "./database/train-images.idx3-ubyte"
 # define TRAINING_SET_LABEL "./database/train-labels.idx1-ubyte"
+# define TEST_SET_IMAGE "./database/t10k-images.idx3-ubyte"
+# define TEST_SET_LABEL "./database/t10k-labels.idx1-ubyte"
 # define IMG_WIDTH 28
 # define IMG_HEIGHT 28
 # define NUMBER_DIGIT 10

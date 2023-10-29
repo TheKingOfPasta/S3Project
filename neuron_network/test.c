@@ -7,11 +7,21 @@
 
 # include "network.h"
 # include "mnist_reader.h"
+# include "network_loader.h"
 
 # define SEED time(NULL)
-# define ETA 0.5 // best value : 0.5
-# define EPOCHS 5000 // best value : 2000
-# define MINI_BATCH_SIZE 2
+
+// for the XOR function
+# define XOR_ETA 0.5 // best value : 0.5
+# define XOR_EPOCHS 5000 // best value : 2000
+# define XOR_MINI_BATCH_SIZE 2
+# define XOR_LAMBDA 5.0
+
+// for the digits function
+# define DIGITS_ETA 5
+# define DIGITS_EPOCHS 30
+# define DIGITS_MINI_BATCH_SIZE 10
+# define DIGITS_LAMBDA 5.0
 
 void print_help()
 {
@@ -23,6 +33,8 @@ void print_help()
             "       --umb:          all the mini_batch relative tests\n"
             "       --xor:          try to teach the network the XOR function\n"
             "       --mnist:        try to import the mnist dataset\n"
+            "       --digits:       try to teach the mnist dataset\n"
+            "       --save [path]:         try to save a network\n"
             );
 
 }
@@ -161,7 +173,7 @@ void test_umb()
     NN_print_biases(network);
     TrainingData data = {input, output};
     TrainingData *dataP = &data;
-    update_mini_batch(network, &dataP, 0, 1, ETA);
+    update_mini_batch(network, &dataP, 0, 1, XOR_ETA, XOR_LAMBDA);
 
     NN_print_weights(network);
     NN_print_biases(network);
@@ -192,7 +204,7 @@ void test_sdg()
     TrainingData data = {input, output};
     TrainingData *dataP = &data;
     
-    sdg(network, &dataP, 1, 200, 10, ETA, NULL, 0);
+    sdg(network, &dataP, 1, 200, 10, XOR_ETA, NULL, 0, XOR_LAMBDA);
 
     NN_print_weights(network);
     NN_print_biases(network);
@@ -236,7 +248,8 @@ void test_xor()
 
     TrainingData **data = xor_data();
 
-    sdg(network, data, 4, EPOCHS, MINI_BATCH_SIZE, ETA, data, 4);
+    sdg(network, data, 4, XOR_EPOCHS, XOR_MINI_BATCH_SIZE, XOR_ETA, data, 4,
+            XOR_LAMBDA);
 
     for (size_t i = 0; i < 4; ++i)
     {
@@ -246,13 +259,75 @@ void test_xor()
     NN_free_network(network);
 }
 
+void test_digit()
+{
+    size_t neurons[] = {784, 32, 10};
+
+    NN_Network *network = NN_create_network(neurons, 3);
+
+    TrainingData **data, **tests;
+    printf("Loading training set...\n");
+    size_t n = load_images(TRAINING_SET_IMAGE, TRAINING_SET_LABEL, &data);
+    printf(" Done !\n");
+    printf("Loading test set...\n");
+    size_t n_tests = load_images(TEST_SET_IMAGE, TEST_SET_LABEL, &tests);
+    printf(" Done !\n");
+    printf("Starting Scalar Gradient descent\n");
+    sdg(network, data, n, DIGITS_EPOCHS,DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
+            tests, n_tests, DIGITS_LAMBDA);
+
+    NN_free_network(network);
+    free_all_training_data(tests, n_tests);
+    free_all_training_data(data, n);
+}
+
+void train_load_digit(char *path)
+{
+    NN_Network *network = load_network(path);
+    TrainingData **data, **tests;
+    printf("Loading training set...\n");
+    size_t n = load_images(TRAINING_SET_IMAGE, TRAINING_SET_LABEL, &data);
+    printf(" Done !\n");
+    printf("Loading test set...\n");
+    size_t n_tests = load_images(TEST_SET_IMAGE, TEST_SET_LABEL, &tests);
+    printf(" Done !\n");
+    printf("Starting Scalar Gradient descent\n");
+    sdg(network, data, n, DIGITS_EPOCHS,DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
+            tests, n_tests, DIGITS_LAMBDA);
+
+    free(network->sizes);
+    NN_free_network(network);
+    free_all_training_data(tests, n_tests);
+    free_all_training_data(data, n);
+
+}
+
 void test_mnist_reader()
 {
     TrainingData **data;
     size_t n = load_images(TRAINING_SET_IMAGE, TRAINING_SET_LABEL, &data);
+
+    for (size_t i = 0; i < n; ++i)
+    {
+        print_image(data[i]->image);
+        print_matrix2(data[i]->expected);
+    }
     free_all_training_data(data, n);
 }
 
+void test_save(char *path)
+{
+    size_t neurons[] = {784, 32, 10};
+
+    NN_Network *network = NN_create_network(neurons, 3);
+    save_network(network, path);
+    NN_free_network(network);
+    
+
+    NN_Network *n = load_network(path);
+    free(n->sizes);
+    NN_free_network(n);
+}
 
 void all()
 {
@@ -267,10 +342,6 @@ int main(int argc, char **argv)
     {
         print_help();
         return EXIT_SUCCESS;
-    }
-    if (argc != 2)
-    {
-        errx(EXIT_FAILURE, "Invalid usage. Expected 1 argument");
     }
     srand(SEED);
 
@@ -292,6 +363,13 @@ int main(int argc, char **argv)
         test_xor();
     else if (strcmp(argv[1], "--mnist") == 0)
         test_mnist_reader();
+    else if (strcmp(argv[1], "--digits") == 0)
+        test_digit();
+    else if (strcmp(argv[1], "--save") == 0)
+        test_save(argv[2]);
+    else if (strcmp(argv[1], "--loadd") == 0)
+        train_load_digit(argv[2]);
+
     else
         print_help();
 
