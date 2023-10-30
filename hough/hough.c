@@ -168,7 +168,7 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 			}
 		}
 
-		if (val < line_threshold || maxTheta == 179)
+		if (val < line_threshold || (maxTheta != 0 && maxTheta != 90))
 			continue;
 
 		//drawing the lines on a surface

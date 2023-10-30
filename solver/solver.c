@@ -2,6 +2,7 @@
 #include <err.h>
 #include <stdlib.h>
 #include "parser.h"
+#include <string.h>
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
@@ -191,13 +192,24 @@ int main(int argc, char *argv[])
 
     short m[9][9];
 
-    PSR_parse_file(argv[1], m);
+    char* path = argv[1];
 
-    print(m);
+    PSR_parse_file(path, m);
 
-    SLV_solve(m);
-    printf("\n-------------\n");
-    print(m);
+    SLV_solve(m);//m is now a correct matrix, save it into 'path'.result
+
+    char* s = PSR_unparse(m);
+    
+    path = strcat(path, ".result");
+
+    FILE *fptr = fopen(path, "w");
+
+    //Write
+    fprintf(fptr, s);
+
+    fclose(fptr);
+
+    free(s);//Useless but shrug
 
     return EXIT_SUCCESS;
 }
