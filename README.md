@@ -7,8 +7,7 @@ How to use:
 
  - Using the command line : go in the solver/ folder, run the 'make' command, and launch ./solver {path}, with path being the path to a text file (assumed correct)
  
- - To test the image processing functions, go in the img_processing/ folder, run 'make', and execute ./img_action or ./img_color
-   - ./img_color is used to apply simple thresholding and grayscaling, simply execute ./img_color to get a tutorial on how to use it
+ - To test the image processing functions, go in the img_processing/ folder, run 'make', and execute ./img_action
    - ./img_action is used to apply all image transformations (rotate/rotate auto/adaptive thresholding/sobel/inverting)
         - execute ./img_action without parameters to get a tutorial
         - execute ./img_action with a single parameter (example: ./img_action -t) to get help on that function 
