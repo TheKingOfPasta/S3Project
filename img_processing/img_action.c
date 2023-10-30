@@ -33,7 +33,9 @@ void ErrorMessage()
            "                   -b/--blur\n"
            "                   -t/--threshold\n"
            "                   -s/--sobel\n"
-           "                   -i/--inverse\n");
+           "                   -i/--inverse\n"
+           "                   -bt/--blur>threshold\n"
+           "                   -bts/--blur>threshold>sobel\n");
 }
 
 SDL_Surface* IMGA_Erosion(SDL_Surface* input){
@@ -135,7 +137,7 @@ int main(int argc, char** argv)
         }
 
         if (argc != 5 && argc != 6)
-            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in folder_path_out [threshold] [m]) (m (optional) : apply thresholds from 0 to n)\n");
+            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in path_out [threshold] [m]) (m (optional) : apply thresholds from 0 to n)\n");
 
 
         char* endptr;
@@ -157,7 +159,7 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-s") || CompareStrings(argv[1], "--sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in folder_path_out )\n");
+            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in path_out )\n");
 
         IMG_SavePNG(sobel_gradient(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -165,7 +167,7 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-bts") || CompareStrings(argv[1], "--blur>threshold>sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold>sobel (path_in folder_path_out)\n");
+            errx(EXIT_FAILURE, "-bts/--blur>threshold>sobel : apply blur>threshold>sobel (path_in path_out)\n");
 
         IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0))), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -173,7 +175,7 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-bt") || CompareStrings(argv[1], "--blur>threshold"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in folder_path_out)\n");
+            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in path_out)\n");
 
         IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);

@@ -168,11 +168,12 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 			}
 		}
 
-		if (val < line_threshold)
+		if (val < line_threshold || maxTheta == 179)
 			continue;
 
 		//drawing the lines on a surface
-		double rho = maxRho - diag_len/2;
+		double rho = rhos[maxRho];
+		//double rho = maxRho - diag_len/2;
 
 		NodeLine *nd = malloc(sizeof(NodeLine));
 		
@@ -285,6 +286,45 @@ void Prune(ListLine* l)
     }
 }
 
+SDL_Surface* ListToSurface(ListLine* list, int width, int height)
+{
+	SDL_Surface* newS = SDL_CreateRGBSurface(0, width, height, 32,0,0,0,0);
+	SDL_LockSurface(newS);
+	NodeLine* curr = list->head;
+
+	int diag_len = sqrt(width * width + height * height);
+
+	double cos_t[180];
+	double sin_t[180];
+	for (int i = -90; i < 90; i++)
+	{
+		cos_t[i + 90] = cos(i * M_PI / 180.0);
+		sin_t[i + 90] = sin(i * M_PI / 180.0);
+	}
+
+	while (curr)
+	{
+		double c = cos_t[curr->theta];
+		double s = sin_t[curr->theta];
+
+		int x0 = curr->rho * c;
+		int y0 = curr->rho * s;
+		
+		int x1 = x0 - diag_len * s;
+		int y1 = y0 + diag_len * c;
+
+		int x2 = x0 + diag_len * s;
+		int y2 = y0 - diag_len * c;
+
+		MyDrawLine(newS, x1, y1, x2, y2);
+
+		curr = curr->next;
+	}
+
+	SDL_UnlockSurface(newS);
+	return newS;
+}
+
 int main(int argc, char** argv){
 	if (argc != 3)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
@@ -292,13 +332,12 @@ int main(int argc, char** argv){
 	ListLine list = { head : NULL };
 
 	SDL_Surface* output = HoughLine(input, &list);
-	IMG_SavePNG(output, argv[2]);
+	Prune(&list);
+	IMG_SavePNG(ListToSurface(&list, output->w, output->h), argv[2]);
 	SDL_FreeSurface(input);
 	SDL_FreeSurface(output);
 	
-	printf("\n\n");
-	printList(&list);
-	Prune(&list);
+	printf("\n\nAfter prune: ");
 	printList(&list);
 	
 	return 0;
