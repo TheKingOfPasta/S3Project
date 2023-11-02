@@ -85,7 +85,7 @@ void PSR_parse_file(char* file, short grid[9][9])
 
 char* PSR_unparse(short grid[9][9])
 {
-    char* s = malloc(112);//how to free memory? @Taliayaya. 112 bcs that should be the length of the text
+    char* s = malloc(111);
     size_t index = 0;
 
     for (size_t j = 0; j < 9; j++)
@@ -103,7 +103,7 @@ char* PSR_unparse(short grid[9][9])
         s[index++] = '\n';
     }
 
-    s[index] = '\0';
+    s[index - 1] = '\0';//-1 to replace the last \n (not needed apparently?)
 
     return s;
 }

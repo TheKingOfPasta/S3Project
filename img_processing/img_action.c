@@ -10,6 +10,7 @@
 #include "adaptive_thresholding.h"
 #include "rotate.h"
 #include "canny_edge_detector.h"
+#include "img_color.h"
 
 
 
@@ -33,7 +34,11 @@ void ErrorMessage()
            "                   -b/--blur\n"
            "                   -t/--threshold\n"
            "                   -s/--sobel\n"
-           "                   -i/--inverse\n");
+           "                   -i/--inverse\n"
+           "                   -bt/--blur>threshold\n"
+           "                   -bts/--blur>threshold>sobel\n"
+           "                   -a/--all\n"
+           "                   -g/--grayscale");
 }
 
 SDL_Surface* IMGA_Erosion(SDL_Surface* input){
@@ -130,12 +135,14 @@ int main(int argc, char** argv)
     {
         if (argc == 4)
         {
+            printf("Attempting to apply thresholding image from %s\n", path_in);
             IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), 0), path_out);
+            printf("Successfully saved the new image at path %s\n", path_out);
             return EXIT_SUCCESS;
         }
 
         if (argc != 5 && argc != 6)
-            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in folder_path_out [threshold] [m]) (m (optional) : apply thresholds from 0 to n)\n");
+            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in path_out [threshold] [m]) (m (optional) : apply thresholds from 0 to n)\n");
 
 
         char* endptr;
@@ -157,24 +164,27 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-s") || CompareStrings(argv[1], "--sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in folder_path_out )\n");
+            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in path_out)\n");
 
+        printf("Attempting to sobel image from %s\n", path_in);
         IMG_SavePNG(sobel_gradient(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-bts") || CompareStrings(argv[1], "--blur>threshold>sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply blur>threshold>sobel (path_in folder_path_out)\n");
+            errx(EXIT_FAILURE, "-bts/--blur>threshold>sobel : apply blur>threshold>sobel (path_in path_out)\n");
 
+        printf("Attempting to blur>threshold>sobel image from %s\n", path_in);
         IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0))), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-bt") || CompareStrings(argv[1], "--blur>threshold"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in folder_path_out)\n");
+            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in path_out)\n");
 
+        printf("Attempting to blur>threshold image from %s\n", path_in);
         IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), 11, 1.5), 0)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
@@ -185,8 +195,30 @@ int main(int argc, char** argv)
                 "only if it needs to be inverted at path"
                 "(path_in path_out)\n");
         
-        printf("Attempting to rotate image from %s\n", path_in);
+        printf("Attempting to apply invert at %s\n", path_in);
         IMG_SavePNG(CheckInvert(IMG_Load(path_in)), path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+    else if (CompareStrings(argv[1], "-a") || CompareStrings(argv[1], "--all"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-a/--all : applies every function "
+                "(path_in path_out)\n");
+
+        printf("Attempting to apply all from %s\n", path_in);
+        SDL_Surface* s = IMG_Load(path_in);
+        IMGC_surface_to_grayscale(s);
+        IMG_SavePNG(sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(IMGA_GaussianBlur(s, 11, 1.5), 0)))), path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+    else if (CompareStrings(argv[1], "-g") || CompareStrings(argv[1], "--grayscale"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-g/--grayscale : applies a grayscale filter "
+                "(path_in path_out)\n");
+        
+        printf("Attempting to apply grayscale to %s\n", path_in);
+        IMGC_to_grayscale(path_in, path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else

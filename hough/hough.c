@@ -14,12 +14,11 @@ typedef struct NodeLine{
 
 typedef struct ListLine {
 	struct NodeLine* head;
-	int size;
 } ListLine;
 
 void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2)
 {
-	printf("trying to draw : w=%i h=%i ||x0 : %i  y0 : %i  x1 : %i  y1 : %i\n", s->w,s->h,x1,y1,x2,y2);
+	//printf("trying to draw : w=%i h=%i ||x0 : %i  y0 : %i  x1 : %i  y1 : %i\n", s->w,s->h,x1,y1,x2,y2);
 
 	int dx = abs(x2 - x1);
     int dy = -abs(y2 - y1);
@@ -169,11 +168,12 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 			}
 		}
 
-		if (val < line_threshold)
+		if (val < line_threshold || (maxTheta != 0 && maxTheta != 90))
 			continue;
 
 		//drawing the lines on a surface
-		double rho = maxRho - diag_len/2;
+		double rho = rhos[maxRho];
+		//double rho = maxRho - diag_len/2;
 
 		NodeLine *nd = malloc(sizeof(NodeLine));
 		
@@ -181,7 +181,6 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 		nd->rho = rho;
 		nd->theta = maxTheta;
 		line_list->head = nd;
-		line_list->size++;
 
 		double c = cos_t[maxTheta];
 		double s = sin_t[maxTheta];
@@ -206,7 +205,8 @@ SDL_Surface* load_image(const char* path)
     SDL_Surface* s = IMG_Load(path);
     if (s == NULL)
 	errx(EXIT_FAILURE, "%s", SDL_GetError());
-    SDL_Surface* surface = SDL_ConvertSurfaceFormat(s,SDL_PIXELFORMAT_RGB888,0);
+    SDL_Surface* surface =
+			SDL_ConvertSurfaceFormat(s,SDL_PIXELFORMAT_RGB888,0);
     if (surface == NULL)
 	errx(EXIT_FAILURE, "%s", SDL_GetError());
     SDL_FreeSurface(s);
@@ -214,32 +214,130 @@ SDL_Surface* load_image(const char* path)
 }
 
 
-void printList(ListLine* l){
-	printf("size list %i\n", l->size);
+void printList(ListLine* l)
+{
+	printf("l = \n");
 	NodeLine* temp = l->head;
 	if(!temp) printf("empty\n");
 	int i =1;
-	while(temp->next){
+	while(temp){
 		printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
 		i++;
 		temp = temp->next;
 	}
-	printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
+	//printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
 }
 
+double DoubleAbs(double x)
+{
+	return x < 0 ? -x : x;
+}
+
+//Removes all lines which are too close to each other
+void Prune(ListLine* l)
+{
+    if (!(l->head->next))
+        return;
+
+
+    NodeLine* curr = l->head;
+	if (curr->next &&
+		((curr->rho == curr->next->rho ||
+			(curr->rho &&
+			DoubleAbs(curr->next->rho / curr->rho - 1) < 0.1))
+		&&
+		(curr->theta == curr->next->theta ||
+			(curr->theta &&
+			DoubleAbs(
+				(float)(curr->next->theta) /
+				(float)(curr->theta) - 1)
+				< 0.1))))
+		{
+			NodeLine* next = curr->next;
+			curr->next = curr->next->next;
+			free(next);
+		}
+
+    while (curr->next)
+    {
+        NodeLine* curr2 = curr->next->next;
+		while (curr2)
+		{
+			if ((curr2->rho == curr->next->rho ||
+					(curr2->rho &&
+					DoubleAbs(curr->next->rho / curr2->rho - 1) < 0.1))
+				&&
+                (curr2->theta == curr->next->theta ||
+					(curr2->theta &&
+					DoubleAbs(
+						(float)(curr->next->theta) /
+						(float)(curr2->theta) - 1)
+						< 0.1)))
+			{
+				
+				curr->next->next = curr2->next;
+				free(curr2);
+				break;
+			}
+			curr2 = curr2->next;
+		}
+
+        curr = curr->next;
+    }
+}
+
+SDL_Surface* ListToSurface(ListLine* list, int width, int height)
+{
+	SDL_Surface* newS = SDL_CreateRGBSurface(0, width, height, 32,0,0,0,0);
+	SDL_LockSurface(newS);
+	NodeLine* curr = list->head;
+
+	int diag_len = sqrt(width * width + height * height);
+
+	double cos_t[180];
+	double sin_t[180];
+	for (int i = -90; i < 90; i++)
+	{
+		cos_t[i + 90] = cos(i * M_PI / 180.0);
+		sin_t[i + 90] = sin(i * M_PI / 180.0);
+	}
+
+	while (curr)
+	{
+		double c = cos_t[curr->theta];
+		double s = sin_t[curr->theta];
+
+		int x0 = curr->rho * c;
+		int y0 = curr->rho * s;
+		
+		int x1 = x0 - diag_len * s;
+		int y1 = y0 + diag_len * c;
+
+		int x2 = x0 + diag_len * s;
+		int y2 = y0 - diag_len * c;
+
+		MyDrawLine(newS, x1, y1, x2, y2);
+
+		curr = curr->next;
+	}
+
+	SDL_UnlockSurface(newS);
+	return newS;
+}
 
 int main(int argc, char** argv){
 	if (argc != 3)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
-	ListLine list = {NULL,0};
+	ListLine list = { head : NULL };
 
-	SDL_Surface* output = HoughLine(input,&list);
-	IMG_SavePNG(output, argv[2]);
+	SDL_Surface* output = HoughLine(input, &list);
+	Prune(&list);
+	IMG_SavePNG(ListToSurface(&list, output->w, output->h), argv[2]);
 	SDL_FreeSurface(input);
 	SDL_FreeSurface(output);
 	
-	printf("\n\n");
+	printf("\n\nAfter prune: ");
 	printList(&list);
 	
 	return 0;
