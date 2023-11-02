@@ -4,6 +4,7 @@ EPITA S3 project (sudoku), presented by Nord En Face
 
 
 How to use:
+ - Execute 'make' in the root folder (you can also use make in the gui, img_processing and solver folders to make specific folders only)
 
  - Using the command line : go in the solver/ folder, run the 'make' command, and launch ./solver {path}, with path being the path to a text file (assumed correct)
  
