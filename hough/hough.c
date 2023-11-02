@@ -5,6 +5,7 @@
 #include <math.h>
 #include <err.h>
 
+#define CloseAngle(t1, t2) (5 + abs(t1 - t2) % 180) < 10
 
 typedef struct NodeLine{
 	struct NodeLine * next;
@@ -168,7 +169,7 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 			}
 		}
 
-		if (val < line_threshold || (maxTheta != 0 && maxTheta != 90))
+		if (val < line_threshold)
 			continue;
 
 		//drawing the lines on a surface
@@ -178,6 +179,7 @@ SDL_Surface* HoughLine(SDL_Surface* img, ListLine* line_list)
 		NodeLine *nd = malloc(sizeof(NodeLine));
 		
 		nd->next = line_list->head;
+		
 		nd->rho = rho;
 		nd->theta = maxTheta;
 		line_list->head = nd;
@@ -237,49 +239,31 @@ double DoubleAbs(double x)
 void Prune(ListLine* l)
 {
     if (!(l->head->next))
+	{
         return;
+	}
 
-
-    NodeLine* curr = l->head;
-	if (curr->next &&
-		((curr->rho == curr->next->rho ||
-			(curr->rho &&
-			DoubleAbs(curr->next->rho / curr->rho - 1) < 0.1))
-		&&
-		(curr->theta == curr->next->theta ||
-			(curr->theta &&
-			DoubleAbs(
-				(float)(curr->next->theta) /
-				(float)(curr->theta) - 1)
-				< 0.1))))
-		{
-			NodeLine* next = curr->next;
-			curr->next = curr->next->next;
-			free(next);
-		}
+	NodeLine* curr = l->head;
 
     while (curr->next)
     {
-        NodeLine* curr2 = curr->next->next;
-		while (curr2)
+        NodeLine* curr2 = curr;
+		while (curr2->next)
 		{
-			if ((curr2->rho == curr->next->rho ||
-					(curr2->rho &&
-					DoubleAbs(curr->next->rho / curr2->rho - 1) < 0.1))
-				&&
-                (curr2->theta == curr->next->theta ||
-					(curr2->theta &&
-					DoubleAbs(
-						(float)(curr->next->theta) /
-						(float)(curr2->theta) - 1)
-						< 0.1)))
+			if (CloseAngle(curr->theta, curr2->next->theta) &&
+				DoubleAbs(curr2->next->rho / curr->rho) < 1.1 &&
+				DoubleAbs(curr2->next->rho / curr->rho) > 0.9)
 			{
-				
-				curr->next->next = curr2->next;
-				free(curr2);
-				break;
+				NodeLine* freeing = curr2->next;
+
+				//TODO average (beware, rhos can be < 0) and thetas can be equivalent
+
+				curr2->next = curr2->next->next;
+
+				free(freeing);
 			}
-			curr2 = curr2->next;
+			else
+				curr2 = curr2->next;
 		}
 
         curr = curr->next;
@@ -325,20 +309,163 @@ SDL_Surface* ListToSurface(ListLine* list, int width, int height)
 	return newS;
 }
 
-int main(int argc, char** argv){
+//Prunes the list till there are only 4 edges left
+void FindEdges(ListLine* list, NodeLine* l[4], NodeLine* l2[4])
+{
+	//Have 2 lists of 4 nodes, the 4 nodes will be the 4 edges
+	// (4 main horizontal and vertical lines)
+	// Works by checking every pair of edges
+	// then checking the list which elements share a multiple of that distance
+
+	int lorl2 = 0;
+	int index = 0;
+	int index2 = 0;
+
+	NodeLine* curr = list->head;
+	while (curr)
+	{
+		if (lorl2)
+			l2[0] = curr;
+		else
+			l[0] = curr;
+		NodeLine* curr2 = curr->next;
+		while (curr2)
+		{
+			if (CloseAngle(curr2->theta, curr->theta) || curr2->rho == curr->rho)
+			{
+				curr2 = curr2->next;
+				continue;
+			}
+			if (lorl2)
+				l2[1] = curr2;
+			else
+				l[1] = curr2;
+			NodeLine* curr3 = curr2->next;
+			if (index2 < 4)
+			{
+				if (lorl2)
+					index2 = 2;
+				else
+					index = 2;
+			}
+
+			while (curr3)
+			{
+				if (CloseAngle(curr3->theta, curr->theta) || curr3->rho == curr->rho)
+				{
+					curr3 = curr3->next;
+					continue;
+				}
+				if ((((int)(curr->rho / 100 + curr3->rho - curr->rho)) %
+					((int)(curr2->rho - curr->rho)))
+					< curr->rho / 100)
+				{
+					if (lorl2)
+					{
+						if (index2 < 4)
+						{
+							l2[index2] = curr3;
+						}
+						index2 += 1;
+					}
+					else
+					{
+						if (index < 4)
+						{
+							l[index] = curr3;
+						}
+						index += 1;
+					}
+				}
+				curr3 = curr3->next;
+			}
+			if (!lorl2 && index == 4)
+				lorl2 = 1;//Found 4 horizontal/vertical, can find the other now
+			if (lorl2 && index2 == 4)
+				return;
+			curr2 = curr2->next;
+		}
+		curr = curr->next;
+	}
+}
+
+int main(int argc, char** argv)
+{
 	if (argc != 3)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
 	ListLine list = { head : NULL };
 
 	SDL_Surface* output = HoughLine(input, &list);
+	printList(&list);
 	Prune(&list);
+	printList(&list);
+
 	IMG_SavePNG(ListToSurface(&list, output->w, output->h), argv[2]);
 	SDL_FreeSurface(input);
 	SDL_FreeSurface(output);
+
+	NodeLine* l[4];
+	NodeLine* l2[4];
+
+	FindEdges(&list, l, l2);
+
+	ListLine li = { head : NULL};
+	NodeLine* nd;
+
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l[0]->rho;
+	nd->theta = l[0]->theta;
+	li.head = nd;
+
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l[1]->rho;
+	nd->theta = l[1]->theta;
+	li.head = nd;
+
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l[2]->rho;
+	nd->theta = l[2]->theta;
+	li.head = nd;
 	
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l[3]->rho;
+	nd->theta = l[3]->theta;
+	li.head = nd;
+	
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l2[0]->rho;
+	nd->theta = l2[0]->theta;
+	li.head = nd;
+
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l2[1]->rho;
+	nd->theta = l2[1]->theta;
+	li.head = nd;
+
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l2[2]->rho;
+	nd->theta = l2[2]->theta;
+	li.head = nd;
+	
+	nd = malloc(sizeof(NodeLine));
+	nd->next = li.head;
+	nd->rho = l2[3]->rho;
+	nd->theta = l2[3]->theta;
+	li.head = nd;
+	
+	
+	IMG_SavePNG(ListToSurface(&li, output->w, output->h), "edges.png");
+
 	printf("\n\nAfter prune: ");
-	printList(&list);
+	printList(&li);
 	
 	return 0;
 }
