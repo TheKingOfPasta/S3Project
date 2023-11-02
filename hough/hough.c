@@ -434,6 +434,8 @@ ListQuad* FindSquares(ListLine* l,int width, int height){
 		index++;
 	}
 
+	/*
+	//debug DONT RMV PLS
 	printf("----");
 	for (int j = 0; j < l->size; j++)
 		printf("[%2i]        ",j);
@@ -447,6 +449,7 @@ ListQuad* FindSquares(ListLine* l,int width, int height){
 		}
 		printf("\n");
 	}
+	*/
 
 	ListQuad *lquad = malloc(sizeof(ListQuad));
 	lquad->head = NULL;
@@ -500,11 +503,8 @@ int main(int argc, char** argv)
 	ListQuad* lquad =  FindSquares(list,input->w,input->h);
 	NodeQuadrilateral * grid = BestSquare(lquad);
 	printf("square found :\n");
-	printQuad(grid);
-	
 
 	DrawSquare(input,grid);
-	printf("square drown\n");
 	IMG_SavePNG(input, argv[2]);
 
 	SDL_FreeSurface(input);
