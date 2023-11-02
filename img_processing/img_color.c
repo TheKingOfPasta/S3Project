@@ -3,7 +3,6 @@
 
 
 #include "img_color.h"
-#include "img_utils.h"
 
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL.h>
@@ -51,7 +50,7 @@ void IMGC_surface_to_grayscale(SDL_Surface* surface)
   */
 void IMGC_to_grayscale(const char* input_path, const char* output_path)
 {
-    SDL_Surface* surface = IMGU_Load(input_path);
+    SDL_Surface* surface = IMG_Load(input_path);
     IMGC_surface_to_grayscale(surface);
 
     IMG_SavePNG(surface, output_path);
