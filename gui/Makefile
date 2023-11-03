@@ -1,8 +1,8 @@
 CC = gcc
 CPPFLAGS =
-CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image SDL2_ttf gtk4`
+CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image SDL2_ttf`
 LDFLAGS =
-LDLIBS = -lm -ldl `pkg-config --libs sdl2 SDL2_image SDL2_ttf gtk4`
+LDLIBS = -lm -ldl `pkg-config --libs sdl2 SDL2_image SDL2_ttf`
 
 SRC = gui.c draw_text.c ../img_processing/adaptive_thresholding.c ../img_processing/canny_edge_detector.c ../img_processing/gaussian_blur.c ../img_processing/rotate.c ../splitting/split.c
 OBJ = ${SRC:.c=.o}
