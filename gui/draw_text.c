@@ -3,7 +3,12 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 
-void DrawText(SDL_Renderer* renderer, char* text, int x, int y, int h, SDL_Color color)
+void DrawText(SDL_Renderer* renderer,
+				char* text,
+				int x,
+				int y,
+				int h,
+				SDL_Color color)
 {
 	TTF_Init();
 
