@@ -16,5 +16,5 @@ gui: gui.o draw_text.o ../img_processing/adaptive_thresholding.o ../img_processi
 clean:
 	rm *.o
 	rm gui
-	rm ../img_processing/*.o
 	rm ../splitting/*.o
+	rm ../img_processing/*.o

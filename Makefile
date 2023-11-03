@@ -10,4 +10,4 @@ clean:
 	cd solver && make clean
 	cd hough && make clean
 	cd gauss_dist && make clean
-	cd gui && make clean
+	cd gui && rm *.o && rm gui
