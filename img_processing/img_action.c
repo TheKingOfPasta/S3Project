@@ -12,6 +12,9 @@
 #include "canny_edge_detector.h"
 #include "img_color.h"
 
+#define Blursize 11
+#define BlurIntensity  1.5 
+#define AdaptiveThreshold 3
 
 
 //1 -> a==b
@@ -97,12 +100,12 @@ int main(int argc, char** argv)
         else if (argc == 5)
         {
             size = atoi(argv[4]);
-            sigma = 1.5;
+            sigma = BlurIntensity;
         }
         else if (argc == 4)
         {
-            size = 11;
-            sigma = 1.5;
+            size = Blursize;
+            sigma = BlurIntensity;
         }
         else
             errx(EXIT_FAILURE, "-b/--blur : gaussian blur "
@@ -147,8 +150,11 @@ int main(int argc, char** argv)
     {
         if (argc == 4)
         {
-            printf("Attempting to apply thresholding on %s\n", path_in);
-            IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), 0), path_out);
+            printf("Attempting to apply thresholding to %s\n", path_in);
+            IMG_SavePNG(IMGA_ApplyThreshold(
+                            IMG_Load(path_in),
+                            AdaptiveThreshold),
+                        path_out);
             printf("Successfully saved the new image at path %s\n", path_out);
             return EXIT_SUCCESS;
         }
@@ -200,14 +206,13 @@ int main(int argc, char** argv)
                 "apply blur>threshold>sobel (path_in path_out)\n");
 
         printf("Attempting to blur>threshold>sobel image from %s\n", path_in);
-        IMG_SavePNG(
-            sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(
-                                            IMGA_GaussianBlur(
-                                                IMG_Load(path_in),
-                                                11,
-                                                1.5),
-                                            0))),
-            path_out);
+        IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(
+                                                    IMGA_GaussianBlur(
+                                                        IMG_Load(path_in),
+                                                        Blursize,
+                                                        BlurIntensity),
+                                                    AdaptiveThreshold))),
+                    path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-bt") ||
@@ -218,13 +223,12 @@ int main(int argc, char** argv)
                         "(path_in path_out)\n");
 
         printf("Attempting to blur>threshold image from %s\n", path_in);
-        IMG_SavePNG(
-            IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(
-                                                IMG_Load(path_in),
-                                                11,
-                                                1.5),
-                                            0)),
-            path_out);
+        IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(
+                                                        IMG_Load(path_in),
+                                                        Blursize,
+                                                        BlurIntensity),
+                                                    AdaptiveThreshold)),
+                path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-i") ||
@@ -251,10 +255,11 @@ int main(int argc, char** argv)
         IMGC_surface_to_grayscale(s);
         IMG_SavePNG(
             sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(
-                                                        IMGA_GaussianBlur(s,
-                                                            11,
-                                                            1.5),
-                                                        0)))),
+                                                        IMGA_GaussianBlur(
+                                                            s,
+                                                            Blursize,
+                                                            BlurIntensity),
+                                                        AdaptiveThreshold)))),
             path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
