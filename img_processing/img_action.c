@@ -80,7 +80,8 @@ int main(int argc, char** argv)
     char* path_in = argv[2];
     char* path_out = argv[3];
 
-    if (CompareStrings(argv[1], "-b") || CompareStrings(argv[1], "--blur"))
+    if (CompareStrings(argv[1], "-b") ||
+                CompareStrings(argv[1], "--blur"))
     {
         int size;
         double sigma;
@@ -102,16 +103,24 @@ int main(int argc, char** argv)
             sigma = BlurIntensity;
         }
         else
-            errx(EXIT_FAILURE, "-b/--blur : gaussian blur (path_in path_out [size, sigma])\n");
+            errx(EXIT_FAILURE, "-b/--blur : gaussian blur "
+                    "(path_in path_out [size, sigma])\n");
         
         printf("Attempting to blur image from %s\n", path_in);
-        IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(path_in), size, sigma), path_out);
+        IMG_SavePNG(
+            IMGA_GaussianBlur(
+                IMG_Load(path_in),
+                size,
+                sigma),
+            path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-r") || CompareStrings(argv[1], "--rotate"))
+    else if (CompareStrings(argv[1], "-r") ||
+                CompareStrings(argv[1], "--rotate"))
     {
         if (argc != 5)
-            errx(EXIT_FAILURE, "-r/--rotate : rotate at path (path_in path_out angle)\n");
+            errx(EXIT_FAILURE, "-r/--rotate : rotate at path "
+                        "(path_in path_out angle)\n");
         
         char* endptr;
         double angle = strtod(argv[4], &endptr);
@@ -120,27 +129,35 @@ int main(int argc, char** argv)
         IMG_SavePNG(IMGA_Rotate_from(path_in, angle), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-ra") || CompareStrings(argv[1], "--rotateauto"))
+    else if (CompareStrings(argv[1], "-ra") ||
+                CompareStrings(argv[1], "--rotateauto"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-ra/--rotateauto : rotate automatically at path (path_in path_out)\n");
+            errx(EXIT_FAILURE, "-ra/--rotateauto : rotate auto at path "
+                        "(path_in path_out)\n");
 
         printf("Attempting to automatically rotate image from %s\n", path_in);
         IMG_SavePNG(IMGA_Rotate_auto(path_in), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-t") || CompareStrings(argv[1], "--threshold"))
+    else if (CompareStrings(argv[1], "-t") ||
+                CompareStrings(argv[1], "--threshold"))
     {
         if (argc == 4)
         {
-            printf("Attempting to apply thresholding image from %s\n", path_in);
-            IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), AdaptiveThreshold), path_out);
+            printf("Attempting to apply thresholding to %s\n", path_in);
+            IMG_SavePNG(IMGA_ApplyThreshold(
+                            IMG_Load(path_in),
+                            AdaptiveThreshold),
+                        path_out);
             printf("Successfully saved the new image at path %s\n", path_out);
             return EXIT_SUCCESS;
         }
 
         if (argc != 5 && argc != 6)
-            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding (path_in path_out [threshold] [m]) (m (optional) : apply thresholds from 0 to n)\n");
+            errx(EXIT_FAILURE, "-t/--threshold : apply adaptive thresholding "
+                        "(path_in path_out [threshold] [m]) "
+                        "(m (optional) : apply thresholds from 0 to n)\n");
 
 
         char* endptr;
@@ -150,7 +167,13 @@ int main(int argc, char** argv)
 
         printf("Attempting to apply thresholding image from %s\n", path_in);
 		if (argc == 5)
-			IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), threshold), path_out);
+        {
+			IMG_SavePNG(
+                IMGA_ApplyThreshold(
+                    IMG_Load(path_in),
+                    threshold),
+                path_out);
+        }
 		else
             for (int i = 0; i <= threshold; i++)
             {
@@ -159,34 +182,52 @@ int main(int argc, char** argv)
             }
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-s") || CompareStrings(argv[1], "--sobel"))
+    else if (CompareStrings(argv[1], "-s") ||
+                CompareStrings(argv[1], "--sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection (path_in path_out)\n");
+            errx(EXIT_FAILURE, "-s/--sobel : apply sobel edge detection "
+                        "(path_in path_out)\n");
 
         printf("Attempting to sobel image from %s\n", path_in);
         IMG_SavePNG(sobel_gradient(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-bts") || CompareStrings(argv[1], "--blur>threshold>sobel"))
+    else if (CompareStrings(argv[1], "-bts") ||
+                CompareStrings(argv[1], "--blur>threshold>sobel"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-bts/--blur>threshold>sobel : apply blur>threshold>sobel (path_in path_out)\n");
+            errx(EXIT_FAILURE, "-bts/--blur>threshold>sobel : "
+                "apply blur>threshold>sobel (path_in path_out)\n");
 
         printf("Attempting to blur>threshold>sobel image from %s\n", path_in);
-        IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), Blursize, BlurIntensity), AdaptiveThreshold))), path_out);
+        IMG_SavePNG(sobel_gradient(IMGA_Erosion(IMGA_ApplyThreshold(
+                                                    IMGA_GaussianBlur(
+                                                        IMG_Load(path_in),
+                                                        Blursize,
+                                                        BlurIntensity),
+                                                    AdaptiveThreshold))),
+                    path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-bt") || CompareStrings(argv[1], "--blur>threshold"))
+    else if (CompareStrings(argv[1], "-bt") ||
+                CompareStrings(argv[1], "--blur>threshold"))
     {
         if (argc != 4)
-            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold (path_in path_out)\n");
+            errx(EXIT_FAILURE, "-bt/--blur>threshold : apply blur>threshold "
+                        "(path_in path_out)\n");
 
         printf("Attempting to blur>threshold image from %s\n", path_in);
-        IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(IMG_Load(path_in), Blursize, BlurIntensity), AdaptiveThreshold)), path_out);
+        IMG_SavePNG(IMGA_Erosion(IMGA_ApplyThreshold(IMGA_GaussianBlur(
+                                                        IMG_Load(path_in),
+                                                        Blursize,
+                                                        BlurIntensity),
+                                                    AdaptiveThreshold)),
+                path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-i") || CompareStrings(argv[1], "--invert"))
+    else if (CompareStrings(argv[1], "-i") ||
+                CompareStrings(argv[1], "--invert"))
     {
         if (argc != 4)
             errx(EXIT_FAILURE, "-i/--invert : inverts the colors of the image"
@@ -197,7 +238,8 @@ int main(int argc, char** argv)
         IMG_SavePNG(CheckInvert(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-a") || CompareStrings(argv[1], "--all"))
+    else if (CompareStrings(argv[1], "-a") ||
+                CompareStrings(argv[1], "--all"))
     {
         if (argc != 4)
             errx(EXIT_FAILURE, "-a/--all : applies every function "
@@ -206,10 +248,18 @@ int main(int argc, char** argv)
         printf("Attempting to apply all from %s\n", path_in);
         SDL_Surface* s = IMG_Load(path_in);
         IMGC_surface_to_grayscale(s);
-        IMG_SavePNG(sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(IMGA_GaussianBlur(s, Blursize, BlurIntensity), AdaptiveThreshold)))), path_out);
+        IMG_SavePNG(
+            sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(
+                                                        IMGA_GaussianBlur(
+                                                            s,
+                                                            Blursize,
+                                                            BlurIntensity),
+                                                        AdaptiveThreshold)))),
+            path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
-    else if (CompareStrings(argv[1], "-g") || CompareStrings(argv[1], "--grayscale"))
+    else if (CompareStrings(argv[1], "-g") ||
+                CompareStrings(argv[1], "--grayscale"))
     {
         if (argc != 4)
             errx(EXIT_FAILURE, "-g/--grayscale : applies a grayscale filter "
