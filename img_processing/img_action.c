@@ -21,13 +21,8 @@
 //0 -> a!=b
 int CompareStrings(char* a, char* b)
 {
-    for (; *a; a++)
-    {
-        if (*b != *a)
-            return 0;
-        b += 1;
-    }
-    return 1;
+    for (;*a &&*b && *a == *b; a++,b++){}
+    return *a==*b;
 }
 
 void ErrorMessage()

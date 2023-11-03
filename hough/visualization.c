@@ -80,13 +80,13 @@ SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
 	return s;
 }
 
-void DrawSquare(SDL_Surface* s, NodeQuadrilateral *q)
+void DrawSquare(SDL_Surface* s, NodeQuadrilateral *q,int r,int g,int b)
 {
 	SDL_LockSurface(s);
-    MyDrawLine(s, q->p1.x , q->p1.y , q->p2.x , q->p2.y ,255,0,0);
-    MyDrawLine(s, q->p2.x , q->p2.y , q->p3.x , q->p3.y ,255,0,0);
-    MyDrawLine(s, q->p3.x , q->p3.y , q->p4.x , q->p4.y ,255,0,0);
-    MyDrawLine(s, q->p4.x , q->p4.y , q->p1.x , q->p1.y ,255,0,0);
+    MyDrawLine(s, q->p1.x , q->p1.y , q->p2.x , q->p2.y ,r,g,b);
+    MyDrawLine(s, q->p2.x , q->p2.y , q->p3.x , q->p3.y ,r,g,b);
+    MyDrawLine(s, q->p3.x , q->p3.y , q->p4.x , q->p4.y ,r,g,b);
+    MyDrawLine(s, q->p4.x , q->p4.y , q->p1.x , q->p1.y ,r,g,b);
 	SDL_UnlockSurface(s);
 }
 

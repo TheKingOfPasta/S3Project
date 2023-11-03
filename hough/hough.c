@@ -32,9 +32,11 @@ ListLine* HoughLine(SDL_Surface* img)
 	for (int j = 0; j < 180; j++)
 		accumulator[i][j] = 0u;
 	
+	double borderExclusion = 0.001;
+
 	// Accumulator calculation
-	for (int i = 0; i < width; i += 1)
-	for (int j = 0; j < height; j += 1)
+	for (int i = width*borderExclusion; i < width*(1-borderExclusion); i += 1)
+	for (int j = height*borderExclusion; j < height*(1-borderExclusion); j += 1)
 	{
 		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
 		if (pixel < 127)continue;
@@ -48,11 +50,11 @@ ListLine* HoughLine(SDL_Surface* img)
 
 	// getting the max value
 	unsigned int maxVal = 0;
-	for (int i = 0; i < diag_len * 2; i++)
-	for (int j = 0; j < 180; j++)
+	for (int t = 4; t < 176; t++)
+	for (int r = diag_len * 2*0.1; r < diag_len * 2*0.9; r++)
 	{
-		if (accumulator[i][j] > maxVal)
-			maxVal = accumulator[i][j];
+		if (accumulator[r][t] > maxVal)
+			maxVal = accumulator[r][t];
 	}
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
@@ -73,8 +75,8 @@ ListLine* HoughLine(SDL_Surface* img)
 	list->head = NULL;
 	list->size =0;
 	
-	for (int t = 0; t < 180; t += step)
-    for (int r = 0; r <= diag_len*2; r += step)
+	for (int t = 4; t < 176; t += step)
+    for (int r = diag_len * 2*0.1; r < diag_len * 2*0.9; r += step)
 	{
 		unsigned int val = accumulator[r][t];
 		

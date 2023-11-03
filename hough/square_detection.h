@@ -7,4 +7,3 @@
 
 ListQuad* FindSquares(ListLine* l,int width, int height);
 NodeQuadrilateral* BestSquare(ListQuad *l);
-

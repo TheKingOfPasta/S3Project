@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 	ListLine* list = HoughLine(input);
 	Prune(list);
-	ListToSurface(input,list,0,255,0);
+	ListToSurface(input,list,255,0,0);
 	printList(list);
 	IMG_SavePNG(ListToSurface(input,list,0,255,255), "lines.png");
 	printf("lines done\n");
@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 	NodeQuadrilateral * grid = BestSquare(lquad);
 	printf("square found :\n");
 
-	DrawSquare(input,grid);
+	DrawSquare(input,grid,255,0,0);
 	IMG_SavePNG(input, argv[2]);
 
 	SDL_FreeSurface(input);
