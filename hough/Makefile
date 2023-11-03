@@ -5,15 +5,17 @@ CFLAGS = -Wall -Wextra -O3 -lm -ldl -g `pkg-config --cflags sdl2 SDL2_image`
 LDFLAGS =
 LDLIBS = -lm -ldl -g `pkg-config --libs sdl2 SDL2_image`
 
-EXE = hough
+SRC = grid_detection.c hough.c square_detection.c utils.c visualization.c
+OBJ = ${SRC:.c=.o}
 
-all: $(EXE)
+all: grid_detection
 
-$(foreach f, $(EXE), $(eval $(f):))
+grid_detection: $(OBJ)
 
 .PHONY: clean
 
 clean:
-	${RM} $(EXE)
+	rm *.o
+	rm grid_detection
 
 # END
