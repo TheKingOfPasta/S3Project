@@ -15,7 +15,7 @@ ListLine* HoughLine(SDL_Surface* img)
 {
 	int width = img->w;
 	int height = img->h;
-	
+
 	int diag_len = ceil(sqrt(width * width + height * height));
 
 	// Cache some resuable values
@@ -26,18 +26,18 @@ ListLine* HoughLine(SDL_Surface* img)
 		cos_t[i + 45] = cos(ToRad(i));
 		sin_t[i + 45] = sin(ToRad(i));
 	}
-		
+
 	// Hough accumulator array of theta vs rho
 	unsigned int accumulator[2 * diag_len][180];
 	for (int i = 0; i < 2 * diag_len; i++)
 	for (int j = 0; j < 180; j++)
 		accumulator[i][j] = 0u;
-	
+
 	double borderExclusion = 0.02;
 
 	// Accumulator calculation
-	for (int i = width*borderExclusion; i < width*(1-borderExclusion); i += 1)
-	for (int j = height*borderExclusion; j < height*(1-borderExclusion); j += 1)
+	for (int i = width*borderExclusion; i < width*(1-borderExclusion); i++)
+	for (int j = height*borderExclusion; j < height*(1-borderExclusion); j++)
 	{
 		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
 		if (pixel < 127)continue;
@@ -69,18 +69,18 @@ ListLine* HoughLine(SDL_Surface* img)
            rho_step = (rho_max - rho_min) / rho_num;
 
 	double rhos[(int)(rho_num + 1)];
-	
+
     spread_arr(rho_num + 1, rho_min, rho_max, rho_step, rhos);
 
-	ListLine* list = malloc(sizeof(ListLine)); 
+	ListLine* list = malloc(sizeof(ListLine));
 	list->head = NULL;
 	list->size =0;
-	
+
 	for (int t = 4; t < 176; t += step)
     for (int r = diag_len * 2*0.1; r < diag_len * 2*0.9; r += step)
 	{
 		unsigned int val = accumulator[r][t];
-		
+
 		maxRho = r;
 		maxTheta = t;
 
@@ -129,7 +129,8 @@ void Prune(ListLine* l)
 				DoubleAbs( DoubleAbs(curr2->next->rho / curr->rho)-1) < 0.05)
 			{
 				NodeLine* freeing = curr2->next;
-				//TODO average (beware, rhos can be < 0) and thetas can be equivalent
+				//TODO average (beware, rhos can be < 0)
+				//and thetas can be equivalent
 				curr->rho = (curr->rho+freeing->rho)/2;
 				curr->theta = (curr->theta+freeing->theta)/2;
 				curr2->next = curr2->next->next;

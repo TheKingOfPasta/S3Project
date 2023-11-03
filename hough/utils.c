@@ -16,7 +16,7 @@ void FreeList(ListLine *l)
         curr = curr->next;
         free(prev);
     }
-    
+
     free(l);
 }
 

@@ -1,8 +1,12 @@
 #include "visualization.h"
 
-void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2, int r, int g, int b)
+void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2,
+	int r, int g, int b)
 {
-	//printf("trying to draw : w=%i h=%i ||x0 : %i  y0 : %i  x1 : %i  y1 : %i\n", s->w,s->h,x1,y1,x2,y2);
+	/*
+	printf("trying to draw : w=%i h=%i |x0 : %i  y0 : %i  x1 : %i  y1 : %i\n"
+		 ,s->w,s->h,x1,y1,x2,y2);
+	*/
 
 	int dx = abs(x2 - x1);
     int dy = -abs(y2 - y1);
@@ -65,7 +69,7 @@ SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
 
 		int x0 = curr->rho * co;
 		int y0 = curr->rho * si;
-		
+
 		int x1 = x0 - diag_len * si;
 		int y1 = y0 + diag_len * co;
 
