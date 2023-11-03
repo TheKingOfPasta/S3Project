@@ -10,6 +10,7 @@ void spread_arr(int size, double min, double max, double step, double* array)
     }
 }
 
+// returns a list of the line found in the image
 ListLine* HoughLine(SDL_Surface* img)
 {
 	int width = img->w;
@@ -32,7 +33,7 @@ ListLine* HoughLine(SDL_Surface* img)
 	for (int j = 0; j < 180; j++)
 		accumulator[i][j] = 0u;
 	
-	double borderExclusion = 0.001;
+	double borderExclusion = 0.02;
 
 	// Accumulator calculation
 	for (int i = width*borderExclusion; i < width*(1-borderExclusion); i += 1)
@@ -59,7 +60,7 @@ ListLine* HoughLine(SDL_Surface* img)
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
 
-    unsigned int line_threshold = maxVal *2/ 3;//line threshold %
+    unsigned int line_threshold = maxVal /2;//line threshold %
 
     int maxTheta, maxRho;
     int step = diag_len*2 / 60;

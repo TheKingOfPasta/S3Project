@@ -27,20 +27,23 @@ int main(int argc, char** argv)
 	
 
 	ListLine* list = HoughLine(input);
+	printf("Hough transform done\n");
+	//printList(list);
 	Prune(list);
-	ListToSurface(input,list,255,0,0);
+	printf("prune done\n");
 	printList(list);
+	
+	ListToSurface(input,list,255,0,0);
 	IMG_SavePNG(ListToSurface(input,list,0,255,255), "lines.png");
-	printf("lines done\n");
+
 	ListQuad* lquad =  FindSquares(list,input->w,input->h);
 	NodeQuadrilateral * grid = BestSquare(lquad);
-	printf("square found :\n");
-
+	printf("square found !\n");
+	printQuad(grid);
 	DrawSquare(input,grid,255,0,0);
 	IMG_SavePNG(input, argv[2]);
 
 	SDL_FreeSurface(input);
 	FreeList(list);
-	printf("\n\nAfter prune: ");
 	return 0;
 }

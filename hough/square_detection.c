@@ -13,6 +13,7 @@ int FindIntersection(NodeLine* l1 ,NodeLine* l2, int w, int h,int *x, int *y ){
 	return *x >0 && *y >0 && *x<w && *y<h;
 }
 
+//returns a list of the quadrilateral formed with the provided list of lines
 ListQuad* FindSquares(ListLine* l,int width, int height){
 	
 	Point intersection[l->size][l->size];

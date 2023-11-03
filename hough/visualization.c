@@ -61,7 +61,7 @@ SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
 	while (curr)
 	{
 		double co = DoubleAbs(cos(ToRad(curr->theta)));
-		double si = DoubleAbs(sin(ToRad(curr->theta)));
+		double si = sin(ToRad(curr->theta));
 
 		int x0 = curr->rho * co;
 		int y0 = curr->rho * si;

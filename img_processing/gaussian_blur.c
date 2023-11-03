@@ -55,9 +55,9 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
         for (int l = -size; l <= size; l++)
         {
             if (i + k >= 0 &&
-                i + k <= surface->w &&
+                i + k < surface->w &&
                 j + l >= 0 &&
-                j + l <= surface->h)
+                j + l < surface->h)
             {
                 SDL_GetRGB(
                     pixels[i + k + (j + l) * surface->w],
