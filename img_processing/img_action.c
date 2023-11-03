@@ -14,7 +14,7 @@
 
 #define Blursize 11
 #define BlurIntensity  1.5 
-#define AdaptiveThreshold 2
+#define AdaptiveThreshold 3
 
 
 //1 -> a==b

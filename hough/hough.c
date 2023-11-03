@@ -7,6 +7,7 @@
 
 #define CloseAngle(t1, t2, threshold) (threshold + abs(t1 - t2) % 180) < (threshold<<1)
 #define toRad(x) x*M_PI/180.0
+
 typedef struct NodeLine{
 	struct NodeLine * next;
 	double rho;
@@ -82,7 +83,7 @@ void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc)
     for (int j = 0; j < newS->h; j++)
 	{
 		Uint8 value = (Uint8) ((((float)acc[j * rmax / (200)][i])/maxacc)*255);
-		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value * 3, value * 3, value * 3);
+		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value , value, value);
 	}
 	SDL_UnlockSurface(newS);
 	IMG_SavePNG(newS,"accumulator.png");
@@ -153,7 +154,7 @@ ListLine* HoughLine(SDL_Surface* img)
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
 
-    unsigned int line_threshold = maxVal / 2;//line threshold %
+    unsigned int line_threshold = maxVal *2/ 3;//line threshold %
 
     int maxTheta = 0, maxRho = 0;
     int step = diag_len*2 / 60;
@@ -271,7 +272,7 @@ void Prune(ListLine* l)
     }
 }
 
-SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list)
+SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
 {
 	NodeLine* curr = list->head;
 	int diag_len = sqrt(s->w * s->w + s->h * s->h);
@@ -291,7 +292,7 @@ SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list)
 		int x2 = x0 + diag_len * si;
 		int y2 = y0 - diag_len * co;
 
-		MyDrawLine(s, x1, y1, x2, y2,0,255,255);
+		MyDrawLine(s, x1, y1, x2, y2,r,g,b);
 
 		curr = curr->next;
 	}
@@ -497,8 +498,9 @@ int main(int argc, char** argv)
 
 	ListLine* list = HoughLine(input);
 	Prune(list);
+	ListToSurface(input,list,0,255,0);
 	printList(list);
-	IMG_SavePNG(ListToSurface(input,list), "lines.png");
+	IMG_SavePNG(ListToSurface(input,list,0,255,255), "lines.png");
 	printf("lines done\n");
 	ListQuad* lquad =  FindSquares(list,input->w,input->h);
 	NodeQuadrilateral * grid = BestSquare(lquad);
