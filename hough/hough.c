@@ -120,7 +120,7 @@ void Prune(ListLine* l)
         return;
 	}
 
-    while (curr->next)
+    while (curr)
     {
         NodeLine* curr2 = curr;
 		while (curr2->next)
