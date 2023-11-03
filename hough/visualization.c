@@ -42,13 +42,14 @@ void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2,
 
 void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc)
 {
-	SDL_Surface* newS = SDL_CreateRGBSurface(0, 180, 200, 32,0,0,0,0);
+	int Detail = 800;
+	SDL_Surface* newS = SDL_CreateRGBSurface(0, 180, Detail, 32,0,0,0,0);
 	SDL_LockSurface(newS);
 	Uint32* pixels = (Uint32*)(newS->pixels);
 	for (int i = 0; i < newS->w; i++)
     for (int j = 0; j < newS->h; j++)
 	{
-		Uint8 value = (Uint8) ((((float)acc[j * rmax / (200)][i])/maxacc)*255);
+		Uint8 value = (Uint8) ((((float)acc[j * rmax / (Detail)][i])/maxacc)*255);
 		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value , value, value);
 	}
 	SDL_UnlockSurface(newS);
@@ -66,7 +67,7 @@ SDL_Surface* DrawLines(SDL_Surface* s,List* list,int r,int g,int b)
 	{
 		Line line = *(Line*)(curr->data);
 		double co = (cos(ToRad(line.theta)));
-		double si = sin(ToRad(line.theta));
+		double si = (sin(ToRad(line.theta)));
 
 		int x0 = line.rho * co;
 		int y0 = line.rho * si;

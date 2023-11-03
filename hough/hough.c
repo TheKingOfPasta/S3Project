@@ -100,19 +100,14 @@ List* HoughLine(SDL_Surface* img)
 				maxTheta = y;
 			}
 		}
-		if (val < line_threshold)
+		if (val < line_threshold || abs(((maxTheta+135))%180 - 45)< 4)
 			continue;
 
 		Line *line = malloc(sizeof(Line));
-		double rho =  rhos[maxRho];
-		if(rho < 0){
-			line->rho = - rho;
-			line->theta = (maxTheta+45)%180;
-		}
-		else {
-			line->rho = rho;
-			line->theta = (maxTheta+45)%180;
-		}
+
+		line->rho = rhos[maxRho];
+		line->theta = ((maxTheta+135))%180;
+
 		Preppend(list, line);
 	}
 	return list;

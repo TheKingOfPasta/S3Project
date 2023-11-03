@@ -29,7 +29,8 @@ List* FindSquares(List* l,int width, int height){
 		int innerIndex =0;
 		while(innerCurr){
 			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,30) &&
-			 FindIntersection(((Line*)(curr->data)),((Line*)(innerCurr->data)),width,height,&(p.x),&(p.y))){
+			 FindIntersection(((Line*)(curr->data)),((Line*)(innerCurr->data))
+			 		,width,height,&(p.x),&(p.y))){
 				intersection[index][innerIndex] = p;
 			}
 			else {
