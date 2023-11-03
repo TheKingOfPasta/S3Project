@@ -251,9 +251,11 @@ int main()
 					{
 						if (dir->d_type != 4 && !IsPng(dir->d_name))
 							continue;
-						int fileY =
-							10*(heightIndex + scrollY) * height/DEFAULT_HEIGHT;
-						if (y >= fileY && y < fileY + height / DEFAULT_HEIGHT)
+
+						if (y >= 10*(heightIndex + scrollY) *
+									height/DEFAULT_HEIGHT &&
+								y < 10*(heightIndex + scrollY + 1) *
+									height/DEFAULT_HEIGHT)
 						{
 							if (dir->d_type == 8)//File
 							{
