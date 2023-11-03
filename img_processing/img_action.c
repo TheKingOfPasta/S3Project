@@ -24,7 +24,8 @@ void ErrorMessage()
            "                   -bt/--blur>threshold\n"
            "                   -bts/--blur>threshold>sobel\n"
            "                   -a/--all\n"
-           "                   -g/--grayscale");
+           "                   -g/--grayscale\n"
+           "                   -agd/--all>grid_detect\n");
 }
 
 SDL_Surface* IMGA_Erosion(SDL_Surface* input){
@@ -255,6 +256,46 @@ int main(int argc, char** argv)
 
         printf("Attempting to apply grayscale to %s\n", path_in);
         IMGC_to_grayscale(path_in, path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+    else if (CompareStrings(argv[1], "-agd") ||
+                CompareStrings(argv[1], "--all>grid_detect"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-agd/--all>grid_detect : "
+                "applies every function then "
+                "applies the grid detection algorithm(s) "
+                "(path_in path_out)\n");
+
+        printf("Attempting to apply all from %s\n", path_in);
+        SDL_Surface* s = IMG_Load(path_in);
+        IMGC_surface_to_grayscale(s);
+
+        s = sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(
+                                                        IMGA_GaussianBlur(
+                                                            s,
+                                                            Blursize,
+                                                            BlurIntensity),
+                                                        AdaptiveThreshold))));
+
+        printf("Attempting to apply grid detection\n");
+        ListLine* l = HoughLine(s);
+        Prune(l);
+
+        NodeQuadrilateral* head = BestSquare(FindSquares(l, s->w, s->h));
+
+        if (head)
+        {
+            NodeQuadrilateral* curr = head->next;
+            while (curr)
+            {
+                DrawSquare(s, curr, 0, 255, 0);
+                curr = curr->next;
+            }
+            DrawSquare(s, head, 255, 0, 0);
+        }
+
+        IMG_SavePNG(s, path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else

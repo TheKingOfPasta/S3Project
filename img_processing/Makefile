@@ -4,15 +4,16 @@ CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image`
 LDFLAGS =
 LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
 
-SRC = img_color.c img_action.c adaptive_thresholding.c gaussian_blur.c rotate.c canny_edge_detector.c invert_colors.c img_color.c
+SRC = img_color.c img_action.c adaptive_thresholding.c gaussian_blur.c rotate.c canny_edge_detector.c invert_colors.c img_color.c ../hough/utils.c ../hough/visualization.c ../hough/square_detection.c ../hough/hough.c
 OBJ = ${SRC:.c=.o}
 
 all: img_action
 
-img_action: img_action.o adaptive_thresholding.o gaussian_blur.o rotate.o canny_edge_detector.o invert_colors.o img_color.o
+img_action: img_action.o adaptive_thresholding.o gaussian_blur.o rotate.o canny_edge_detector.o invert_colors.o img_color.o ../hough/utils.o ../hough/visualization.o ../hough/square_detection.o ../hough/hough.o
 
 .PHONY: clean
 
 clean:
 	rm *.o
 	rm img_action
+	rm ../hough/*.o

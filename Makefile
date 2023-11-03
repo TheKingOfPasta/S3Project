@@ -6,8 +6,9 @@ all:
 	cd gauss_dist && make
 
 clean:
-	cd img_processing && make clean
 	cd solver && make clean
 	cd hough && make clean
 	cd gauss_dist && make clean
-	cd gui && rm *.o && rm gui
+	cd gui && rm *.o gui
+	cd splitting && rm *.o
+	cd img_processing && rm img_action *.o
