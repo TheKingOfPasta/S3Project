@@ -1,6 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <math.h>
+#include "rotate.h"
 
 /**
   * Rotate the texture with the given angle (from the center)
@@ -12,7 +10,6 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
     double angleRad = angle * 3.141592 / 180;
     double cosine = cos(angleRad);
     double sine = sin(angleRad);
-	
 
 	SDL_Surface* newS = SDL_CreateRGBSurface(0,
 							surface->h*sine+surface->w*cosine,
@@ -114,7 +111,7 @@ double GetSkewFromFile(char* path)
 SDL_Surface* IMGA_Rotate_auto(char* path)
 {
     SDL_Surface* surface = IMG_Load(path);
- 
+
     double skewLeft = FindSkew(IMGA_Rotate(surface, 10.0));
     double currentSkew = FindSkew(surface);
 

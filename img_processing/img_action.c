@@ -1,19 +1,7 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <err.h>
-#include <stdio.h>
-#include <math.h>
-
-#include "invert_colors.h"
 #include "img_action.h"
-#include "gaussian_blur.h"
-#include "adaptive_thresholding.h"
-#include "rotate.h"
-#include "canny_edge_detector.h"
-#include "img_color.h"
 
 #define Blursize 11
-#define BlurIntensity  1.5 
+#define BlurIntensity 1.5
 #define AdaptiveThreshold 3
 
 
@@ -57,12 +45,12 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 		for (int l =-1; l <= 1; l++)
 		{
             if (inpPixels[i + k + (j + l) * input->w])
-                sumWhite++;           
+                sumWhite++;
 		}
 
 		Uint32* outpxl = (Uint32*)outPixels + j*output->w + i;
 
-		*outpxl = ( sumWhite< 3) ? 
+		*outpxl = ( sumWhite< 3) ?
             SDL_MapRGB(output->format,   0,   0,   0) :
             SDL_MapRGB(output->format, 255, 255, 255);
 	}
@@ -105,7 +93,7 @@ int main(int argc, char** argv)
         else
             errx(EXIT_FAILURE, "-b/--blur : gaussian blur "
                     "(path_in path_out [size, sigma])\n");
-        
+
         printf("Attempting to blur image from %s\n", path_in);
         IMG_SavePNG(
             IMGA_GaussianBlur(
@@ -121,7 +109,7 @@ int main(int argc, char** argv)
         if (argc != 5)
             errx(EXIT_FAILURE, "-r/--rotate : rotate at path "
                         "(path_in path_out angle)\n");
-        
+
         char* endptr;
         double angle = strtod(argv[4], &endptr);
 
@@ -177,7 +165,7 @@ int main(int argc, char** argv)
 		else
             for (int i = 0; i <= threshold; i++)
             {
-                asprintf(&str, "%s/thresholded_%i.png", path_out, i);	
+                asprintf(&str, "%s/thresholded_%i.png", path_out, i);
                 IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), i), str);
             }
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -233,7 +221,7 @@ int main(int argc, char** argv)
             errx(EXIT_FAILURE, "-i/--invert : inverts the colors of the image"
                 "only if it needs to be inverted at path"
                 "(path_in path_out)\n");
-        
+
         printf("Attempting to apply invert at %s\n", path_in);
         IMG_SavePNG(CheckInvert(IMG_Load(path_in)), path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -264,7 +252,7 @@ int main(int argc, char** argv)
         if (argc != 4)
             errx(EXIT_FAILURE, "-g/--grayscale : applies a grayscale filter "
                 "(path_in path_out)\n");
-        
+
         printf("Attempting to apply grayscale to %s\n", path_in);
         IMGC_to_grayscale(path_in, path_out);
         printf("Successfully saved the new image at path %s\n", path_out);

@@ -1,9 +1,4 @@
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL.h"
-#include "utils.h"
-#include "visualization.h"
-#include "hough.h"
-#include "square_detection.h"
+#include "grid_detection.h"
 
 SDL_Surface* load_image(const char* path)
 {
@@ -24,7 +19,7 @@ int main(int argc, char** argv)
 	if (argc != 3)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
-	
+
 
 	ListLine* list = HoughLine(input);
 	printf("Hough transform done\n");
@@ -32,7 +27,7 @@ int main(int argc, char** argv)
 	Prune(list);
 	printf("prune done\n");
 	printList(list);
-	
+
 	ListToSurface(input,list,255,0,0);
 	IMG_SavePNG(ListToSurface(input,list,0,255,255), "lines.png");
 
