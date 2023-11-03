@@ -8,5 +8,5 @@
 #include "utils.h"
 #include "visualization.h"
 
-ListLine* HoughLine(SDL_Surface* img);
-void Prune(ListLine* l);
+List* HoughLine(SDL_Surface* img);
+void Prune(List* lLine);

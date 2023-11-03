@@ -56,19 +56,20 @@ void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc)
 	SDL_FreeSurface(newS);
 }
 
-SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
+SDL_Surface* DrawLines(SDL_Surface* s,List* list,int r,int g,int b)
 {
-	NodeLine* curr = list->head;
+	Node* curr = list->head;
 	int diag_len = sqrt(s->w * s->w + s->h * s->h);
 
 	SDL_LockSurface(s);
 	while (curr)
 	{
-		double co = DoubleAbs(cos(ToRad(curr->theta)));
-		double si = sin(ToRad(curr->theta));
+		Line line = *(Line*)(curr->data);
+		double co = (cos(ToRad(line.theta)));
+		double si = sin(ToRad(line.theta));
 
-		int x0 = curr->rho * co;
-		int y0 = curr->rho * si;
+		int x0 = line.rho * co;
+		int y0 = line.rho * si;
 
 		int x1 = x0 - diag_len * si;
 		int y1 = y0 + diag_len * co;
@@ -84,7 +85,7 @@ SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b)
 	return s;
 }
 
-void DrawSquare(SDL_Surface* s, NodeQuadrilateral *q,int r,int g,int b)
+void DrawSquare(SDL_Surface* s, Quadrilateral *q,int r,int g,int b)
 {
 	SDL_LockSurface(s);
     MyDrawLine(s, q->p1.x , q->p1.y , q->p2.x , q->p2.y ,r,g,b);
@@ -94,7 +95,7 @@ void DrawSquare(SDL_Surface* s, NodeQuadrilateral *q,int r,int g,int b)
 	SDL_UnlockSurface(s);
 }
 
-void printQuad(NodeQuadrilateral* q){
+void printQuad(Quadrilateral* q){
 	printf("	square pointer %p\n",q);
 	printf("	p1 x: %3i  y: %3i \n",q->p1.x,q->p1.y);
 	printf("	p2 x: %3i  y: %3i \n",q->p2.x,q->p2.y);
@@ -102,16 +103,73 @@ void printQuad(NodeQuadrilateral* q){
 	printf("	p4 x: %3i  y: %3i \n",q->p4.x,q->p4.y);
 }
 
-void printList(ListLine* l)
+void printList(List* l, int line)
 {
-	printf("l = \n");
-	NodeLine* temp = l->head;
-	if(!temp) printf("empty\n");
-	int i =1;
-	while(temp){
-		printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
-		i++;
-		temp = temp->next;
+	if(line){
+		printf("line list = \n");
+		Node* temp = l->head;
+		if(!temp) printf("empty\n");
+		int i =1;
+		while(temp){
+			Line line = *(Line*)(temp->data);
+			printf("%3i : theta %3i rho %f\n",i,line.theta,line.rho);
+			i++;
+			temp = temp->next;
+		}
 	}
-	//printf("%3i : theta %3i rho %f\n",i,temp->theta,temp->rho);
+	else{
+		printf("line list = \n");
+		Node* temp = l->head;
+		if(!temp) printf("empty\n");
+		int i =1;
+		while(temp){
+			printf("%3i : ",i);
+			printQuad((Quadrilateral*)(temp->data));
+			i++;
+			temp = temp->next;
+		}
+	}
+}
+
+int FindIntersectio(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
+	//lines are not parallel
+	float cost1=cosf(ToRad(l1->theta));
+    float cost2=cosf(ToRad(l2->theta));
+    float sint1=sinf(ToRad(l1->theta));
+    float sint2=sinf(ToRad(l2->theta));
+    float a=cost1*sint2-sint1*cost2;
+    *x = (int)((sint2*l1->rho - sint1*l2->rho)/a);
+	*y = (int)((cost1*l2->rho - cost2*l1->rho)/a);
+	//check if the intersection is not out of bound
+	return *x >0 && *y >0 && *x<w && *y<h;
+}
+
+void DrawIntersections(SDL_Surface* s,List* l){
+
+	Node *curr = l->head;
+	int index = 0;
+
+	Point p;
+	Uint32* pixels = (Uint32*)(s->pixels);
+	SDL_LockSurface(s);
+	while(curr){
+		int angle = ((Line*)(curr->data))->theta +90 %180;
+		Node *innerCurr = l->head;
+		int innerIndex =0;
+		while(innerCurr){
+			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,30) &&
+			 	FindIntersectio(((Line*)(curr->data)),((Line*)(innerCurr->data)),s->w,s->h,&(p.x),&(p.y))){
+				pixels[p.x + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
+				pixels[p.x-1 + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
+				pixels[p.x+1 + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
+				pixels[p.x + (p.y+1) *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
+				pixels[p.x + (p.y-1) *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
+			}
+			innerIndex++;
+			innerCurr= innerCurr->next;
+		}
+		curr = curr->next;
+		index++;
+	}
+	SDL_UnlockSurface(s);
 }

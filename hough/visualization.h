@@ -5,7 +5,8 @@
 #include <stdio.h>
 
 void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc);
-SDL_Surface* ListToSurface(SDL_Surface* s,ListLine* list,int r,int g,int b);
-void printList(ListLine* l);
-void DrawSquare(SDL_Surface* s, NodeQuadrilateral *q,int r,int g,int b);
-void printQuad(NodeQuadrilateral* q);
+SDL_Surface* DrawLines(SDL_Surface* s,List* list,int r,int g,int b);
+void printList(List* l, int line);
+void DrawSquare(SDL_Surface* s, Quadrilateral *q,int r,int g,int b);
+void printQuad(Quadrilateral* q);
+void DrawIntersections(SDL_Surface* s,List* list);

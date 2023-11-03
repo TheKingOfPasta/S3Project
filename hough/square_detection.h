@@ -5,5 +5,5 @@
 #include <err.h>
 #include "utils.h"
 
-ListQuad* FindSquares(ListLine* l,int width, int height);
-NodeQuadrilateral* BestSquare(ListQuad *l);
+List* FindSquares(List* lLine,int width, int height);
+Quadrilateral* BestSquare(List * lQuad);

@@ -13,6 +13,27 @@ SDL_Surface* load_image(const char* path)
     return surface;
 }
 
+Quadrilateral* Find_Grid(SDL_Surface *s ){
+	List* lLine = HoughLine(s);
+		printf("Hough transform done\n");
+		//printList(lLine);
+	Prune(lLine);
+		printf("prune done\n");
+		printList(lLine,1);
+		IMG_SavePNG(DrawLines(s,lLine,0,255,255), "lines.png");
+
+	List* lquad =  FindSquares(lLine,s->w,s->h);
+		printf("found quad list\n");
+		printList(lLine,0);
+		IMG_SavePNG(DrawLines(s,lLine,0,255,0), "quads.png");
+
+
+	Quadrilateral * grid = BestSquare(lquad);
+
+	FreeList(lLine);
+	return grid;
+}
+
 
 int main(int argc, char** argv)
 {
@@ -20,25 +41,15 @@ int main(int argc, char** argv)
 		errx(1,"first param : path_in\nsecond param : path_out\n");
 	SDL_Surface* input = load_image(argv[1]);
 
+	Quadrilateral* grid = Find_Grid(input);
 
-	ListLine* list = HoughLine(input);
-	printf("Hough transform done\n");
-	//printList(list);
-	Prune(list);
-	printf("prune done\n");
-	printList(list);
-
-	ListToSurface(input,list,255,0,0);
-	IMG_SavePNG(ListToSurface(input,list,0,255,255), "lines.png");
-
-	ListQuad* lquad =  FindSquares(list,input->w,input->h);
-	NodeQuadrilateral * grid = BestSquare(lquad);
-	printf("square found !\n");
+	printf("grid found !\n");
 	printQuad(grid);
+
 	DrawSquare(input,grid,255,0,0);
-	IMG_SavePNG(input, argv[2]);
+	IMG_SavePNG(input,"output.png");
 
 	SDL_FreeSurface(input);
-	FreeList(list);
+
 	return 0;
 }
