@@ -1,9 +1,4 @@
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL.h"
-#include "utils.h"
-#include "visualization.h"
-#include "hough.h"
-#include "square_detection.h"
+#include "grid_detection.h"
 
 SDL_Surface* load_image(const char* path)
 {
