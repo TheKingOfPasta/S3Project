@@ -5,7 +5,7 @@ SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
     SDL_Surface* newS =
         SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
 
-    int splitSize = 3;//TODO : resolution dependent size
+    int splitSize = surface->w*surface->h/50000;
 
     SDL_LockSurface(newS);
 

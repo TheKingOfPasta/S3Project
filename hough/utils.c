@@ -1,19 +1,23 @@
 #include "utils.h"
 
-void Preppend(ListLine* l, NodeLine* nd){
-	nd->next = l->head;
+// the data is allocated
+void Preppend(List* l, void* data){
+	Node * nd = malloc(sizeof(Node));
+    nd->next = l->head;
+    nd->data = data;
 	l->head = nd;
-	l->size++;
+	l->length++;
 }
 
-void FreeList(ListLine *l)
+void FreeList(List *l)
 {
-    NodeLine* curr = l->head;
+    Node* curr = l->head;
 
     while (curr)
     {
-        NodeLine* prev = curr;
+        Node* prev = curr;
         curr = curr->next;
+        free(prev->data);
         free(prev);
     }
 

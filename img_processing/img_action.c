@@ -1,7 +1,7 @@
 #include "img_action.h"
 
-#define Blursize 11
-#define BlurIntensity 1.5
+#define Blursize 13
+#define BlurIntensity 3
 #define AdaptiveThreshold 3
 
 
@@ -51,7 +51,7 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 
 		Uint32* outpxl = (Uint32*)outPixels + j*output->w + i;
 
-		*outpxl = ( sumWhite< 3) ?
+		*outpxl = ( sumWhite< 4) ?
             SDL_MapRGB(output->format,   0,   0,   0) :
             SDL_MapRGB(output->format, 255, 255, 255);
 	}
@@ -261,6 +261,39 @@ int main(int argc, char** argv)
     else if (CompareStrings(argv[1], "-agd") ||
                 CompareStrings(argv[1], "--all>grid_detect"))
     {
+        if (argc ==2)
+        {
+            for(int i =1 ; i<7;i++){
+                asprintf(&path_in,"../test_grid/sudoku0%i.png",i);
+                printf("Attempting to apply all from %s\n", path_in);
+                SDL_Surface* s = IMG_Load(path_in);
+                IMGC_surface_to_grayscale(s);
+            s = sobel_gradient(
+                    IMGA_Erosion(CheckInvert(
+                            IMGA_ApplyThreshold(
+                                IMGA_GaussianBlur(s,Blursize, BlurIntensity),
+                                                AdaptiveThreshold))));
+
+            printf("Attempting to apply grid detection\n");
+            List* l = HoughLine(s);
+            Prune(l);
+            DrawLines(s,l,0,255,255);
+            List* lquad = FindSquares(l, s->w, s->h);
+            Node* curr = lquad->head;
+            while (curr)
+            {
+                DrawSquare(s, curr->data, 0, 255, 0);
+                curr = curr->next;
+            }
+            Quadrilateral* grid= BestSquare(lquad);
+            if(grid)  DrawSquare(s, grid, 255, 0, 0);
+            asprintf(&path_out,"./sudoku0%i.png",i);
+            IMG_SavePNG(s, path_out);
+            printf("Successfully saved the new image at path %s\n", path_out);
+            }
+            return 1;
+        }
+
         if (argc != 4)
             errx(EXIT_FAILURE, "-agd/--all>grid_detect : "
                 "applies every function then "
@@ -279,21 +312,22 @@ int main(int argc, char** argv)
                                                         AdaptiveThreshold))));
 
         printf("Attempting to apply grid detection\n");
-        ListLine* l = HoughLine(s);
+        List* l = HoughLine(s);
         Prune(l);
+        printList(l,1);
+        DrawLines(s,l,0,255,255);
+        DrawIntersections(s,l);
 
-        NodeQuadrilateral* head = BestSquare(FindSquares(l, s->w, s->h));
-
-        if (head)
+        IMG_SavePNG(s, "int.png");
+        List* lquad = FindSquares(l, s->w, s->h);
+        Node* curr = lquad->head;
+        while (curr)
         {
-            NodeQuadrilateral* curr = head->next;
-            while (curr)
-            {
-                DrawSquare(s, curr, 0, 255, 0);
-                curr = curr->next;
-            }
-            DrawSquare(s, head, 255, 0, 0);
+            DrawSquare(s, curr->data, 0, 255, 0);
+            curr = curr->next;
         }
+        Quadrilateral* grid= BestSquare(lquad);
+        if(grid)  DrawSquare(s, grid, 255, 0, 255);
 
         IMG_SavePNG(s, path_out);
         printf("Successfully saved the new image at path %s\n", path_out);

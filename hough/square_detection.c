@@ -1,6 +1,6 @@
 #include "square_detection.h"
 
-int FindIntersection(NodeLine* l1 ,NodeLine* l2, int w, int h, int *x, int *y ){
+int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
 	//lines are not parallel
 	float cost1=cosf(ToRad(l1->theta));
     float cost2=cosf(ToRad(l2->theta));
@@ -14,22 +14,22 @@ int FindIntersection(NodeLine* l1 ,NodeLine* l2, int w, int h, int *x, int *y ){
 }
 
 //returns a list of the quadrilateral formed with the provided list of lines
-ListQuad* FindSquares(ListLine* l,int width, int height){
+List* FindSquares(List* l,int width, int height){
 
-	Point intersection[l->size][l->size];
+	Point intersection[l->length][l->length];
 
-	NodeLine *curr = l->head;
+	Node *curr = l->head;
 	int index = 0;
 
 	Point p;
 
 	while(curr){
-		int angle = curr->theta +90 %180;
-		NodeLine *innerCurr = l->head;
+		int angle = ((Line*)(curr->data))->theta +90 %180;
+		Node *innerCurr = l->head;
 		int innerIndex =0;
 		while(innerCurr){
-			if( CloseAngle(angle,innerCurr->theta,30) &&
-			 FindIntersection(curr,innerCurr,width,height,&(p.x),&(p.y))){
+			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,30) &&
+			 FindIntersection(((Line*)(curr->data)),((Line*)(innerCurr->data)),width,height,&(p.x),&(p.y))){
 				intersection[index][innerIndex] = p;
 			}
 			else {
@@ -42,41 +42,39 @@ ListQuad* FindSquares(ListLine* l,int width, int height){
 		index++;
 	}
 
-	/*
 	//debug DONT RMV PLS
 	printf("----");
-	for (int j = 0; j < l->size; j++)
+	for (int j = 0; j < l->length; j++)
 		printf("[%2i]        ",j);
 	printf("\n");
-	for (int i =0 ; i < l->size; i++)
+	for (int i =0 ; i < l->length; i++)
 	{
 		printf("[%2i]",i);
-		for (int j = 0; j < l->size; j++)
+		for (int j = 0; j < l->length; j++)
 		{
 			printf("x:%3i y:%3i ",intersection[i][j].x,intersection[i][j].y);
 		}
 		printf("\n");
 	}
-	*/
 
-	ListQuad *lquad = malloc(sizeof(ListQuad));
+
+	List *lquad = malloc(sizeof(List));
 	lquad->head = NULL;
-	for(int i1 = 0; i1<l->size;i1++)
-		for(int i2 = 0; i2<l->size;i2++)
+	for(int i1 = 0; i1<l->length;i1++)
+		for(int i2 = 0; i2<l->length;i2++)
 			if(intersection[i1][i2].x !=-1)
-				for (int i3 = 0; i3 < l->size; i3++)
+				for (int i3 = 0; i3 < l->length; i3++)
 					if(i3!=i1 && intersection[i2][i3].x !=-1)
-						for (int i4 = 0; i4 < l->size; i4++)
+						for (int i4 = 0; i4 < l->length; i4++)
 							if(i4!=i2 && intersection[i3][i4].x !=-1 &&
 								intersection[i4][i1].x != -1){
-								NodeQuadrilateral *nd =
-									malloc(sizeof(NodeQuadrilateral));
-								nd->next = lquad->head;
-								nd->p1 = intersection[i1][i2];
-								nd->p2 = intersection[i2][i3];
-								nd->p3 = intersection[i3][i4];
-								nd->p4 = intersection[i4][i1];
-								lquad->head = nd;
+								Quadrilateral *quad =
+									malloc(sizeof(Quadrilateral));
+								quad->p1 = intersection[i1][i2];
+								quad->p2 = intersection[i2][i3];
+								quad->p3 = intersection[i3][i4];
+								quad->p4 = intersection[i4][i1];
+								Preppend(lquad,quad);
 							}
 
 	return lquad;
@@ -101,14 +99,15 @@ double Dist(Point p1, Point p2)
 }
 
 // returns the best square among a quadrilateral list
-NodeQuadrilateral* BestSquare(ListQuad *l){
+Quadrilateral* BestSquare(List *l){
 	if(!l->head) err(EXIT_FAILURE,"empty quad list\n");
 
-	NodeQuadrilateral* currQuad = l->head;
-	NodeQuadrilateral* bestSquare = l->head;
+	Quadrilateral* bestSquare = l->head->data;
+	Node* curr = l->head;
 	double bestRatio = 0;
 
-	while(currQuad){
+	while(curr){
+		Quadrilateral* currQuad = curr->data;
 		Point p1 = currQuad->p1;
     	Point p2 = currQuad->p2;
     	Point p3 = currQuad->p3;
@@ -127,7 +126,7 @@ NodeQuadrilateral* BestSquare(ListQuad *l){
 			bestRatio = selectionRatio;
 			bestSquare = currQuad;
 		}
-		currQuad = currQuad->next;
+		curr = curr->next;
 	}
 	return bestSquare;
 }

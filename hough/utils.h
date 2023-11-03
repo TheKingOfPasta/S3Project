@@ -2,6 +2,31 @@
 #include <math.h>
 #include <stdlib.h>
 
+typedef struct Line{
+	double rho;
+	int theta;
+} Line;
+
+typedef struct Point {
+	int x;
+	int y;
+} Point;
+
+typedef struct Quadrilateral{
+	Point p1,p2,p3,p4;
+} Quadrilateral;
+
+typedef struct Node{
+	struct Node* next;
+	void * data;
+} Node;
+
+typedef struct List{
+	Node* head;
+	int length;
+} List ;
+
+/*
 typedef struct NodeLine {
 	struct NodeLine * next;
 	double rho;
@@ -13,10 +38,6 @@ typedef struct ListLine {
 	int size;
 } ListLine;
 
-typedef struct Point {
-	int x;
-	int y;
-} Point;
 
 typedef struct NodeQuadrilateral{
 	struct NodeQuadrilateral * next;
@@ -27,9 +48,10 @@ typedef struct NodeQuadrilateral{
 typedef struct ListQuad {
 	NodeQuadrilateral* head;
 } ListQuad;
+*/
 
-void Preppend(ListLine* l, NodeLine* nd);
-void FreeList(ListLine *l);
+void Preppend(List* l, void* value);
+void FreeList(List *l);
 double DoubleAbs(double x);
 int CloseAngle(int t1, int t2, int threshold);
 double ToRad(int t);

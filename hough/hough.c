@@ -11,7 +11,7 @@ void spread_arr(int size, double min, double max, double step, double* array)
 }
 
 // returns a list of the line found in the image
-ListLine* HoughLine(SDL_Surface* img)
+List* HoughLine(SDL_Surface* img)
 {
 	int width = img->w;
 	int height = img->h;
@@ -52,7 +52,7 @@ ListLine* HoughLine(SDL_Surface* img)
 	// getting the max value
 	unsigned int maxVal = 0;
 	for (int t = 4; t < 176; t++)
-	for (int r = diag_len * 2*0.1; r < diag_len * 2*0.9; r++)
+	for (int r = 0; r < diag_len * 2; r++)
 	{
 		if (accumulator[r][t] > maxVal)
 			maxVal = accumulator[r][t];
@@ -72,12 +72,12 @@ ListLine* HoughLine(SDL_Surface* img)
 
     spread_arr(rho_num + 1, rho_min, rho_max, rho_step, rhos);
 
-	ListLine* list = malloc(sizeof(ListLine));
+	List* list = malloc(sizeof(List));
 	list->head = NULL;
-	list->size =0;
+	list->length =0;
 
 	for (int t = 4; t < 176; t += step)
-    for (int r = diag_len * 2*0.1; r < diag_len * 2*0.9; r += step)
+    for (int r = 0; r < diag_len * 2; r += step)
 	{
 		unsigned int val = accumulator[r][t];
 
@@ -103,38 +103,48 @@ ListLine* HoughLine(SDL_Surface* img)
 		if (val < line_threshold)
 			continue;
 
-		NodeLine *nd = malloc(sizeof(NodeLine));
-		nd->rho = rhos[maxRho];
-		nd->theta = maxTheta-45%180;
-		Preppend(list, nd);
+		Line *line = malloc(sizeof(Line));
+		double rho =  rhos[maxRho];
+		if(rho < 0){
+			line->rho = - rho;
+			line->theta = (maxTheta+45)%180;
+		}
+		else {
+			line->rho = rho;
+			line->theta = (maxTheta+45)%180;
+		}
+		Preppend(list, line);
 	}
 	return list;
 }
 
 //Removes all lines which are too close to each other
-void Prune(ListLine* l)
+void Prune(List* lLine)
 {
-	NodeLine* curr;
-    if (!(curr = l->head))
+	Node* curr;
+    if (!(curr = lLine->head))
 	{
         return;
 	}
 
     while (curr)
     {
-        NodeLine* curr2 = curr;
+		Line* currLine = curr->data;
+        Node* curr2 = curr;
 		while (curr2->next)
 		{
-			if (CloseAngle(curr->theta, curr2->next->theta,5) &&
-				DoubleAbs( DoubleAbs(curr2->next->rho / curr->rho)-1) < 0.05)
+			Line* currLine2 = curr2->next->data;
+			if (CloseAngle(currLine->theta, currLine2->theta,5) &&
+				DoubleAbs( DoubleAbs(currLine2->rho / currLine->rho)-1) < 0.05)
 			{
-				NodeLine* freeing = curr2->next;
 				//TODO average (beware, rhos can be < 0)
 				//and thetas can be equivalent
-				curr->rho = (curr->rho+freeing->rho)/2;
-				curr->theta = (curr->theta+freeing->theta)/2;
+				//currLine->rho = (currLine->rho+currLine2->rho)/2;
+				//currLine->theta = (currLine->theta+currLine2->theta)/2;
+				Node* freeing = curr2->next;
 				curr2->next = curr2->next->next;
-				l->size--;
+				lLine->length--;
+				free(freeing->data);
 				free(freeing);
 			}
 			else
