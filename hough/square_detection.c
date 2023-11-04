@@ -2,10 +2,10 @@
 
 int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
 	//lines are not parallel
-	float cost1=cosf(ToRad(l1->theta));
-    float cost2=cosf(ToRad(l2->theta));
-    float sint1=sinf(ToRad(l1->theta));
-    float sint2=sinf(ToRad(l2->theta));
+	float cost1=cosf((l1->theta));
+    float cost2=cosf((l2->theta));
+    float sint1=sinf((l1->theta));
+    float sint2=sinf((l2->theta));
     float a=cost1*sint2-sint1*cost2;
     *x = (int)((sint2*l1->rho - sint1*l2->rho)/a);
 	*y = (int)((cost1*l2->rho - cost2*l1->rho)/a);
@@ -26,11 +26,11 @@ List* FindSquares(List* l,int width, int height){
 	Point p;
 
 	while(curr){
-		int angle = ((Line*)(curr->data))->theta +90 %180;
+		double angle = (((Line*)(curr->data))->theta) +M_PI_2 ;
 		Node *innerCurr = l->head;
 		int innerIndex =0;
 		while(innerCurr){
-			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,30) &&
+			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,ToRad(30)) &&
 			 FindIntersection(((Line*)(curr->data)),((Line*)(innerCurr->data))
 			 		,width,height,&(p.x),&(p.y))){
 				intersection[index][innerIndex] = p;

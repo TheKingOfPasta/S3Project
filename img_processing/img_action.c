@@ -61,37 +61,6 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 	return output;
 }
 
-void e(SDL_Surface* s, char* out){
-        printf("Attempting to apply grid detection\n");
-        List* l = HoughLine(s);
-        if(l == NULL){
-            printf("no lines \n");
-            return;
-        }
-
-        Prune(l);
-        printList(l,1);
-        DrawLines(s,l,0,255,255);
-        DrawIntersections(s,l);
-        printf("lines done\n");
-        IMG_SavePNG(s, out);
-        List* lquad = FindSquares(l, s->w, s->h);
-        Node* curr = lquad->head;
-        while (curr)
-        {
-            DrawSquare(s, curr->data, 0, 255, 0);
-            curr = curr->next;
-        }
-        //printList(lquad,0);//<-pretty long
-
-        IMG_SavePNG(s, out);
-        Quadrilateral* grid= BestSquare(lquad);
-        if(grid)  DrawSquare(s, grid, 255, 0, 255);
-
-        IMG_SavePNG(s, out);
-        printf("Successfully saved the new image at path %s\n", out);
-
-}
 
 int main(int argc, char** argv)
 {
@@ -296,6 +265,7 @@ int main(int argc, char** argv)
         if (argc ==2)
         {
             for(int i =1 ; i<7;i++){
+                if (i == 4 ) continue;
                 asprintf(&path_in,"../test_grid/sudoku0%i.png",i);
                 printf("Attempting to apply all from %s\n", path_in);
                 SDL_Surface* s = IMG_Load(path_in);
@@ -305,7 +275,10 @@ int main(int argc, char** argv)
                             IMGA_GaussianBlur(s,Blursize, BlurIntensity),
                                             AdaptiveThreshold,Splitsize))));
                 asprintf(&path_out,"./sudoku0%i.png",i);
-                e(s,path_out);
+                Quadrilateral* grid = Find_Grid(s);
+                printQuad(grid);
+                IMG_SavePNG(s, path_out);
+                printf("Successfully saved the new image at path %s\n", path_out);
             }
             return 1;
         }
@@ -325,8 +298,10 @@ int main(int argc, char** argv)
                         IMGA_GaussianBlur( s,Blursize,BlurIntensity),
                                 AdaptiveThreshold,Splitsize))));
 
+        Quadrilateral* grid = Find_Grid(s);
+        printQuad(grid);
         IMG_SavePNG(s, path_out);
-        e(s,path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
     }
     else
         ErrorMessage();

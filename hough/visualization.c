@@ -40,16 +40,15 @@ void MyDrawLine(SDL_Surface* s, int x1, int y1, int x2, int y2,
     }
 }
 
-void Visualize_Acc(unsigned int acc[][180] , int rmax, int maxacc)
+void Visualize_Acc(int **acc , int size, int maxacc)
 {
-	int Detail = 800;
-	SDL_Surface* newS = SDL_CreateRGBSurface(0, 180, Detail, 32,0,0,0,0);
+	SDL_Surface* newS = SDL_CreateRGBSurface(0, size, size, 32,0,0,0,0);
 	SDL_LockSurface(newS);
 	Uint32* pixels = (Uint32*)(newS->pixels);
 	for (int i = 0; i < newS->w; i++)
     for (int j = 0; j < newS->h; j++)
 	{
-		Uint8 value = (Uint8) ((((float)acc[j * rmax / (Detail)][i])/maxacc)*255);
+		Uint8 value = (Uint8) ((((float)acc[j][i])/maxacc)*255);
 		pixels[i+j*newS->w] = SDL_MapRGB(newS->format, value , value, value);
 	}
 	SDL_UnlockSurface(newS);
@@ -66,8 +65,8 @@ SDL_Surface* DrawLines(SDL_Surface* s,List* list,int r,int g,int b)
 	while (curr)
 	{
 		Line line = *(Line*)(curr->data);
-		double co = (cos(ToRad(line.theta)));
-		double si = (sin(ToRad(line.theta)));
+		double co = (cos((line.theta)));
+		double si = (sin((line.theta)));
 
 		int x0 = line.rho * co;
 		int y0 = line.rho * si;
@@ -113,7 +112,8 @@ void printList(List* l, int line)
 		int i =1;
 		while(temp){
 			Line line = *(Line*)(temp->data);
-			printf("%3i : theta %3i rho %f\n",i,line.theta,line.rho);
+			printf("%3i : theta %5f (deg %i) rho %5f\n",i,line.theta,
+					 (int)((line.theta)*180/M_PI),line.rho);
 			i++;
 			temp = temp->next;
 		}
@@ -154,11 +154,11 @@ void DrawIntersections(SDL_Surface* s,List* l){
 	Uint32* pixels = (Uint32*)(s->pixels);
 	SDL_LockSurface(s);
 	while(curr){
-		int angle = ((Line*)(curr->data))->theta +90 %180;
+		double angle = (((Line*)(curr->data))->theta) + M_PI_2;
 		Node *innerCurr = l->head;
 		int innerIndex =0;
 		while(innerCurr){
-			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,30) &&
+			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,ToRad(30)) &&
 			 	FindIntersectio(((Line*)(curr->data)),((Line*)(innerCurr->data)),s->w,s->h,&(p.x),&(p.y))){
 				pixels[p.x + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
 				pixels[p.x-1 + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);

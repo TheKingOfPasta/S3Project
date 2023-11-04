@@ -1,5 +1,7 @@
 #include "hough.h"
 
+#define LINE_THRESHOLD 50 // percent
+
 void spread_arr(int size, double min, double max, double step, double* array)
 {
     double current = min;
@@ -18,31 +20,45 @@ List* HoughLine(SDL_Surface* img)
 
 	int diag_len = ceil(sqrt(width * width + height * height));
 
+ 	// Creating the rho values array used for line retrieval
+    double rho_min = -diag_len, rho_max = diag_len, rho_num = (diag_len * 2);
+	double rhos[((int)rho_num) + 1];
+    spread_arr(rho_num + 1, rho_min, rho_max,
+			(rho_max - rho_min) / rho_num,rhos);
+
+    // Creating the theta array
+    double theta_min = -45, theta_max = 135, theta_num = (diag_len * 2);
+    double thetas[((int)theta_num) + 1];
+    spread_arr(theta_num + 1, theta_min, theta_max,
+			(theta_max - theta_min) / theta_num,thetas);
+
 	// Cache some resuable values
-	double cos_t[180];
-	double sin_t[180];
-	for (int i = -45; i < 135; i++)
-	{
-		cos_t[i + 45] = cos(ToRad(i));
-		sin_t[i + 45] = sin(ToRad(i));
-	}
+    double cos_t[((int)theta_num) + 1];
+    double sin_t[((int)theta_num) + 1];
+    for (int i = 0; i <= theta_num; i++)
+    {
+        thetas[i] = ToRad(thetas[i]);
+        cos_t[i] = cos(thetas[i]);
+        sin_t[i] = sin(thetas[i]);
+    }
 
-	// Hough accumulator array of theta vs rho
-	unsigned int accumulator[2 * diag_len][180];
-	for (int i = 0; i < 2 * diag_len; i++)
-	for (int j = 0; j < 180; j++)
-		accumulator[i][j] = 0u;
-
-	double borderExclusion = 0.02;
+    // Creating accumulator
+    int **accumulator = malloc(sizeof(int *) * (rho_num + 1) + 1);
+    for (int r = 0; r <= rho_num; r++)
+    {
+        accumulator[r] = malloc(sizeof(int) * (theta_num + 1) + 1);
+        for (int t = 0; t <= theta_num; t++)
+            accumulator[r][t] = 0;
+    }
 
 	// Accumulator calculation
-	for (int i = width*borderExclusion; i < width*(1-borderExclusion); i++)
-	for (int j = height*borderExclusion; j < height*(1-borderExclusion); j++)
+	for (int i = 0; i < width; i++)
+	for (int j = 0; j < height; j++)
 	{
 		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
 		if (pixel < 127)continue;
 
-		for (int angle = 0; angle < 180; angle += 1)
+		for (int angle = 0; angle < theta_num; angle += 1)
 		{
 			int rho = round(i * cos_t[angle] + j * sin_t[angle]) + diag_len;
 			accumulator[rho][angle] += 1;
@@ -50,9 +66,9 @@ List* HoughLine(SDL_Surface* img)
 	}
 
 	// getting the max value
-	unsigned int maxVal = 0;
-	for (int t = 4; t < 176; t++)
-	for (int r = 0; r < diag_len * 2; r++)
+	 int maxVal = 0;
+	for (int t = 0; t < theta_num; t++)
+	for (int r = 0; r < rho_num; r++)
 	{
 		if (accumulator[r][t] > maxVal)
 			maxVal = accumulator[r][t];
@@ -60,26 +76,20 @@ List* HoughLine(SDL_Surface* img)
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
 
-    unsigned int line_threshold = maxVal /2;//line threshold %
+    int line_threshold = maxVal * (LINE_THRESHOLD/100.0);
 
     int maxTheta, maxRho;
     int step = diag_len*2 / 60;
 
-	double rho_min = -diag_len, rho_max = diag_len, rho_num = (diag_len * 2),
-           rho_step = (rho_max - rho_min) / rho_num;
-
-	double rhos[(int)(rho_num + 1)];
-
-    spread_arr(rho_num + 1, rho_min, rho_max, rho_step, rhos);
 
 	List* list = malloc(sizeof(List));
 	list->head = NULL;
 	list->length =0;
 
-	for (int t = 4; t < 176; t += step)
-    for (int r = 0; r < diag_len * 2; r += step)
+	for (int t = 0; t < theta_num; t += step)
+    for (int r = 0; r < rho_num; r += step)
 	{
-		unsigned int val = accumulator[r][t];
+		 int val = accumulator[r][t];
 
 		maxRho = r;
 		maxTheta = t;
@@ -90,7 +100,7 @@ List* HoughLine(SDL_Surface* img)
 			int x = r + i;
 			int y = t + j;
 
-			if (x >= diag_len*2 || y >= 180)
+			if (x > rho_num || y > theta_num)
 				continue;
 
 			if (accumulator[x][y] > val)
@@ -100,16 +110,22 @@ List* HoughLine(SDL_Surface* img)
 				maxTheta = y;
 			}
 		}
-		if (val < line_threshold || abs(((maxTheta+135))%180 - 45)< 4)
+		if (val < line_threshold ||
+			fabs (fabs( thetas[maxTheta]) - M_PI_4) < ToRad(5))
 			continue;
 
 		Line *line = malloc(sizeof(Line));
 
 		line->rho = rhos[maxRho];
-		line->theta = ((maxTheta+135))%180;
+		line->theta =thetas[maxTheta];
 
 		Preppend(list, line);
 	}
+
+	for (int r = 0; r <= rho_num; r++)
+    	free(accumulator[r]);
+	free(accumulator);
+
 	return list;
 }
 
@@ -129,18 +145,14 @@ void Prune(List* lLine)
 		while (curr2->next)
 		{
 			Line* currLine2 = curr2->next->data;
-			if (CloseAngle(currLine->theta, currLine2->theta,5) &&
-				DoubleAbs( DoubleAbs(currLine2->rho / currLine->rho)-1) < 0.05)
+			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(5)) &&
+				fabs( fabs(currLine2->rho / currLine->rho)-1) < 0.05)
 			{
 				//TODO average (beware, rhos can be < 0)
 				//and thetas can be equivalent
 				//currLine->rho = (currLine->rho+currLine2->rho)/2;
 				//currLine->theta = (currLine->theta+currLine2->theta)/2;
-				Node* freeing = curr2->next;
-				curr2->next = curr2->next->next;
-				lLine->length--;
-				free(freeing->data);
-				free(freeing);
+				RemoveNextNode(lLine,curr2);
 			}
 			else
 				curr2 = curr2->next;
@@ -148,4 +160,101 @@ void Prune(List* lLine)
 
         curr = curr->next;
     }
+}
+
+//list has at 4 elements
+void ExcludeBorder(List* list, int w, int h, double exthres)
+{
+    Node* curr = list->head;
+    int count = 0;
+	Node *arrToRemove[4];
+	double widthbound = w*exthres;
+	double heightbound = h*exthres;
+    //printf("%i  %f %i %f\n",w,widthbound,h, heightbound);
+	while (curr)
+    {
+        Line l = *(Line*)curr->data;
+		if( CloseAngle(l.theta, ToRad(0), ToRad(2)) &&
+				((fabs(l.rho)<widthbound) || (fabs(l.rho-w)<widthbound))){
+			arrToRemove[count++] = curr;
+				}
+		else if(CloseAngle(l.theta, ToRad(90), ToRad(2)) &&
+				((fabs(l.rho)<heightbound) || (fabs(l.rho-h)<heightbound)))
+			arrToRemove[count++] = curr;
+		curr =curr->next;
+        if (count >= 4)
+            return ;//Too many borders, don't exclude
+    }
+	/*
+	for (int j =  0 ; j<count;j++){
+		printf("line %i  theta %f rho %f\n",
+			 j,((Line*)arrToRemove[j]->data)->theta,
+			((Line*)arrToRemove[j]->data)->rho);
+	}
+	*/
+
+	int i= 0;
+	curr = list->head;
+	while(i <= count && arrToRemove[i] == curr && curr->next)
+	{
+		Tail(list);
+		curr = list->head;
+		i++;
+	}
+
+	while( i <= count && curr->next){
+		if (curr->next == arrToRemove[i]){
+			RemoveNextNode(list,curr);
+			i++;
+		}
+		else curr =curr->next;
+	}
+}
+
+void LineFiltering(List *l,int thresh){
+	int histogram[180];
+	for(int i =0; i<180;i++) histogram[i] =0;
+	Node* curr = l->head;
+	while(curr){
+		histogram[(((int)(((Line*)(curr->data))->theta *180 / M_PI))+90) %180]++;
+		curr = curr->next;
+	}
+
+	int max = 0;
+	int indexMax = 0;
+	for (int i = 0; i < 180; i++)
+	{
+		if(histogram[i]>max){
+			max = histogram[i];
+			indexMax = i;
+		}
+	}
+
+	int secondMax = (indexMax +90) %180;
+
+	//double maxRad =fmod( ToRad(indexMax ),M_PI) - M_PI_2;
+	//double scndMaxRad = fmod(ToRad(secondMax),M_PI) - M_PI_2;
+
+	//printf("filter out %i  %i \n",indexMax,secondMax);
+	//printList(l,1);
+	return;
+
+	curr = l->head;
+	while(curr && (!(fabs((((Line*)(curr->data))->theta)*180/M_PI - indexMax)<thresh)
+		&& !(fabs((((Line*)(curr->data))->theta)*180/M_PI - secondMax)<thresh)))
+	{
+		Tail(l);
+		curr = l->head;
+	}
+	if(!l->head) return;
+	while(curr->next){
+		if((!(fabs((((Line*)(curr->data))->theta)*180/M_PI - indexMax)<thresh)
+		&& !(fabs((((Line*)(curr->data))->theta)*180/M_PI - secondMax)<thresh))){
+			RemoveNextNode(l,curr);
+		}
+		else{
+			curr = curr->next;
+		}
+	}
+
 }
