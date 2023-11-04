@@ -13,6 +13,8 @@ int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
 	return *x >0 && *y >0 && *x<w && *y<h;
 }
 
+
+
 //returns a list of the quadrilateral formed with the provided list of lines
 List* FindSquares(List* l,int width, int height){
 
@@ -32,6 +34,7 @@ List* FindSquares(List* l,int width, int height){
 			 FindIntersection(((Line*)(curr->data)),((Line*)(innerCurr->data))
 			 		,width,height,&(p.x),&(p.y))){
 				intersection[index][innerIndex] = p;
+				intersection[innerIndex][index] = p;
 			}
 			else {
 				intersection[index][innerIndex] = (Point){x:-1,y:-1};
@@ -43,6 +46,7 @@ List* FindSquares(List* l,int width, int height){
 		index++;
 	}
 
+	/*
 	//debug DONT RMV PLS
 	printf("----");
 	for (int j = 0; j < l->length; j++)
@@ -57,27 +61,32 @@ List* FindSquares(List* l,int width, int height){
 		}
 		printf("\n");
 	}
-
-
+	*/
+	Point p1,p2,p3,p4;
 	List *lquad = malloc(sizeof(List));
 	lquad->head = NULL;
-	for(int i1 = 0; i1<l->length;i1++)
+	for(int i1 = 0; i1<l->length;i1++){
+		//printf("i1: %i\n",i1);
 		for(int i2 = 0; i2<l->length;i2++)
-			if(intersection[i1][i2].x !=-1)
+			if((p1 = intersection[i1][i2]).x !=-1){
+				//printf("	i2: %i\n",i2);
 				for (int i3 = 0; i3 < l->length; i3++)
-					if(i3!=i1 && intersection[i2][i3].x !=-1)
+					if(i3!=i1 && (p2=intersection[i2][i3]).x !=-1){
+						//printf("		i3: %i\n",i3);
 						for (int i4 = 0; i4 < l->length; i4++)
-							if(i4!=i2 && intersection[i3][i4].x !=-1 &&
-								intersection[i4][i1].x != -1){
+							if(i4!=i2 && (p3 =intersection[i3][i4]).x !=-1 &&
+								(p4=intersection[i4][i1]).x != -1){
 								Quadrilateral *quad =
-									malloc(sizeof(Quadrilateral));
-								quad->p1 = intersection[i1][i2];
-								quad->p2 = intersection[i2][i3];
-								quad->p3 = intersection[i3][i4];
-								quad->p4 = intersection[i4][i1];
-								Preppend(lquad,quad);
+									InitializeQuad(&p1,&p2,&p3,&p4);
+								if(!ContainsQuad(lquad,quad)){
+									//printf("			i4: %i\n",i4);
+									Preppend(lquad,quad);
+								}
 							}
 
+					}
+			}
+	}
 	return lquad;
 }
 
