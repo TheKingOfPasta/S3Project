@@ -1,8 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <err.h>
-#include <stdio.h>
-#include <math.h>
+#include "gaussian_blur.h"
 
 void print_matrix(double** arr, size_t size)
 {
@@ -34,8 +30,8 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 		{
 			double i2 = i - size / 2;
 			double j2 = j - size / 2;
-			gaussianWeights[i][j] = 
-				1000 * exp(-(i2*i2 + j2*j2) / (2 * sigma * sigma)) 
+			gaussianWeights[i][j] =
+				1000 * exp(-(i2*i2 + j2*j2) / (2 * sigma * sigma))
 				/ (2 * M_PI * sigma * sigma);
 		}
 	}
@@ -50,14 +46,14 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 
         size_t total = 0;
         size_t totalWeight = 0;
-        
+
         for (int k = -size; k <= size; k++)
         for (int l = -size; l <= size; l++)
         {
             if (i + k >= 0 &&
-                i + k <= surface->w &&
+                i + k < surface->w &&
                 j + l >= 0 &&
-                j + l <= surface->h)
+                j + l < surface->h)
             {
                 SDL_GetRGB(
                     pixels[i + k + (j + l) * surface->w],
@@ -65,21 +61,21 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
                     &r,
                     &g,
                     &b);
-                
+
                 size_t weight = gaussianWeights[k + size][l + size];
-                
+
                 totalWeight += weight;
                 total += weight * r;//Since r = b = g (grayscale)
 
             }
         }
-        
+
         newPixels[i + j * newS->w] =
             SDL_MapRGB(newS->format,
                         total / totalWeight,
                         total / totalWeight,
                         total / totalWeight);
-        
+
     }
 
     SDL_FreeSurface(surface);

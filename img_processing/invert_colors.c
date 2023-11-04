@@ -1,6 +1,4 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-
+#include "invert_colors.h"
 
 //Takes a black and white image
 //Inverts it if it has too much white

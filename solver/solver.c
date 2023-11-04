@@ -3,13 +3,9 @@
 #include <stdlib.h>
 #include "parser.h"
 #include <string.h>
+#include "solver.h"
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
-
-
-void SLV_collapse_grid(short grid[9][9], int x, int y, short val);
-short SLV_get_collapsed_value(short cell_val);
-void printUnsolved(short x);
 
 #define IsNotSolved(x) (x>>13)
 #define IsSolved(x) (!(x>>13))
@@ -52,18 +48,17 @@ short SLV_get_collapsed_value(short cell_val){
 
 
 void SLV_collapse_cell(short grid[9][9],int x,int y,short val){
-    if(IsNotSolved(grid[x][y])){
-        //if (msg) printf("    x=%i,y=%i  rmvng %hi \n ",x,y,val);
-        //if (msg) printf("    nb possibil=%hi\n",getNbPossibilities(grid[x][y]));
-        if(SLV_rmv_possibility(&grid[x][y], val)){
-            //if (msg) printf("        collapsing on a %hi!! at x=%i,y=%i \n",grid[x][y],x,y);
+    if(IsNotSolved(grid[x][y]))
+    {
+        if(SLV_rmv_possibility(&grid[x][y], val))
+        {
             remainingCell--;
             if(remainingCell > 0) SLV_collapse_grid(grid, x, y, grid[x][y]);
         }
         //else if(msg) printUnsolved(grid[x][y]);
     }
-}	
-	
+}
+
 void SLV_collapse_grid(short grid[9][9], int x, int y, short val){
     //printf(" %hi for collapse pos x=%i,y=%i \n", val,x,y);
 
@@ -199,7 +194,7 @@ int main(int argc, char *argv[])
     SLV_solve(m);//m is now a correct matrix, save it into 'path'.result
 
     char* s = PSR_unparse(m);
-    
+
     path = strcat(path, ".result");
 
     FILE *fptr = fopen(path, "w");

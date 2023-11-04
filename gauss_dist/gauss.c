@@ -6,7 +6,7 @@
 double* Norm(int size, double pas, int* newSize) {
 	if (!size)
 		size = 1;
-	//returns the gaussian distribution in "[-size,size]" with an increment of "pas"
+	//the gaussian distribution in "[-size,size]" with an increment of 'pas'
 	double* dist = malloc(((int)(2*size/pas)+1)*sizeof(double));
 	int j = 0;
 	for(double i = -size; i<size; i+=pas) {
@@ -14,7 +14,7 @@ double* Norm(int size, double pas, int* newSize) {
 		j++;
 	}
 	*newSize = j;
-	return dist;	
+	return dist;
 }
 
 double* NormArray(double* array, int size) {
@@ -39,19 +39,19 @@ double toDouble(char* c) {
 		if (t == 0) {
 			total *= 10;
 			total += c[i]-'0';
-		}	
+		}
 		else {
 			total += (c[i]-'0')/mult;
 			mult *= 10;
 		}
 	}
 	return total;
-}	
+}
 
 int main(int argc, char** argv) {
 	if (argc != 3)
 		errx(1,"Use : ./gauss [size of the array] [increment]\n");
-	
+
 	int newSize;
 	double* t = Norm((int)toDouble(argv[1]),toDouble(argv[2]),&newSize);
 
@@ -61,8 +61,12 @@ int main(int argc, char** argv) {
 	a[2] = 8;
 	a[3] = 0.7;
 	double* aa = NormArray(a,4);
-	for(int i = 0; i<4; i++) { 
+	for(int i = 0; i<4; i++) {
 		printf("array[%i] = %f\n",i,aa[i]);
 	}
-	return 0;	
+
+	for(int i = 0; i<newSize; i++) {
+		printf("gauss[%i] = %f\n",i,t[i]);
+	}
+	return 0;
 }

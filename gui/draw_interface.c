@@ -5,7 +5,12 @@
 #define DEFAULT_WIDTH 160
 #define DEFAULT_HEIGHT 90
 
-void DrawText(SDL_Renderer* renderer, int x, int y, char* text, int width, int height)
+void DrawText(SDL_Renderer* renderer,
+                int x,
+                int y,
+                char* text,
+                int width,
+                int height)
 {
     x *= width / DEFAULT_WIDTH;
     y *= height / DEFAULT_HEIGHT;//Convert to absolute positions

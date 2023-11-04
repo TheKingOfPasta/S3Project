@@ -14,7 +14,9 @@ NN_Network *NN_create_network(size_t *sizes, size_t num_layers)
                 "NN_Network");
 
     network->num_layers = num_layers;
-    network->sizes = sizes;
+    network->sizes = malloc(num_layers * sizeof(size_t));
+    for (size_t i = 0; i < num_layers; ++i)
+        network->sizes[i] = sizes[i];
     // num_layers - 1 because input layer has no biases nor weights
     network->biases2 = malloc((num_layers - 1) * sizeof(Matrix *));
     network->weights2 = malloc((num_layers - 1) * sizeof(Matrix *));
@@ -75,6 +77,7 @@ void NN_free_network(NN_Network* network)
     }
     free(network->biases2);
     free(network->weights2);
+    free(network->sizes);
 
 
 

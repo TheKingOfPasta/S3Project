@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <math.h>
 
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle);
 
