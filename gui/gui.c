@@ -8,8 +8,6 @@
 #include "draw_text.h"
 #include <dirent.h>//Used to get directory list
 
-#include <unistd.h>
-
 #include "../img_processing/adaptive_thresholding.h"
 #include "../img_processing/canny_edge_detector.h"
 #include "../img_processing/gaussian_blur.h"
@@ -19,7 +17,12 @@
 #define DEFAULT_WIDTH 160
 #define DEFAULT_HEIGHT 90//the default resolution of the screen,
 						 //scale your gui items compared to these
-void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, char* path, int selecting);
+void DrawInterface(SDL_Renderer* renderer,
+					int width,
+					int height,
+					int scrollY,
+					char* path,
+					int selecting);
 void CallSDLError()
 {
 	errx(EXIT_FAILURE, "%s", SDL_GetError());
@@ -66,7 +69,7 @@ void Draw(
 		SDL_RenderDrawLine(renderer, x + w, y + h, x + w, y);
 		SDL_RenderDrawLine(renderer, x + w, y + h, x, y + h);
 	}
-    
+
 	DrawInterface(renderer, width, height, scrollY, path, selecting);
 
     // Updates the display.
@@ -90,7 +93,12 @@ int IsPng(char* str)
 	return *str == '.';
 }
 
-void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, char* path, int selecting)
+void DrawInterface(SDL_Renderer* renderer,
+					int width,
+					int height,
+					int scrollY,
+					char* path,
+					int selecting)
 {
     // Skeleton found on google,
     // don't blame me if it's ugly (*cough cough* loop condition)
@@ -106,7 +114,7 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
 				continue;
 
             SDL_Color color;
-        
+
             if (dir->d_type == 4)//Folder
                 color = (SDL_Color){0, 0, 255, 255};
             else//File (not folder)
@@ -118,9 +126,15 @@ void DrawInterface(SDL_Renderer* renderer, int width, int height, int scrollY, c
             int h = 10 * height / DEFAULT_HEIGHT;
 			if (i == selecting)
 			{//Draw cool arrow
-				SDL_RenderDrawLine(renderer, 100 * width / DEFAULT_WIDTH, y + h/2, x, y + h/2);
-				SDL_RenderDrawLine(renderer, x, y + h/2, x - 3 * width / DEFAULT_WIDTH, y - 3 * height / DEFAULT_HEIGHT + h/2);
-				SDL_RenderDrawLine(renderer, x, y + h/2, x - 3 * width / DEFAULT_WIDTH, y + 3 * height / DEFAULT_HEIGHT + h/2);
+				int dx = - 3 * width / DEFAULT_WIDTH;
+				int dy = 3 * height / DEFAULT_HEIGHT;
+				SDL_RenderDrawLine(renderer,
+									100 * width / DEFAULT_WIDTH,
+									y + h/2,
+									x,
+									y + h/2);
+				SDL_RenderDrawLine(renderer, x, y + h/2, x + dx, y + dy + h/2);
+				SDL_RenderDrawLine(renderer, x, y + h/2, x + dx, y - dy + h/2);
 			}
 
             DrawText(renderer, dir->d_name, x, y, h, color);
@@ -235,14 +249,19 @@ int main()
 					{
 						if (dir->d_type != 4 && !IsPng(dir->d_name))
 							continue;
-						if (y >= (int)10 * (heightIndex + scrollY) * height / DEFAULT_HEIGHT && y < (int)(10 * (heightIndex + scrollY + 1) * height / DEFAULT_HEIGHT))
+
+						if (y >= 10*(heightIndex + scrollY) *
+									height/DEFAULT_HEIGHT &&
+								y < 10*(heightIndex + scrollY + 1) *
+									height/DEFAULT_HEIGHT)
 						{
 							if (dir->d_type == 8)//File
 							{
 								selecting = i;
 								selectingText = strcpy(selectingText, path);
 								selectingText = my_cat(selectingText, "/");
-								selectingText = my_cat(selectingText, dir->d_name);
+								selectingText = my_cat(selectingText,
+														dir->d_name);
 							}
 							else//Folder
 							{
@@ -251,7 +270,14 @@ int main()
 								scrollY = 0;
 								selecting = -1;
 							}
-							Draw(renderer, buttonArray, arraySize, width, height, scrollY, path, selecting);
+							Draw(renderer,
+								buttonArray,
+								arraySize,
+								width,
+								height,
+								scrollY,
+								path,
+								selecting);
 							break;
 						}
 						heightIndex += 1;
@@ -275,28 +301,41 @@ int main()
 					//Dumb i know but multi params are annoying
 					if (strequ(b.func, "Blur"))
 					{
-						IMG_SavePNG(IMGA_GaussianBlur(IMG_Load(selectingText), 11, 1.5), "../guioutputs/output.png");
-						printf("Saved into root/guioutputs/output.png\n");
+						IMG_SavePNG(
+							IMGA_GaussianBlur(IMG_Load(selectingText),
+														11,
+														1.5),
+							"../guioutputs/output.png");
+						printf("Saved to root/guioutputs/output.png\n");
 					}
 					else if (strequ(b.func, "Threshold"))
 					{
-						IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(selectingText), 0), "../guioutputs/output.png");
-						printf("Saved into root/guioutputs/output.png\n");
+						IMG_SavePNG(
+							IMGA_ApplyThreshold(
+										IMG_Load(selectingText),
+										2,
+										75000),
+							"../guioutputs/output.png");
+						printf("Saved to root/guioutputs/output.png\n");
 					}
 					else if (strequ(b.func, "Sobel"))
 					{
-						IMG_SavePNG(sobel_gradient(IMG_Load(selectingText)), "../guioutputs/output.png");
-						printf("Saved into root/guioutputs/output.png\n");
+						IMG_SavePNG(
+							sobel_gradient(IMG_Load(selectingText)),
+							"../guioutputs/output.png");
+						printf("Saved to root/guioutputs/output.png\n");
 					}
 					else if (strequ(b.func, "Rotate"))
 					{
-						IMG_SavePNG(IMGA_Rotate(IMG_Load(selectingText), 15), "../guioutputs/output.png");
-						printf("Saved into root/guioutputs/output.png\n");
+						IMG_SavePNG(
+							IMGA_Rotate(IMG_Load(selectingText), 15),
+							"../guioutputs/output.png");
+						printf("Saved to root/guioutputs/output.png\n");
 					}
 					else if (strequ(b.func, "Split"))
 					{
 						Split(selectingText, "../guioutputs/");
-						printf("Saved into root/guioutputs/split[01-81].png\n");
+						printf("Saved to root/guioutputs/split[01-81].png\n");
 					}
 					//Calls the function stored in the button
 				}
@@ -306,15 +345,29 @@ int main()
 				 event.window.event == SDL_WINDOWEVENT_RESIZED)
 		{
 			SDL_GetWindowSize(window, &width, &height);
-			Draw(renderer, buttonArray, arraySize, width, height, scrollY, path, selecting);
+			Draw(renderer,
+				buttonArray,
+				arraySize,
+				width,
+				height,
+				scrollY,
+				path,
+				selecting);
 		}
 		else if (event.type == SDL_MOUSEWHEEL)
 		{
 			scrollY += event.wheel.y;
 			if (scrollY > 0)
 				scrollY = 0;
-			
-			Draw(renderer, buttonArray, arraySize, width, height, scrollY, path, selecting);
+
+			Draw(renderer,
+				buttonArray,
+				arraySize,
+				width,
+				height,
+				scrollY,
+				path,
+				selecting);
 		}
 	}
 

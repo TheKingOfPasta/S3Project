@@ -12,7 +12,8 @@ void PSR_parse(char* s, short grid[9][9])
     size_t j = 0;
     size_t index = 0;
 
-    while (s[index] != 0)//We stop at the null character that's at the end of string
+    //We stop at the null character that's at the end of string
+    while (s[index] != 0)
     {
         if (s[index] == '\n')
         {
@@ -32,13 +33,13 @@ void PSR_parse(char* s, short grid[9][9])
 
         if (c != ' ' && c != '.' && (c < '1' || c > '9'))
         {
-            printf("The given string was not a valid format (only dots, spaces, numbers and new lines are allowed),"
-                   "found %c (ascii %i)\n", c, c);
+            printf("The given string was not a valid format "
+                    "(only dots, spaces, numbers and new lines are allowed),"
+                    "found %c (ascii %i)\n", c, c);
 
-            //Continue and no error because there are some things like \r's at end of lines and things like that :/
+            //Continue and no error because there are some things like
+            // \r's at end of lines and things like that :/
             continue;
-            //errx(EXIT_FAILURE, "The given string was not a valid format (only dots, spaces, numbers and new lines are
-            // allowed), found %c (ascii %i)\n", c, c);
         }
 
         if (c == '.')
@@ -92,10 +93,10 @@ char* PSR_unparse(short grid[9][9])
     {
         for (size_t i = 0; i < 9; i++)
         {
-            //if grid[i][j] is larger than 9 then the cell hasn't been solved yet
+            //if grid[i][j] is larger than 9 => the cell hasn't been solved yet
             s[index] = (grid[i][j] > 9) ? '.' : (grid[i][j] + '0');
             index += 1;
-            if (i % 3 == 2 && i != 8)//i == 8 <=> end of line (no trailing spaces)
+            if (i % 3 == 2 && i != 8)//i == 8 <=> end of line
                 s[index++] = ' ';
         }
         if (j % 3 == 2)

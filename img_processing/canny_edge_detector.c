@@ -1,6 +1,3 @@
-#include <err.h>
-#include <stdio.h>
-#include <math.h>
 #include "canny_edge_detector.h"
 #define WHITE SDL_MapRGB(output->format, 255, 255, 255)
 #define BLACK SDL_MapRGB(output->format,   0,   0,   0)

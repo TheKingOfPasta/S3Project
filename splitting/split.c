@@ -20,7 +20,7 @@ void Split(char* path_in, char* folder_out)
     {
         for (int i = 0; i < surface->w; i += w9)
         {
-            SDL_Surface* newS = SDL_CreateRGBSurface(0, w9, h9, 32, 0, 0, 0, 0);
+            SDL_Surface* newS =SDL_CreateRGBSurface(0, w9, h9, 32, 0, 0, 0, 0);
             Uint32* newPixels = newS->pixels;
 
             for (int x = 0; x < w9; x++)

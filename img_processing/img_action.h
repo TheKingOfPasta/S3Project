@@ -1,6 +1,22 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <err.h>
+#include <math.h>
+#include <stdio.h>
+#include "gaussian_blur.h"
+#include "adaptive_thresholding.h"
+#include "rotate.h"
+#include "canny_edge_detector.h"
+#include "img_color.h"
+#include "invert_colors.h"
+#include "../hough/utils.h"
+#include "../hough/hough.h"
+#include "../hough/visualization.h"
+#include "../hough/square_detection.h"
+#include "../hough/grid_detection.h"
+
+int CompareStrings(char* a, char* b);
 
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle);
 

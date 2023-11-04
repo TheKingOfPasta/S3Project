@@ -1,9 +1,9 @@
 # Makefile
 
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -lm -ldl `pkg-config --cflags`
+CFLAGS = -Wall -Wextra -O3 -lm -ldl
 LDFLAGS =
-LDLIBS = -lm -ldl `pkg-config --libs`
+LDLIBS = -lm -ldl
 
 EXE = gauss
 
