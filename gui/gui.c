@@ -8,8 +8,6 @@
 #include "draw_text.h"
 #include <dirent.h>//Used to get directory list
 
-#include <unistd.h>
-
 #include "../img_processing/adaptive_thresholding.h"
 #include "../img_processing/canny_edge_detector.h"
 #include "../img_processing/gaussian_blur.h"
