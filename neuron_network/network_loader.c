@@ -28,7 +28,7 @@ void read_header(int fd)
         err(EXIT_FAILURE, "Could not read the network's header");
     if (magic != MAGIC)
         err(EXIT_FAILURE, "Wrong magic number");
-    printf("Magic: %i", magic);
+    printf("Magic: %i\n", magic);
 }
 
 /**

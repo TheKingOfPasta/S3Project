@@ -251,12 +251,33 @@ void test_xor()
     sdg(network, data, 4, XOR_EPOCHS, XOR_MINI_BATCH_SIZE, XOR_ETA, data, 4,
             XOR_LAMBDA);
 
+    save_network(network, "xor.ai");
     for (size_t i = 0; i < 4; ++i)
     {
         free_training_data(data[i]);
     }
     free(data);
     NN_free_network(network);
+}
+
+void try_xor(int argc, char **data)
+{
+    if (argc != 2)
+        return;
+    Matrix *input = init_matrix2(2, 1);
+    input->matrix[0][0] = data[0][0] - '0';
+    input->matrix[1][0] = data[1][0] - '0';
+    printf("Input is \n");
+    print_matrix2(input);
+    printf("Loading network...\n");
+    NN_Network *n = load_network("xor.ai");
+    printf("Searching value\n");
+    Matrix *output = NN_feedforward(n, input);
+    int res = argmax(output);
+    printf("Result is %i\n", res);
+
+    free_matrix2(output);
+    NN_free_network(n);
 }
 
 void test_digit()
@@ -369,7 +390,8 @@ int main(int argc, char **argv)
         test_save(argv[2]);
     else if (strcmp(argv[1], "--loadd") == 0)
         train_load_digit(argv[2]);
-
+    else if (strcmp(argv[1], "--tryxor") == 0)
+        try_xor(argc - 2, argv + 2);
     else
         print_help();
 
