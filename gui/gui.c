@@ -313,7 +313,8 @@ int main()
 						IMG_SavePNG(
 							IMGA_ApplyThreshold(
 										IMG_Load(selectingText),
-										2),
+										2,
+										75000),
 							"../guioutputs/output.png");
 						printf("Saved to root/guioutputs/output.png\n");
 					}
