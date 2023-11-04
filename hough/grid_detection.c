@@ -20,19 +20,22 @@ Quadrilateral* Find_Grid(SDL_Surface *s ){
 	if(l == NULL){
 		errx(EXIT_FAILURE,"no lines found\n");
 	}
+	//printList(lLine,1);
+	//DrawLines(s,lLine,255,0,0);
+
 	Prune(lLine);
-	if(l->length >75){
+	ExcludeBorder(lLine, s->w, s->h, 0.015);
+	LineFiltering(lLine,10);
+
+	if(l->length >125){
 		errx(EXIT_FAILURE,"too many lines found -> preprocessing is at fault\n");
 	}
 	if(l->length <4){
 		errx(EXIT_FAILURE,"not enough lines found\n");
 	}
-
-	//printf("prune done\n");
-	ExcludeBorder(lLine, s->w, s->h, 0.015);
-	LineFiltering(lLine,10);
 	//printList(lLine,1);
 
+	//printf("prune done\n");
 	DrawLines(s,lLine,0,255,255);
 
 	List* lquad =  FindSquares(lLine,s->w,s->h);
@@ -50,9 +53,10 @@ Quadrilateral* Find_Grid(SDL_Surface *s ){
 		DrawSquare(s, curr->data, 0, 255, 0);
 		curr = curr->next;
 	}
-
-
 	Quadrilateral *bestSquare = BestSquare(lquad);
+
+	curr = lquad->head;
+
 	printf("found grid !\n");
 	DrawSquare(s, bestSquare, 255, 0, 255);
 
