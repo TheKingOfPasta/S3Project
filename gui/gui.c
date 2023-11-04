@@ -8,8 +8,6 @@
 #include "draw_text.h"
 #include <dirent.h>//Used to get directory list
 
-#include <unistd.h>
-
 #include "../img_processing/adaptive_thresholding.h"
 #include "../img_processing/canny_edge_detector.h"
 #include "../img_processing/gaussian_blur.h"
@@ -315,7 +313,8 @@ int main()
 						IMG_SavePNG(
 							IMGA_ApplyThreshold(
 										IMG_Load(selectingText),
-										2),
+										2,
+										75000),
 							"../guioutputs/output.png");
 						printf("Saved to root/guioutputs/output.png\n");
 					}
