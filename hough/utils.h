@@ -55,3 +55,5 @@ void FreeList(List *l);
 double DoubleAbs(double x);
 int CloseAngle(int t1, int t2, int threshold);
 double ToRad(int t);
+int ContainsQuad(List* lquad, Quadrilateral* quad);
+Quadrilateral* InitializeQuad(Point* p1, Point* p2, Point* p3, Point* p4);

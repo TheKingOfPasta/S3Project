@@ -1,11 +1,11 @@
 #include "adaptive_thresholding.h"
 
-SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold)
+SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold, int split)
 {
     SDL_Surface* newS =
         SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
 
-    int splitSize = surface->w*surface->h/50000;
+    int splitSize = surface->w*surface->h/split;
 
     SDL_LockSurface(newS);
 

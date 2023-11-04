@@ -3,7 +3,7 @@
 #define Blursize 13
 #define BlurIntensity 3
 #define AdaptiveThreshold 3
-
+#define Splitsize 75000
 
 //1 -> a==b
 //0 -> a!=b
@@ -59,6 +59,38 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 	SDL_UnlockSurface(output);
 	SDL_FreeSurface(input);
 	return output;
+}
+
+void e(SDL_Surface* s, char* out){
+        printf("Attempting to apply grid detection\n");
+        List* l = HoughLine(s);
+        if(l == NULL){
+            printf("no lines \n");
+            return;
+        }
+
+        Prune(l);
+        printList(l,1);
+        DrawLines(s,l,0,255,255);
+        DrawIntersections(s,l);
+        printf("lines done\n");
+        IMG_SavePNG(s, out);
+        List* lquad = FindSquares(l, s->w, s->h);
+        Node* curr = lquad->head;
+        while (curr)
+        {
+            DrawSquare(s, curr->data, 0, 255, 0);
+            curr = curr->next;
+        }
+        //printList(lquad,0);//<-pretty long
+
+        IMG_SavePNG(s, out);
+        Quadrilateral* grid= BestSquare(lquad);
+        if(grid)  DrawSquare(s, grid, 255, 0, 255);
+
+        IMG_SavePNG(s, out);
+        printf("Successfully saved the new image at path %s\n", out);
+
 }
 
 int main(int argc, char** argv)
@@ -137,7 +169,7 @@ int main(int argc, char** argv)
             printf("Attempting to apply thresholding to %s\n", path_in);
             IMG_SavePNG(IMGA_ApplyThreshold(
                             IMG_Load(path_in),
-                            AdaptiveThreshold),
+                            AdaptiveThreshold,Splitsize),
                         path_out);
             printf("Successfully saved the new image at path %s\n", path_out);
             return EXIT_SUCCESS;
@@ -160,14 +192,14 @@ int main(int argc, char** argv)
 			IMG_SavePNG(
                 IMGA_ApplyThreshold(
                     IMG_Load(path_in),
-                    threshold),
+                    threshold, Splitsize),
                 path_out);
         }
 		else
             for (int i = 0; i <= threshold; i++)
             {
                 asprintf(&str, "%s/thresholded_%i.png", path_out, i);
-                IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), i), str);
+                IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), i, Splitsize), str);
             }
         printf("Successfully saved the new image at path %s\n", path_out);
     }
@@ -195,7 +227,7 @@ int main(int argc, char** argv)
                                                         IMG_Load(path_in),
                                                         Blursize,
                                                         BlurIntensity),
-                                                    AdaptiveThreshold))),
+                                                    AdaptiveThreshold,Splitsize))),
                     path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
@@ -211,7 +243,7 @@ int main(int argc, char** argv)
                                                         IMG_Load(path_in),
                                                         Blursize,
                                                         BlurIntensity),
-                                                    AdaptiveThreshold)),
+                                                    AdaptiveThreshold,Splitsize)),
                 path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
@@ -243,7 +275,7 @@ int main(int argc, char** argv)
                                                             s,
                                                             Blursize,
                                                             BlurIntensity),
-                                                        AdaptiveThreshold)))),
+                                                        AdaptiveThreshold,Splitsize)))),
             path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
@@ -268,28 +300,12 @@ int main(int argc, char** argv)
                 printf("Attempting to apply all from %s\n", path_in);
                 SDL_Surface* s = IMG_Load(path_in);
                 IMGC_surface_to_grayscale(s);
-            s = sobel_gradient(
-                    IMGA_Erosion(CheckInvert(
-                            IMGA_ApplyThreshold(
-                                IMGA_GaussianBlur(s,Blursize, BlurIntensity),
-                                                AdaptiveThreshold))));
-
-            printf("Attempting to apply grid detection\n");
-            List* l = HoughLine(s);
-            Prune(l);
-            DrawLines(s,l,0,255,255);
-            List* lquad = FindSquares(l, s->w, s->h);
-            Node* curr = lquad->head;
-            while (curr)
-            {
-                DrawSquare(s, curr->data, 0, 255, 0);
-                curr = curr->next;
-            }
-            Quadrilateral* grid= BestSquare(lquad);
-            if(grid)  DrawSquare(s, grid, 255, 0, 0);
-            asprintf(&path_out,"./sudoku0%i.png",i);
-            IMG_SavePNG(s, path_out);
-            printf("Successfully saved the new image at path %s\n", path_out);
+                s = sobel_gradient(IMGA_Erosion(CheckInvert(
+                        IMGA_ApplyThreshold(
+                            IMGA_GaussianBlur(s,Blursize, BlurIntensity),
+                                            AdaptiveThreshold,Splitsize))));
+                asprintf(&path_out,"./sudoku0%i.png",i);
+                e(s,path_out);
             }
             return 1;
         }
@@ -304,33 +320,13 @@ int main(int argc, char** argv)
         SDL_Surface* s = IMG_Load(path_in);
         IMGC_surface_to_grayscale(s);
 
-        s = sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(
-                                                        IMGA_GaussianBlur(
-                                                            s,
-                                                            Blursize,
-                                                            BlurIntensity),
-                                                        AdaptiveThreshold))));
-
-        printf("Attempting to apply grid detection\n");
-        List* l = HoughLine(s);
-        Prune(l);
-        printList(l,1);
-        DrawLines(s,l,0,255,255);
-        DrawIntersections(s,l);
-
-        IMG_SavePNG(s, "int.png");
-        List* lquad = FindSquares(l, s->w, s->h);
-        Node* curr = lquad->head;
-        while (curr)
-        {
-            DrawSquare(s, curr->data, 0, 255, 0);
-            curr = curr->next;
-        }
-        Quadrilateral* grid= BestSquare(lquad);
-        if(grid)  DrawSquare(s, grid, 255, 0, 255);
+        s = sobel_gradient(IMGA_Erosion(CheckInvert(
+                IMGA_ApplyThreshold(
+                        IMGA_GaussianBlur( s,Blursize,BlurIntensity),
+                                AdaptiveThreshold,Splitsize))));
 
         IMG_SavePNG(s, path_out);
-        printf("Successfully saved the new image at path %s\n", path_out);
+        e(s,path_out);
     }
     else
         ErrorMessage();
