@@ -7,7 +7,7 @@
 
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 {
-    double angleRad = angle * 3.141592 / 180;
+    double angleRad = angle * M_PI / 180;
     double cosine = cos(angleRad);
     double sine = sin(angleRad);
 

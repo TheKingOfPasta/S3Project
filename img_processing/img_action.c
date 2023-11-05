@@ -136,6 +136,37 @@ int main(int argc, char** argv)
             path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
+    else if (CompareStrings(argv[1], "-w") ||
+                CompareStrings(argv[1], "--wrapping"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-w/--wrapping : wrapping at path "
+                        "(path_in path_out)\n");
+
+	/*Quadrilateral* quad = malloc(sizeof(Quadrilateral));
+	Point p1;
+	p1.x = 0;
+	p1.y = 0;
+	Point p2;
+	p2.x = 0;
+	p2.y = 40;
+	Point p3;
+	p3.x = 40;
+	p3.y = 40;
+	Point p4;
+	p4.x = 40;
+	p4.y = 0;
+	quad->p1 = p1;
+	quad->p2 = p2;
+	quad->p3 = p3;
+	quad->p4 = p4;*/
+	printf("Attempting to wrap image from %s\n",path_in);
+	SDL_Surface* wrapped = Wrapping_Copy(path_in, quad);
+	printf("Attemption to save image\n");
+	IMG_SavePNG(wrapped,path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+
     else if (CompareStrings(argv[1], "-r") ||
                 CompareStrings(argv[1], "--rotate"))
     {

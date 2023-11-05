@@ -14,6 +14,7 @@
 #include "../hough/hough.h"
 #include "../hough/visualization.h"
 #include "../hough/square_detection.h"
+#include "wrapping.h"
 
 int CompareStrings(char* a, char* b);
 
