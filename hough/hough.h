@@ -10,3 +10,5 @@
 
 List* HoughLine(SDL_Surface* img);
 void Prune(List* lLine);
+void ExcludeBorder(List* list, int w, int h, double exthres);
+void LineFiltering(List *l,int thresholdDeg);

@@ -9,6 +9,11 @@ void Preppend(List* l, void* data){
 	l->length++;
 }
 
+void FreeNode(Node * nd){
+    free(nd->data);
+    free(nd);
+}
+
 void FreeList(List *l)
 {
     Node* curr = l->head;
@@ -17,20 +22,32 @@ void FreeList(List *l)
     {
         Node* prev = curr;
         curr = curr->next;
-        free(prev->data);
-        free(prev);
+        FreeNode(prev);
     }
 
     free(l);
 }
 
-double DoubleAbs(double x)
-{
-	return x < 0 ? -x : x;
+void RemoveNextNode(List *l , Node *nd){
+    Node* freeing = nd->next;
+	nd->next = nd->next->next;
+    l->length--;
+    FreeNode(freeing);
+
 }
 
-int CloseAngle(int t1, int t2, int threshold){
-	return (threshold + abs(t1 - t2) % 180) < (threshold<<1);
+void Tail(List *l )
+{
+    if(!l->head) return;
+    Node* temp = l->head;
+    l->head = temp->next;
+    l->length--;
+    FreeNode(temp);
+}
+
+int CloseAngle(double t1, double t2, double threshold){
+    double diff = fmod( fabs(t1-t2),M_PI);
+	return  diff< threshold || M_PI-diff< threshold;
 }
 
 double ToRad(int t) {
