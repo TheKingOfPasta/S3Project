@@ -38,3 +38,8 @@ void Split(char* path_in, char* folder_out)
 
     SDL_FreeSurface(surface);
 }
+
+int main(int argc, char** argv) {
+	Split(argv[1],argv[2]);
+	return 0;
+}
