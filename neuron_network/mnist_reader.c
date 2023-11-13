@@ -2,8 +2,7 @@
 # include <unistd.h>
 # include <err.h>
 # include <stdint.h>
-
-# include "helper.h"
+# include "network2.h"
 # include "mnist_reader.h"
 
 /**
@@ -72,38 +71,36 @@ int check_header(int img_fd, int lbl_fd)
     return img_nb_items;
 }
 
-/**
-  * Print a linear matrix as an image:
-  * When a value is more than 0, it is considering as an existing pixel,
-  * otherwise an empty one.
-  */
-void print_image(Matrix *a)
-{
-    for (size_t i = 0; i < IMG_WIDTH; ++i)
-    {
-        for (size_t j = 0; j < IMG_HEIGHT; ++j)
-            if (a->matrix[i * IMG_HEIGHT + j][0] > 0)
-                printf("@ ");
-            else
-                printf(". ");
-        printf("\n");
-    }
-}
+///**
+//  * Print a linear matrix as an image:
+//  * When a value is more than 0, it is considering as an existing pixel,
+//  * otherwise an empty one.
+//  */
+//void print_image(Matrix *a)
+//{
+//    for (size_t i = 0; i < IMG_WIDTH; ++i)
+//    {
+//        for (size_t j = 0; j < IMG_HEIGHT; ++j)
+//            if (a->matrix[i * IMG_HEIGHT + j][0] > 0)
+//                printf("@ ");
+//            else
+//                printf(". ");
+//        printf("\n");
+//    }
+//}
 
 /**
   * Read the image file descriptor to read the IMG_WIDTH*IMG_HEIGHT bytes to fill the
   * matrix a of size (IMG_WIDTH*IMG_HEIGHTx1). The byte value is put between 0 and 1
   */
-void load_image(int img_fd, Matrix *image)
+void load_image(int img_fd, float *image)
 {
-    char buffer[IMG_WIDTH * IMG_HEIGHT];
+    unsigned char buffer[IMG_WIDTH * IMG_HEIGHT];
     if (read(img_fd, buffer, IMG_WIDTH * IMG_HEIGHT) != IMG_WIDTH * IMG_HEIGHT)
         errx(EXIT_FAILURE, "load_image() couldn't read the entire image");
 
     for (size_t i = 0; i < IMG_WIDTH * IMG_HEIGHT; ++i)
-    {
-        image->matrix[i][0] = (double)(buffer[i]) / MAX_BLACK;
-    }
+        image[i] = buffer[i] / MAX_BLACK;
 }
 
 /**
@@ -111,23 +108,23 @@ void load_image(int img_fd, Matrix *image)
   * image is representing (0 to 9)
   * Fill a matrix of size (10, 1) where the index of the value is set to 1
   */
-void load_label(int lbl_fd, Matrix *expected)
+void load_label(int lbl_fd, float *expected)
 {
     char label;
     if (read(lbl_fd, &label, sizeof(label)) != sizeof(label))
         errx(EXIT_FAILURE, "load_label() couldn't read the label");
-    expected->matrix[(size_t)label][0] = 1;
+    expected[(size_t)label] = 1;
 }
 
 /**
   * Allocate a freshly new TrainingData struct and fill it by reading the image
   * and label file descriptors
   */
-TrainingData *load_image_label(int img_fd, int lbl_fd)
+Data *load_image_label(int img_fd, int lbl_fd)
 {
-    TrainingData *data = malloc(sizeof(TrainingData));
-    data->image = init_matrix2(IMG_WIDTH * IMG_HEIGHT, 1);
-    data->expected = init_matrix2(NUMBER_DIGIT, 1);
+    Data *data = malloc(sizeof(Data));
+    data->image = malloc(IMG_WIDTH * IMG_HEIGHT * sizeof(float));
+    data->expected = malloc(NUMBER_DIGIT * sizeof(float));
     load_image(img_fd, data->image);
     load_label(lbl_fd, data->expected);
     return data;
@@ -143,7 +140,7 @@ TrainingData *load_image_label(int img_fd, int lbl_fd)
   *
   * Remarks: The dataset can be heavy and freeing it is mandatory!!
   */
-size_t load_images(char *img_path, char *label_path, TrainingData ***data)
+size_t load_images(char *img_path, char *label_path, Data ***data)
 {
     if (data == NULL)
         errx(EXIT_FAILURE, "load_images(): invalid pointer");
@@ -151,7 +148,7 @@ size_t load_images(char *img_path, char *label_path, TrainingData ***data)
     int lbl_fd = open(label_path, O_RDONLY);
 
     int nb_items = check_header(img_fd, lbl_fd);
-    *data = malloc(nb_items * sizeof(TrainingData *));
+    *data = malloc(nb_items * sizeof(Data *));
     for (int i = 0; i < nb_items; ++i)
         (*data)[i] = load_image_label(img_fd, lbl_fd);
 
@@ -163,10 +160,14 @@ size_t load_images(char *img_path, char *label_path, TrainingData ***data)
 /**
   * Free all the dataset of size n
   */
-void free_all_training_data(TrainingData **data, size_t n)
+void free_all_training_data(Data **data, size_t n)
 {
     for (size_t i = 0; i < n; ++i)
-        free_training_data(data[i]);
+    {
+        free(data[i]->image);
+        free(data[i]->expected);
+        free(data[i]);
+    }
     free(data);
 }
 
