@@ -18,7 +18,7 @@ SDL_Surface* Wrapping(char* path, Quadrilateral* quad) {
 	Point p1 = quad->p1;
 	Point p2 = quad->p2;
 	Point p4 = quad->p4;
-	
+
 	p1.x = p1.x * cos(angle) - p1.y * sin(angle);
 	p1.y = p1.y * cos(angle) + p1.x * sin(angle);
 

@@ -112,7 +112,7 @@ int main(int argc, char** argv)
             errx(EXIT_FAILURE, "-w/--wrapping : wrapping at path "
                         "(path_in path_out)\n");
 
-	/*Quadrilateral* quad = malloc(sizeof(Quadrilateral));
+	Quadrilateral* quad = malloc(sizeof(Quadrilateral));
 	Point p1;
 	p1.x = 0;
 	p1.y = 0;
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 	quad->p1 = p1;
 	quad->p2 = p2;
 	quad->p3 = p3;
-	quad->p4 = p4;*/
+	quad->p4 = p4;
 	printf("Attempting to wrap image from %s\n",path_in);
 	SDL_Surface* wrapped = Wrapping_Copy(path_in, quad);
 	printf("Attemption to save image\n");
@@ -296,7 +296,6 @@ int main(int argc, char** argv)
         if (argc ==2)
         {
             for(int i =1 ; i<7;i++){
-                if (i == 4 ) continue;
                 asprintf(&path_in,"../test_grid/sudoku0%i.png",i);
                 printf("Attempting to apply all from %s\n", path_in);
                 SDL_Surface* s = IMG_Load(path_in);
@@ -307,6 +306,10 @@ int main(int argc, char** argv)
                                             AdaptiveThreshold,Splitsize))));
                 asprintf(&path_out,"./sudoku0%i.png",i);
                 Quadrilateral* grid = Find_Grid(s);
+                if(!grid){
+                    printf("not found grid :(\n");
+                    continue;
+                }
                 printQuad(grid);
                 IMG_SavePNG(s, path_out);
                 printf("Successfully saved the new image at path %s\n", path_out);
@@ -331,8 +334,12 @@ int main(int argc, char** argv)
 
         Quadrilateral* grid = Find_Grid(s);
         printQuad(grid);
-        IMG_SavePNG(s, path_out);
-        printf("Successfully saved the new image at path %s\n", path_out);
+        if(!grid)
+            printf("not found grid :(\n");
+        else{
+            IMG_SavePNG(s, path_out);
+            printf("Successfully saved the new image at path %s\n", path_out);
+        }
     }
     else
         ErrorMessage();

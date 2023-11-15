@@ -1,6 +1,6 @@
 #include "hough.h"
 
-#define LINE_THRESHOLD 50 // percent
+#define LINE_THRESHOLD 45 // percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {
@@ -66,7 +66,7 @@ List* HoughLine(SDL_Surface* img)
 	}
 
 	// getting the max value
-	 int maxVal = 0;
+	int maxVal = 0;
 	for (int t = 0; t < theta_num; t++)
 	for (int r = 0; r < rho_num; r++)
 	{
@@ -137,27 +137,46 @@ void Prune(List* lLine)
 	{
         return;
 	}
-
+	int  i =0;
     while (curr)
     {
 		Line* currLine = curr->data;
         Node* curr2 = curr;
+		double sumrho = currLine->rho;
+		double sumtheta = currLine->theta;
+		int nb =1;
+
+		//printf("		%3i : theta %2.3f (deg %i) rho %5f\n",i,currLine->theta,(int)((currLine->theta)*180/M_PI),currLine->rho);
+		int j =i+1;
 		while (curr2->next)
 		{
 			Line* currLine2 = curr2->next->data;
-			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(5)) &&
-				fabs( fabs(currLine2->rho / currLine->rho)-1) < 0.05)
+			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(15)) &&
+				fabs( (currLine2->rho / currLine->rho)-1) < 0.05)
+				//   ^ I removed a fabs here if something is broken
 			{
-				//TODO average (beware, rhos can be < 0)
+				//printf("			%3i : theta %2.3f (deg %i) rho %5f\n",j,currLine2->theta,(int)((currLine2->theta)*180/M_PI),currLine->rho);
+				j++;
+				//TODO average
 				//and thetas can be equivalent
-				//currLine->rho = (currLine->rho+currLine2->rho)/2;
-				//currLine->theta = (currLine->theta+currLine2->theta)/2;
+				nb++;
+				sumrho+= currLine2->rho;
+				if( fabs(currLine->theta-currLine2->theta)<M_PI_4)
+					sumtheta+= currLine2->theta;
+				else if(fabs(currLine->theta-currLine2->theta+M_PI)<M_PI_4)
+					sumtheta+= currLine2->theta+M_PI;
+				else sumtheta+= currLine2->theta-M_PI;
 				RemoveNextNode(lLine,curr2);
 			}
 			else
 				curr2 = curr2->next;
 		}
-
+		if(nb!=1){
+			currLine->rho = sumrho/nb;
+			currLine->theta = sumtheta/nb;
+			//printf("		newvalu	%3i : theta %2.3f (deg %i) rho %5f\n",i,currLine->theta,(int)((currLine->theta)*180/M_PI),currLine->rho);
+		}
+		i++;
         curr = curr->next;
     }
 }
@@ -216,7 +235,7 @@ void LineFiltering(List *l,int thresh){
 	for(int i =0; i<180;i++) histogram[i] =0;
 	Node* curr = l->head;
 	while(curr){
-		histogram[(((int)(((Line*)(curr->data))->theta *180 / M_PI))+90) %180]++;
+		histogram[(((int)(((Line*)(curr->data))->theta*180/M_PI))+90) %180]++;
 		curr = curr->next;
 	}
 

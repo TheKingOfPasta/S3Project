@@ -112,7 +112,7 @@ void printList(List* l, int line)
 		int i =1;
 		while(temp){
 			Line line = *(Line*)(temp->data);
-			printf("%3i : theta %5f (deg %i) rho %5f\n",i,line.theta,
+			printf("%3i : theta %2.3f (deg %i) rho %5f\n",i,line.theta,
 					 (int)((line.theta)*180/M_PI),line.rho);
 			i++;
 			temp = temp->next;
@@ -158,8 +158,14 @@ void DrawIntersections(SDL_Surface* s,List* l){
 		Node *innerCurr = l->head;
 		int innerIndex =0;
 		while(innerCurr){
-			if( CloseAngle(angle,((Line*)(innerCurr->data))->theta,ToRad(30)) &&
-			 	FindIntersectio(((Line*)(curr->data)),((Line*)(innerCurr->data)),s->w,s->h,&(p.x),&(p.y))){
+			if(CloseAngle(angle,((Line*)(innerCurr->data))->theta,ToRad(30)) &&
+			 	FindIntersectio(((Line*)(curr->data)),
+					((Line*)(innerCurr->data)),
+					s->w,
+					s->h,
+					&(p.x),
+					&(p.y)))
+				{
 				pixels[p.x + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
 				pixels[p.x-1 + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);
 				pixels[p.x+1 + p.y *s->w] = SDL_MapRGB(s->format, 255, 0, 0);

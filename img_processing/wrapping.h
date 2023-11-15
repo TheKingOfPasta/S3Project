@@ -4,6 +4,8 @@
 #include <err.h>
 #include <stdio.h>
 #include <math.h>
+#include "../hough/utils.h"
+#include "rotate.h"
 
 double FindAngle(Quadrilateral* quad);
 
