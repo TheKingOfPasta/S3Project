@@ -1,6 +1,6 @@
 #include "hough.h"
 
-#define LINE_THRESHOLD 45 // percent
+#define LINE_THRESHOLD 40 // percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {
@@ -151,7 +151,7 @@ void Prune(List* lLine)
 		while (curr2->next)
 		{
 			Line* currLine2 = curr2->next->data;
-			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(15)) &&
+			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(30)) &&
 				fabs( (currLine2->rho / currLine->rho)-1) < 0.05)
 				//   ^ I removed a fabs here if something is broken
 			{
@@ -250,25 +250,29 @@ void LineFiltering(List *l,int thresh){
 	}
 
 	int secondMax = (indexMax +90) %180;
-
+	if(indexMax >90) indexMax-=180;
+	if (secondMax>90) secondMax-=180;
 	//double maxRad =fmod( ToRad(indexMax ),M_PI) - M_PI_2;
 	//double scndMaxRad = fmod(ToRad(secondMax),M_PI) - M_PI_2;
 
 	//printf("filter out %i  %i \n",indexMax,secondMax);
 	//printList(l,1);
-	return;
 
 	curr = l->head;
-	while(curr && (!(fabs((((Line*)(curr->data))->theta)*180/M_PI - indexMax)<thresh)
-		&& !(fabs((((Line*)(curr->data))->theta)*180/M_PI - secondMax)<thresh)))
+	while(curr)
 	{
-		Tail(l);
-		curr = l->head;
+		int currAngle = fabs((((Line*)(curr->data))->theta)*180/M_PI);
+		if( abs(currAngle - indexMax)>thresh
+		&& abs(currAngle - secondMax)>thresh){
+			Tail(l);
+			curr = l->head;
+		}
+		else break;
 	}
 	if(!l->head) return;
 	while(curr->next){
-		if((!(fabs((((Line*)(curr->data))->theta)*180/M_PI - indexMax)<thresh)
-		&& !(fabs((((Line*)(curr->data))->theta)*180/M_PI - secondMax)<thresh))){
+		int currAngle = (((Line*)(curr->next->data))->theta)*180/M_PI;
+		if( abs(currAngle-indexMax)>thresh && abs(currAngle-secondMax)>thresh){
 			RemoveNextNode(l,curr);
 		}
 		else{

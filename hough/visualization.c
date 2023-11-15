@@ -112,7 +112,7 @@ void printList(List* l, int line)
 		int i =1;
 		while(temp){
 			Line line = *(Line*)(temp->data);
-			printf("%3i : theta %2.3f (deg %i) rho %5f\n",i,line.theta,
+			printf("%3i : theta %2.3f (deg %i) rho %3.2f\n",i,line.theta,
 					 (int)((line.theta)*180/M_PI),line.rho);
 			i++;
 			temp = temp->next;
