@@ -1,1 +1,7 @@
+#ignore vscode files
+.vscode/**
+#ignore program output
+img_processing/*.png
+#ignore compiled files
+img_processing/img_action
 *.o
