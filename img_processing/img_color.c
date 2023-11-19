@@ -23,9 +23,8 @@ Uint32 IMGC_pixel_to_grayscale(Uint32 pixel_color, const SDL_PixelFormat* format
 /**
   * Convert the given surface into grayscale
   * Surface is locked then pixels are modified one by one
-  * === IN PLACE ===
   */
-void IMGC_surface_to_grayscale(SDL_Surface* surface)
+SDL_Surface* IMGC_surface_to_grayscale(SDL_Surface* surface)
 {
     Uint32* pixels = surface->pixels;
     int len = surface->w * surface->h;
@@ -39,17 +38,6 @@ void IMGC_surface_to_grayscale(SDL_Surface* surface)
     }
 
     SDL_UnlockSurface(surface);
-}
 
-/**
-  * From the given input image file, export it to its grayscale version
-  */
-void IMGC_to_grayscale(const char* input_path, const char* output_path)
-{
-    SDL_Surface* surface = IMG_Load(input_path);
-    IMGC_surface_to_grayscale(surface);
-
-    IMG_SavePNG(surface, output_path);
-
-    SDL_FreeSurface(surface);
+    return surface;
 }

@@ -17,6 +17,11 @@
 #include "wrapping.h"
 #include "../hough/grid_detection.h"
 
+#define Blursize 13
+#define BlurIntensity 3
+#define AdaptiveThreshold 3
+#define Splitsize 75000
+
 int CompareStrings(char* a, char* b);
 
 SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle);

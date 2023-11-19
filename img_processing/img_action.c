@@ -1,10 +1,5 @@
 #include "img_action.h"
 
-#define Blursize 13
-#define BlurIntensity 3
-#define AdaptiveThreshold 3
-#define Splitsize 75000
-
 //1 -> a==b
 //0 -> a!=b
 int CompareStrings(char* a, char* b)
@@ -28,38 +23,7 @@ void ErrorMessage()
            "                   -agd/--all>grid_detect\n");
 }
 
-SDL_Surface* IMGA_Erosion(SDL_Surface* input){
-	SDL_Surface* output =
-	   	SDL_CreateRGBSurface(0,input->w,input->h,32,0,0,0,0);
 
-    SDL_LockSurface(output);
-
-    Uint32* inpPixels = (Uint32*)(input->pixels);
-    Uint32* outPixels = (Uint32*)(output->pixels);
-
-	int sumWhite;
-	for (int i = 1; i < input->w-1; i++)
-	for (int j = 1; j < input->h-1; j++)
-	{
-        sumWhite =0;
-		for (int k =-1; k <= 1; k++)
-		for (int l =-1; l <= 1; l++)
-		{
-            if (inpPixels[i + k + (j + l) * input->w])
-                sumWhite++;
-		}
-
-		Uint32* outpxl = (Uint32*)outPixels + j*output->w + i;
-
-		*outpxl = ( sumWhite< 4) ?
-            SDL_MapRGB(output->format,   0,   0,   0) :
-            SDL_MapRGB(output->format, 255, 255, 255);
-	}
-
-	SDL_UnlockSurface(output);
-	SDL_FreeSurface(input);
-	return output;
-}
 
 
 int main(int argc, char** argv)
@@ -268,7 +232,7 @@ int main(int argc, char** argv)
 
         printf("Attempting to apply all from %s\n", path_in);
         SDL_Surface* s = IMG_Load(path_in);
-        IMGC_surface_to_grayscale(s);
+        s = IMGC_surface_to_grayscale(s);
         IMG_SavePNG(
             sobel_gradient(IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(
                                                         IMGA_GaussianBlur(
@@ -300,7 +264,7 @@ int main(int argc, char** argv)
                 asprintf(&path_in,"../test_grid/sudoku0%i.png",i);
                 printf("Attempting to apply all from %s\n", path_in);
                 SDL_Surface* s = IMG_Load(path_in);
-                IMGC_surface_to_grayscale(s);
+                s = IMGC_surface_to_grayscale(s);
                 s = sobel_gradient(IMGA_Erosion(CheckInvert(
                         IMGA_ApplyThreshold(
                             IMGA_GaussianBlur(s,Blursize, BlurIntensity),
@@ -322,7 +286,7 @@ int main(int argc, char** argv)
 
         printf("Attempting to apply all from %s\n", path_in);
         SDL_Surface* s = IMG_Load(path_in);
-        IMGC_surface_to_grayscale(s);
+        s = IMGC_surface_to_grayscale(s);
 
         s = sobel_gradient(IMGA_Erosion(CheckInvert(
                 IMGA_ApplyThreshold(
