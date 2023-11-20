@@ -28,6 +28,8 @@ typedef struct widgets
     GtkFileChooser* FilePicker;
 
     GtkButton* NextPageButton;
+    GtkButton* DoAllButton;
+    GtkButton* DoNextButton;
     char* path;
 } widgets;
 
@@ -35,7 +37,8 @@ int i = 0;
 
 gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 {
-    GtkImage* ImageDisplay = ptr;
+    widgets* h = ptr;
+    GtkImage* ImageDisplay = h->ImageDisplay;
 
     SDL_Surface* img = IMG_Load("temp.png");
 
@@ -44,22 +47,27 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         case 0:
             img = IMGC_surface_to_grayscale(img);
             printf("Applied grayscaling\n");
+            gtk_button_set_label(btn, "Next step (Gaussian blur)");
             break;
         case 1:
             img = IMGA_GaussianBlur(img, Blursize, BlurIntensity);
             printf("Applied gaussian blur\n");
+            gtk_button_set_label(btn, "Next step (Adaptive thresholding)");
             break;
         case 2:
             img = IMGA_ApplyThreshold(img, AdaptiveThreshold, Splitsize);
             printf("Applied thresholding\n");
+            gtk_button_set_label(btn, "Next step (Invert if necessary)");
             break;
         case 3:
             img = CheckInvert(img);
             printf("Inverted colors if necessary\n");
+            gtk_button_set_label(btn, "Next step (Erode)");
             break;
         case 4:
             img = IMGA_Erosion(img);
             printf("Applied erosion\n");
+            gtk_button_set_label(btn, "No next steps");
             break;
     }
     i += 1;
@@ -70,7 +78,10 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     gtk_image_set_from_file(ImageDisplay, "temp.png");
 
     if (i == 5)//TODO put the actual number of functions we use
-        gtk_widget_hide(GTK_WIDGET(btn));
+    {
+        gtk_widget_hide(GTK_WIDGET(h->DoNextButton));
+        gtk_widget_hide(GTK_WIDGET(h->DoAllButton));
+    }
 
 
     return TRUE;
@@ -78,9 +89,12 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
 gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
 {
+    btn = btn;
+    widgets* h = ptr;
+
     for (; i < 5;)
     {
-        DoNextFunc(btn, ptr);
+        DoNextFunc(h->NextPageButton, h);
     }
 
     printf("All has been applied to the image\n");
@@ -94,10 +108,17 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
 
     widgets* h = ptr;
 
+    i = 0;
+
     gtk_widget_hide(GTK_WIDGET(h->w1));
     gtk_widget_show(GTK_WIDGET(h->w2));
 
     gtk_image_set_from_file(h->ImageDisplay, h->path);
+
+    gtk_button_set_label(h->DoNextButton, "Next step (Grayscale)");
+
+    gtk_widget_show(GTK_WIDGET(h->DoNextButton));
+    gtk_widget_show(GTK_WIDGET(h->DoAllButton));
 
     IMG_SavePNG(IMG_Load(h->path), "temp.png");
 
@@ -116,6 +137,29 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
     gtk_widget_show(GTK_WIDGET(h->NextPageButton));
 
     return TRUE;
+}
+
+gboolean GoBack(GtkButton* btn, gpointer ptr)
+{
+    btn = btn;
+
+    widgets* h = ptr;
+
+    if (i)//If you applied any function (a temp file was created => remove it)
+        remove("temp.png");
+
+    gtk_widget_show(GTK_WIDGET(h->w1));
+    gtk_widget_hide(GTK_WIDGET(h->w2));
+
+    gtk_image_set_from_file(h->ImagePicking, "");//Reset the image
+
+    gtk_file_chooser_set_filename(h->FilePicker, "");
+
+    gtk_widget_hide(GTK_WIDGET(h->NextPageButton));
+
+    printf("Choosing new image\n");
+
+    return FALSE;
 }
 
 gpointer MyQuit()
@@ -154,6 +198,8 @@ int main ()
         ImageDisplay : GTK_IMAGE(gtk_builder_get_object(builder, "ImageDisplay")),
         FilePicker : GTK_FILE_CHOOSER(gtk_builder_get_object(builder, "FilePicker")),
         NextPageButton : GTK_BUTTON(gtk_builder_get_object(builder, "ApplyOnImage")),
+        DoAllButton : GTK_BUTTON(gtk_builder_get_object(builder, "DoAll")),
+        DoNextButton : GTK_BUTTON(gtk_builder_get_object(builder, "DoNext")),
         path : NULL
     };
 
@@ -171,8 +217,10 @@ int main ()
     g_signal_connect(w.w2, "destroy", G_CALLBACK(MyQuit), NULL);
     g_signal_connect(w.FilePicker, "file-set", G_CALLBACK(ShowImage), &w);
 
-    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFunc), w.ImageDisplay);
-    g_signal_connect(DoAll, "clicked", G_CALLBACK(DoAllFunc), w.ImageDisplay);
+    g_signal_connect(GTK_BUTTON(gtk_builder_get_object(builder, "CancelButton")), "clicked", G_CALLBACK(GoBack), &w);
+
+    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFunc), &w);
+    g_signal_connect(DoAll, "clicked", G_CALLBACK(DoAllFunc), &w);
 
     gtk_main();
 
