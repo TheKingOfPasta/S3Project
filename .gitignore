@@ -1,5 +1,6 @@
 #ignore vscode files
 .vscode/**
+.vs/
 #ignore program output
 img_processing/*.png
 #ignore compiled files
