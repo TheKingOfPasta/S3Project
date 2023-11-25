@@ -16,7 +16,8 @@ void ErrorMessage()
            "                   -t/--threshold\n"
            "                   -s/--sobel\n"
            "                   -i/--inverse\n"
-           "                   -bt/--blur>threshold\n"
+           "                   -w/--wrapping>wrapping\n"
+	   "		       -bt/--blur>threshold\n"
            "                   -bts/--blur>threshold>sobel\n"
            "                   -a/--all\n"
            "                   -g/--grayscale\n"
@@ -76,7 +77,7 @@ int main(int argc, char** argv)
             errx(EXIT_FAILURE, "-w/--wrapping : wrapping at path "
                         "(path_in path_out)\n");
 
-	Quadrilateral* quad = malloc(sizeof(Quadrilateral));
+	/*Quadrilateral* quad = malloc(sizeof(Quadrilateral));
 	Point p1;
 	p1.x = 0;
 	p1.y = 0;
@@ -92,9 +93,18 @@ int main(int argc, char** argv)
 	quad->p1 = p1;
 	quad->p2 = p2;
 	quad->p3 = p3;
-	quad->p4 = p4;
+	quad->p4 = p4;*/
+        SDL_Surface* s = IMG_Load(path_in);
+        s = IMGC_surface_to_grayscale(s);
+        s = sobel_gradient(IMGA_Erosion(CheckInvert(
+                IMGA_ApplyThreshold(
+                        IMGA_GaussianBlur( s,Blursize,BlurIntensity),
+                                AdaptiveThreshold,Splitsize))));
+
+        Quadrilateral* grid = Find_Grid(s);
+	printQuad(grid); 
 	printf("Attempting to wrap image from %s\n",path_in);
-	SDL_Surface* wrapped = Wrapping_Copy(path_in, quad);
+	SDL_Surface* wrapped = Wrapping(path_in, grid);
 	printf("Attemption to save image\n");
 	IMG_SavePNG(wrapped,path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -251,7 +261,8 @@ int main(int argc, char** argv)
                 "(path_in path_out)\n");
 
         printf("Attempting to apply grayscale to %s\n", path_in);
-        IMGC_to_grayscale(path_in, path_out);
+        SDL_Surface* s = IMGC_surface_to_grayscale(IMG_Load(path_in));
+	IMG_SavePNG(s,path_out);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     else if (CompareStrings(argv[1], "-agd") ||

@@ -7,6 +7,7 @@
 #include "gaussian_blur.h"
 #include "adaptive_thresholding.h"
 #include "rotate.h"
+#include "erosion.h"
 #include "canny_edge_detector.h"
 #include "img_color.h"
 #include "invert_colors.h"

@@ -10,5 +10,3 @@
 double FindAngle(Quadrilateral* quad);
 
 SDL_Surface* Wrapping(char* path, Quadrilateral* quad);
-
-SDL_Surface* Wrapping_Copy(char* path, Quadrilateral* quad);
