@@ -44,6 +44,7 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
 	}
 
 	SDL_UnlockSurface(surface);
+    SDL_FreeSurface(surface);
 
     return newS;
 }

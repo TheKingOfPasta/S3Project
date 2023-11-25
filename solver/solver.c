@@ -146,7 +146,7 @@ void SLV_backtracking(short grid[9][9]){
 
 
 void SLV_findRemainingCells(short g[9][9],short a[]){
-    char index = 0;
+    int index = 0;
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
             if(IsNotSolved(g[i][j]))
@@ -154,11 +154,6 @@ void SLV_findRemainingCells(short g[9][9],short a[]){
         }
     }
 }
-
-void SLV_sort(short a[]){
-
-}
-
 
 void SLV_solve(short grid[9][9]){
     remainingCell =81;
@@ -169,7 +164,7 @@ void SLV_solve(short grid[9][9]){
 
     short remainingCellIndex[81] = {0}; //filled with zeros
     SLV_findRemainingCells(grid ,remainingCellIndex);
-    SLV_sort(remainingCellIndex);
+    //SLV_sort(remainingCellIndex);
 
     //looking_for_one_occurrence(grid);
     SLV_backtracking(grid);
@@ -177,7 +172,7 @@ void SLV_solve(short grid[9][9]){
 
 
 
-int main(int argc, char *argv[])
+/*int main(int argc, char *argv[])
 {
 	if (argc != 2)
     {
@@ -207,5 +202,5 @@ int main(int argc, char *argv[])
     free(s);//Useless but shrug
 
     return EXIT_SUCCESS;
-}
+}*/
 
