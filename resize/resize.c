@@ -22,7 +22,7 @@ SDL_Surface* Resample(SDL_Surface* surface, int newSize) {
 		for(int cx = 0; cx<newSize;cx++){
 			int pixel = (cy*(newSize)) + (cx);
 			int nearestMatch = (((int)(cy/scale) * (surface->w)) + ((int)(cx/scale)));
-			printf("pixel: %i\nnearestMatch: %i\n",pixel,nearestMatch);
+			//printf("pixel: %i\nnearestMatch: %i\n",pixel,nearestMatch);
 			pixels[pixel] = p[nearestMatch];
 		}
 	}
