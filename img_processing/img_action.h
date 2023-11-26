@@ -11,6 +11,7 @@
 #include "canny_edge_detector.h"
 #include "img_color.h"
 #include "invert_colors.h"
+#include "../splitting/split.h"
 #include "../hough/utils.h"
 #include "../hough/hough.h"
 #include "../hough/visualization.h"
