@@ -17,6 +17,11 @@ double sigmoid(double x)
     return 1 / (1 + exp(-x));
 }
 
+double sigmoid_p(double x)
+{
+    double sig = sigmoid(x);
+    return sig * (1 - sig);
+}
 
 void sigmoid_of_matrix2(Matrix *a, Matrix *b)
 {
