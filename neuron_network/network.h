@@ -30,8 +30,8 @@ void NN_free_network(NN_Network* network);
 Matrix *NN_feedforward(NN_Network *network, Matrix *inputs);
 
 
-Matrix **NN_feedforward_save(NN_Network *network, Matrix *input, Matrix
-        ***zs);
+void NN_feedforward_save(NN_Network *network, Matrix *input, Matrix
+        **zs, Matrix **activations);
 
 
 /*
@@ -64,10 +64,11 @@ double *NN_feedforward(NN_Network *network, double *inputs)
 
 }
 */
-void backprop(NN_Network *network, TrainingData *data, Matrix ***in_nabla_b,
-        Matrix ***in_nabla_w);
+void backprop(NN_Network *network, TrainingData *data, Matrix **nabla_b,
+        Matrix **nabla_w, Matrix **activations, Matrix **zs);
 void update_mini_batch(NN_Network * network, TrainingData **data, size_t k, size_t
-        k_max, double eta, double lambda);
+        k_max, double eta, double lambda, Matrix **nabla_b, Matrix **nabla_w,
+        Matrix **activations, Matrix **zs);
 void sdg(NN_Network *network, TrainingData **data, size_t n, size_t epochs, size_t batch_size,
         double eta, TrainingData **test_data, size_t n_test, double lambda);
 

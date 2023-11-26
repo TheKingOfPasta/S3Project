@@ -7,6 +7,8 @@
 # include <string.h>
 # include <stdio.h>
 
+# define PRECISION float
+
 
 // represent a matrix of size m x n
 typedef struct Matrix
@@ -39,6 +41,7 @@ void sigmoid_prime(double **a, size_t m);
 void sigmoid_prime2(Matrix *a);
 
 double sigmoid(double x);
+double sigmoid_p(double x);
 
 double random_value();
 
