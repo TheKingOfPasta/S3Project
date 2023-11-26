@@ -143,6 +143,21 @@
                 <property name="index">2</property>
               </packing>
             </child>
+            <child type="overlay">
+              <object class="GtkScale" id="RotateScale">
+                <property name="width-request">150</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="halign">center</property>
+                <property name="valign">start</property>
+                <property name="fill-level">1</property>
+                <property name="round-digits">1</property>
+                <property name="digits">0</property>
+              </object>
+              <packing>
+                <property name="index">3</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">True</property>

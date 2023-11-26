@@ -4,6 +4,7 @@
 #define BlurIntensity 3
 #define AdaptiveThreshold 3
 #define Splitsize 75000
+#define DEFAULT_CELL_VALUE 0b0011001111111111
 
 typedef struct widgets
 {
@@ -19,18 +20,38 @@ typedef struct widgets
     GtkButton* DoAllButton;
     GtkButton* DoNextButton;
     GtkProgressBar* ProgressBar;
+    GtkRange* RotateScale;
     char* path;
 } widgets;
 
 int i = 0;
 Quadrilateral* quad;//The quad used by FindAngle and returned by FindGrid
-tuple coords[81];//The list of coordinates, filled in by Split
 short digits[9][9];
 
 // Writes 'digit' on the surface at (x, y)
 void WriteDigit(SDL_Surface* s, int x, int y, int digit)
 {
-    
+    char* file;
+
+    if (asprintf(&file, "templates/number%i.png", digit) == -1)
+        errx(EXIT_FAILURE, "asprintf failed");
+
+    SDL_Surface* inp = IMG_Load(file);
+
+    SDL_LockSurface(inp);
+    SDL_LockSurface(s);
+
+    Uint32* pixels = s->pixels;
+    Uint32* inpPixels = inp->pixels;
+
+    for (int j = 4; j < 36; j++)
+    for (int k = 4; k < 36; k++)
+        pixels[x + k + (y + j) * 396] = inpPixels[k + j * 39];
+
+    free(file);
+    SDL_UnlockSurface(inp);
+    SDL_UnlockSurface(s);
+    SDL_FreeSurface(inp);
 }
 
 gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
@@ -43,6 +64,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
+    if (i != 5)
+        gtk_widget_hide(GTK_WIDGET(h->RotateScale));
 
     switch (i)
     {
@@ -73,12 +96,17 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         case 5:
             double angle = FindAngle(quad);
             img = IMGA_Rotate(img, angle);
+
+            gtk_widget_show(GTK_WIDGET(h->RotateScale));
+
+            gtk_range_set_value(h->RotateScale, angle);
+
             gtk_button_set_label(btn, "Next step (Splitting)");
             break;
         case 6:
             mkdir("temp_split", S_IRWXU);
 
-            Split(img, "temp_split", coords);
+            Split(img, "temp_split");
 
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
@@ -97,8 +125,10 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 // knowing that s is your image
                 // You need to fill foundDigit
                 // @Ilan
+                // 0 for no digit (blank cell)
 
-                //Maybe -1 for no digit
+                if (!foundDigit)
+                    foundDigit = DEFAULT_CELL_VALUE;
 
                 digits[j % 9][j / 9] = foundDigit;
 
@@ -111,14 +141,22 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             SLV_solve(digits);
             //digits is filled in place with values from the neural network
 
+            SDL_Surface* new = IMG_Load("templates/grid.png");
+
             for (int j = 0; j < 9; j++)
-            for (int k = 0; k < 9; k++)
             {
-                WriteDigit(img,
-                           coords[j * 9 + k].x,
-                           coords[j * 9 + k].y,
-                           digits[i][j]);
+                for (int k = 0; k < 9; k++)
+                {
+                    WriteDigit(new,
+                            j * 44,//44 = 396 / 9 (396 = new->width)
+                            k * 44,
+                            digits[k][j]);
+                }
             }
+
+            SDL_FreeSurface(img);
+
+            img = new;
 
             gtk_widget_hide(GTK_WIDGET(h->DoNextButton));
             gtk_widget_hide(GTK_WIDGET(h->DoAllButton));
@@ -282,6 +320,23 @@ gpointer MyQuit()
     return FALSE;
 }
 
+gboolean RotateSlider(GtkRange* range, gpointer ptr)
+{
+    widgets* h = ptr;
+
+    gint v = gtk_range_get_value(h->RotateScale);
+
+    SDL_Surface* s = IMG_Load("temp06.png");
+
+    s = IMGA_Rotate(s, v);
+
+    gtk_range_set_range(range, -180, 180);
+
+    IMG_SavePNG(s, "temp06.png");
+
+    return TRUE;
+}
+
 // Main function.
 int main ()
 {
@@ -300,7 +355,7 @@ int main ()
     }
 
     // Gets the widgets.
-    widgets w =
+    widgets h =
     {
         w1 : GTK_WIDGET(
             gtk_builder_get_object(builder, "StartWindow")),
@@ -328,48 +383,52 @@ int main ()
 
         ProgressBar : GTK_PROGRESS_BAR(
             gtk_builder_get_object(builder, "ProgressBar")),
+        RotateScale : GTK_RANGE(
+            gtk_builder_get_object(builder, "RotateScale")),
 
         path : NULL
     };
 
-    gtk_widget_hide(GTK_WIDGET(w.NextPageButton));
+    g_signal_connect(h.RotateScale, "value-changed", G_CALLBACK(RotateSlider), &h);
+
+    gtk_widget_hide(GTK_WIDGET(h.NextPageButton));
 
     GtkButton* ApplyOnImage =
         GTK_BUTTON(gtk_builder_get_object(builder, "ApplyOnImage"));
 
-    g_signal_connect(ApplyOnImage, "clicked", G_CALLBACK(ChangeWindow), &w);
+    g_signal_connect(ApplyOnImage, "clicked", G_CALLBACK(ChangeWindow), &h);
 
     GtkButton* DoNext = GTK_BUTTON(gtk_builder_get_object(builder, "DoNext"));
     GtkButton* DoAll = GTK_BUTTON(gtk_builder_get_object(builder, "DoAll"));
 
     // Connects signal handlers.
-    g_signal_connect(w.w1, "destroy", G_CALLBACK(MyQuit), NULL);
-    g_signal_connect(w.w2, "destroy", G_CALLBACK(MyQuit), NULL);
-    g_signal_connect(w.FilePicker, "file-set", G_CALLBACK(ShowImage), &w);
+    g_signal_connect(h.w1, "destroy", G_CALLBACK(MyQuit), NULL);
+    g_signal_connect(h.w2, "destroy", G_CALLBACK(MyQuit), NULL);
+    g_signal_connect(h.FilePicker, "file-set", G_CALLBACK(ShowImage), &h);
 
     g_signal_connect(
         GTK_BUTTON(gtk_builder_get_object(builder, "CancelButton")),
         "clicked",
         G_CALLBACK(GoBack),
-        &w
+        &h
         );
 
     g_signal_connect(
         GTK_BUTTON(gtk_builder_get_object(builder, "SaveButton")),
         "clicked",
         G_CALLBACK(Save),
-        &w
+        &h
         );
 
     g_signal_connect(
         GTK_BUTTON(gtk_builder_get_object(builder, "Undo")),
         "clicked",
         G_CALLBACK(Undo),
-        &w
+        &h
         );
 
-    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFunc), &w);
-    g_signal_connect(DoAll, "clicked", G_CALLBACK(DoAllFunc), &w);
+    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFunc), &h);
+    g_signal_connect(DoAll, "clicked", G_CALLBACK(DoAllFunc), &h);
 
     gtk_main();
 

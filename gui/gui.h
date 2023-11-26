@@ -21,3 +21,5 @@
 #include "../img_processing/wrapping.h"
 #include "../splitting/split.h"
 #include "../solver/solver.h"
+#include <SDL2/SDL_ttf.h>
+#include "../solver/parser.h"
