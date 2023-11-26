@@ -18,7 +18,7 @@
 # define XOR_LAMBDA 5.0
 
 // for the digits function
-# define DIGITS_ETA 5
+# define DIGITS_ETA 10
 # define DIGITS_EPOCHS 30
 # define DIGITS_MINI_BATCH_SIZE 10
 # define DIGITS_LAMBDA 5.0
@@ -63,74 +63,74 @@ void test_feedforward()
 // ffs = feedforward_save
 void test_ffs()
 {
-    size_t neurons[] = {4, 8, 2, 5};
-    NN_Network *network = NN_create_network(neurons, 4);
+    //size_t neurons[] = {4, 8, 2, 5};
+    //NN_Network *network = NN_create_network(neurons, 4);
 
-    Matrix *input = init_matrix2(4, 1);
+    //Matrix *input = init_matrix2(4, 1);
 
-    for (size_t i = 0; i < 4; ++i)
-        for (size_t j = 0; j < 1; ++j)
-            input->matrix[i][j] = i;
+    //for (size_t i = 0; i < 4; ++i)
+    //    for (size_t j = 0; j < 1; ++j)
+    //        input->matrix[i][j] = i;
 
-    print_matrix2(input);
-    Matrix **zs;
-    Matrix **output = NN_feedforward_save(network, input, &zs);
+    //print_matrix2(input);
+    //Matrix **zs;
+    //Matrix **output = NN_feedforward_save(network, input, &zs);
 
-    printf("printing output: \n");
-    for (size_t i = 0; i < 4; ++i)
-    {
-        print_matrix2(output[i]);
-        free_matrix2(output[i]);
-    }
-    free(output);
+    //printf("printing output: \n");
+    //for (size_t i = 0; i < 4; ++i)
+    //{
+    //    print_matrix2(output[i]);
+    //    free_matrix2(output[i]);
+    //}
+    //free(output);
 
-    printf("printing zs: \n");
-    for (size_t i = 0; i < 3; ++i)
-    {
-        print_matrix2(zs[i]);
-        free_matrix2(zs[i]);
-    }
-    free(zs);
+    //printf("printing zs: \n");
+    //for (size_t i = 0; i < 3; ++i)
+    //{
+    //    print_matrix2(zs[i]);
+    //    free_matrix2(zs[i]);
+    //}
+    //free(zs);
 
-    NN_free_network(network);
+    //NN_free_network(network);
 
 }
 
 void test_backprop()
 {
-    size_t neurons[] = {4, 8, 2, 5};
-    NN_Network *network = NN_create_network(neurons, 4);
+    //size_t neurons[] = {4, 8, 2, 5};
+    //NN_Network *network = NN_create_network(neurons, 4);
 
-    Matrix *input = init_matrix2(4, 1);
+    //Matrix *input = init_matrix2(4, 1);
 
-    for (size_t i = 0; i < 4; ++i)
-        for (size_t j = 0; j < 1; ++j)
-            input->matrix[i][j] = i;
+    //for (size_t i = 0; i < 4; ++i)
+    //    for (size_t j = 0; j < 1; ++j)
+    //        input->matrix[i][j] = i;
 
-    Matrix *output = init_matrix2(5, 1);
-    for (size_t i = 0; i < 5; ++i)
-        for (size_t j = 0; j < 1; ++j)
-            output->matrix[i][j] = i;
+    //Matrix *output = init_matrix2(5, 1);
+    //for (size_t i = 0; i < 5; ++i)
+    //    for (size_t j = 0; j < 1; ++j)
+    //        output->matrix[i][j] = i;
 
-    TrainingData data = {input, output};
-    Matrix **nablab, **nablaw;
-    backprop(network, &data, &nablab, &nablaw);
+    //TrainingData data = {input, output};
+    //Matrix **nablab, **nablaw;
+    //backprop(network, &data, &nablab, &nablaw);
 
-    printf("printing nablas\n");
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-    {
-        printf("nabla_b:\n");
-        print_matrix2(nablab[i]);
-        printf("nabla_w:\n");
-        print_matrix2(nablaw[i]);
-        free_matrix2(nablab[i]);
-        free_matrix2(nablaw[i]);
-    }
-    free(nablab);
-    free(nablaw);
-    free_matrix2(output);
+    //printf("printing nablas\n");
+    //for (size_t i = 0; i < network->num_layers - 1; ++i)
+    //{
+    //    printf("nabla_b:\n");
+    //    print_matrix2(nablab[i]);
+    //    printf("nabla_w:\n");
+    //    print_matrix2(nablaw[i]);
+    //    free_matrix2(nablab[i]);
+    //    free_matrix2(nablaw[i]);
+    //}
+    //free(nablab);
+    //free(nablaw);
+    //free_matrix2(output);
 
-    NN_free_network(network);
+    //NN_free_network(network);
 }
 
 void test_network()
@@ -155,31 +155,31 @@ void test_network()
 
 void test_umb()
 {
-    size_t neurons[] = {4, 8, 2, 5};
-    NN_Network *network = NN_create_network(neurons, 4);
+    //size_t neurons[] = {4, 8, 2, 5};
+    //NN_Network *network = NN_create_network(neurons, 4);
 
-    Matrix *input = init_matrix2(4, 1);
+    //Matrix *input = init_matrix2(4, 1);
 
-    for (size_t i = 0; i < 4; ++i)
-        for (size_t j = 0; j < 1; ++j)
-            input->matrix[i][j] = i;
+    //for (size_t i = 0; i < 4; ++i)
+    //    for (size_t j = 0; j < 1; ++j)
+    //        input->matrix[i][j] = i;
 
-    Matrix *output = init_matrix2(5, 1);
-    for (size_t i = 0; i < 5; ++i)
-        for (size_t j = 0; j < 1; ++j)
-            output->matrix[i][j] = i;
+    //Matrix *output = init_matrix2(5, 1);
+    //for (size_t i = 0; i < 5; ++i)
+    //    for (size_t j = 0; j < 1; ++j)
+    //        output->matrix[i][j] = i;
 
-    NN_print_weights(network);
-    NN_print_biases(network);
-    TrainingData data = {input, output};
-    TrainingData *dataP = &data;
-    update_mini_batch(network, &dataP, 0, 1, XOR_ETA, XOR_LAMBDA);
+    //NN_print_weights(network);
+    //NN_print_biases(network);
+    //TrainingData data = {input, output};
+    //TrainingData *dataP = &data;
+    //update_mini_batch(network, &dataP, 0, 1, XOR_ETA, XOR_LAMBDA);
 
-    NN_print_weights(network);
-    NN_print_biases(network);
+    //NN_print_weights(network);
+    //NN_print_biases(network);
 
-    free_matrix2(output);
-    NN_free_network(network);
+    //free_matrix2(output);
+    //NN_free_network(network);
 
 }
 

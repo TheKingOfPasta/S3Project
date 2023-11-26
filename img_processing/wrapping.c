@@ -12,15 +12,12 @@ SDL_Surface* Wrapping(char* path, Quadrilateral* quad) {
 	double angle = FindAngle(quad);
 	printf("Angle is : %f\n",angle);
 	SDL_Surface* surface = IMGA_Rotate_from(path,angle);
-	printf("cringe\n");
 	SDL_Surface* wrapped = SDL_CreateRGBSurface(0,quad->p2.x-quad->p1.x,quad->p4.y-quad->p1.y,32,0,0,0,0);
-	printf("also cringe\n");
 	Uint32* newPixels = wrapped->pixels;
 	Uint32* pixels = surface->pixels;
 	int i = 0;
 	for(int h = quad->p1.y; h<quad->p4.y; h++) {
 		for(int w = quad->p1.x;w<quad->p2.x;w++) {
-			printf("copying the pixel at (%i, %i)\n", w, h);
 			newPixels[i] = pixels[h*surface->w+w];
 			i++;
 		}
