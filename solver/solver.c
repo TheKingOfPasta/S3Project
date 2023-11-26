@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <err.h>
-#include <stdlib.h>
-#include "parser.h"
-#include <string.h>
 #include "solver.h"
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
@@ -156,7 +151,7 @@ void SLV_findRemainingCells(short g[9][9],short a[]){
 }
 
 void SLV_solve(short grid[9][9]){
-    remainingCell =81;
+    remainingCell = 81;
     SLV_Clues_Collapsing(grid);
     if(remainingCell<1) return;
     printf("brute forcing now..\n");

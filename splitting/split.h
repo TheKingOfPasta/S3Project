@@ -5,10 +5,4 @@
 #include <err.h>
 #include <stdlib.h>
 
-typedef struct tuple
-{
-    int x;
-    int y;
-} tuple;
-
-void Split(SDL_Surface* surface, char* folder_out, tuple* coords);
+void Split(SDL_Surface* surface, char* folder_out);

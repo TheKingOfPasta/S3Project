@@ -1,3 +1,10 @@
+#pragma once
+#include <stdio.h>
+#include <err.h>
+#include <stdlib.h>
+#include "parser.h"
+#include <string.h>
+
 void SLV_collapse_grid(short grid[9][9], int x, int y, short val);
 short SLV_get_collapsed_value(short cell_val);
 void printUnsolved(short x);

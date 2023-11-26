@@ -1,8 +1,5 @@
 //Method prefix : PSR
-
-#include <malloc.h>
-#include <string.h>
-#include <stdio.h>
+#include "parser.h"
 
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 

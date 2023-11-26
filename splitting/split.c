@@ -1,7 +1,7 @@
 #include "split.h"
 
 //Fills 'folder_out' with 81 new images
-void Split(SDL_Surface* surface, char* folder_out, tuple* coords)
+void Split(SDL_Surface* surface, char* folder_out)
 {
     Uint32* pixels = surface->pixels;
 
@@ -24,9 +24,6 @@ void Split(SDL_Surface* surface, char* folder_out, tuple* coords)
             {
                 newPixels[y * w9 + x] = pixels[(j + y) * surface->w + (i + x)];
             }
-
-            coords[fileIndex - 1].x = i;
-            coords[fileIndex - 1].y = j;
 
             char* str;
             if (asprintf(&str, "%s/split_%02i.png", folder_out, fileIndex) == -1)
