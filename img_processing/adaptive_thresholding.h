@@ -2,4 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
+SDL_Surface* IMGA_OtsuThreshold(SDL_Surface* surface);
+SDL_Surface* IMGA_AdaptiveThresholdDeluxe(SDL_Surface* s, int split);
+SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k);
 SDL_Surface* IMGA_ApplyThreshold(SDL_Surface* surface, int threshold,  int splitsize);
