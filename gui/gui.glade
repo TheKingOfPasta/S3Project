@@ -144,14 +144,14 @@
               </packing>
             </child>
             <child type="overlay">
-              <object class="GtkScale" id="RotateScale">
+              <object class="GtkScale" id="Scale">
                 <property name="width-request">150</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Change</property>
                 <property name="halign">center</property>
                 <property name="valign">start</property>
-                <property name="fill-level">1</property>
-                <property name="round-digits">1</property>
+                <property name="round-digits">0</property>
                 <property name="digits">0</property>
               </object>
               <packing>

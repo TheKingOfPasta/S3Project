@@ -5,8 +5,6 @@ void Split(SDL_Surface* surface, char* folder_out)
 {
     Uint32* pixels = surface->pixels;
 
-    SDL_LockSurface(surface);//Avoid random stuff while accessing the pixels
-
     int w9 = surface->w / 9;
     int h9 = surface->h / 9;
 
@@ -30,6 +28,7 @@ void Split(SDL_Surface* surface, char* folder_out)
                 errx(EXIT_FAILURE, "asprintf failed");
             IMG_SavePNG(newS, str);
             fileIndex += 1;
+            free(str);
         }
     }
 

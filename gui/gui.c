@@ -8,6 +8,7 @@
 
 typedef struct widgets
 {
+    GtkBuilder* b;
     GtkWidget* w1;
     GtkWidget* w2;
 
@@ -20,8 +21,9 @@ typedef struct widgets
     GtkButton* DoAllButton;
     GtkButton* DoNextButton;
     GtkProgressBar* ProgressBar;
-    GtkRange* RotateScale;
+    GtkScale* Scale;
     char* path;
+    int resetSlider;
 } widgets;
 
 int i = 0;
@@ -64,8 +66,12 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
-    if (i != 5)
-        gtk_widget_hide(GTK_WIDGET(h->RotateScale));
+
+    if (h->resetSlider)
+    {
+        gtk_widget_hide(GTK_WIDGET(h->Scale));
+        gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 9);
+    }
 
     switch (i)
     {
@@ -78,10 +84,22 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Adaptive thresholding)");
             break;
         case 2:
-            img = IMGA_ApplyThreshold(img, AdaptiveThreshold, Splitsize);
+            if (h->resetSlider)
+            {
+                gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
+                gtk_range_set_range(GTK_RANGE(h->Scale), 1.0, 6.0);
+                gtk_widget_show(GTK_WIDGET(h->Scale));
+                gtk_button_set_label(btn, "Next step (Sobel gradient)");
+                img = IMGA_ApplyThreshold(img, AdaptiveThreshold, Splitsize);
+            }
+            else
+            {
+                gint v = gtk_range_get_value(GTK_RANGE(h->Scale));
+                img = IMGA_ApplyThreshold(img, v, Splitsize);
+            }
             img = CheckInvert(img);
             img = IMGA_Erosion(img);
-            gtk_button_set_label(btn, "Next step (Sobel gradient)");
+
             break;
         case 3:
             img = sobel_gradient(img);
@@ -94,12 +112,19 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             break;
         case 5:
-            double angle = FindAngle(quad);
-            img = IMGA_Rotate(img, angle);
-
-            gtk_widget_show(GTK_WIDGET(h->RotateScale));
-
-            gtk_range_set_value(h->RotateScale, angle);
+            if (h->resetSlider)
+            {
+                gtk_widget_show(GTK_WIDGET(h->Scale));
+                double angle = FindAngle(quad);
+                img = IMGA_Rotate(img, angle);
+                gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
+                gtk_range_set_value(GTK_RANGE(h->Scale), angle);
+            }
+            else
+            {
+                float f = (float)(gtk_range_get_value(GTK_RANGE(h->Scale)));
+                img = IMGA_Rotate(img, f);
+            }
 
             gtk_button_set_label(btn, "Next step (Splitting)");
             break;
@@ -172,10 +197,17 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     gtk_image_set_from_file(ImageDisplay, newFile);
 
-    gtk_progress_bar_set_fraction(h->ProgressBar, (float)i / 9);
-
     free(newFile);
     free(file);
+
+    return TRUE;
+}
+
+gboolean DoNextFuncHat(GtkButton* btn, gpointer ptr)
+{
+    widgets* h = ptr;
+    h->resetSlider = 1;
+    DoNextFunc(btn, ptr);
 
     return TRUE;
 }
@@ -235,25 +267,19 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
 
 gboolean Save()
 {
-    IMG_SavePNG(IMG_Load("temp00.png"), "output.png");
+    char* s;
+    if (asprintf(&s, "temp%02i.png", i) == -1)
+        errx(EXIT_FAILURE, "asprintf failed");
+    IMG_SavePNG(IMG_Load(s), "output.png");
+    free(s);
 
     printf("Saved into output.png\n");
 
     return FALSE;
 }
 
-gboolean Undo(GtkButton* btn, gpointer ptr)
+void RefreshDisplay(widgets* h)
 {
-    btn = btn;
-    if (i == 0)
-        return FALSE;
-
-    i -= 1;
-    widgets* h = ptr;
-
-    gtk_widget_show(GTK_WIDGET(h->DoNextButton));
-    gtk_widget_show(GTK_WIDGET(h->DoAllButton));
-
     if (i == 0)
     {
         //Can't go backwards to call DoNextFunc, so copy paste :/
@@ -271,13 +297,29 @@ gboolean Undo(GtkButton* btn, gpointer ptr)
         //DoNextFunc will handle the i increase, the image loading
         // and the button labels update
     }
+}
 
+gboolean Undo(GtkButton* btn, gpointer ptr)
+{
+    btn = btn;
+    if (i == 0)
+        return FALSE;
+
+    i -= 1;
+    widgets* h = ptr;
+
+    gtk_widget_show(GTK_WIDGET(h->DoNextButton));
+    gtk_widget_show(GTK_WIDGET(h->DoAllButton));
+
+    h->resetSlider = 0;
+    RefreshDisplay(h);
 
     return FALSE;
 }
 
 void RemoveTemps()
 {
+    remove("accumulator.png");
     for (int j = 0; j < 9; j++)
     {
         char* removing;
@@ -320,19 +362,29 @@ gpointer MyQuit()
     return FALSE;
 }
 
-gboolean RotateSlider(GtkRange* range, gpointer ptr)
+gboolean SliderAction(GtkRange* slider, gpointer user_data)
 {
-    widgets* h = ptr;
+    widgets* h = user_data;
+    gint v = gtk_range_get_value(slider);
 
-    gint v = gtk_range_get_value(h->RotateScale);
+    if (i == 6)
+    {
+        IMG_SavePNG(IMGA_Rotate(IMG_Load("temp05.png"), v), "temp06.png");
+    }
+    else if (i == 3)
+    {
+        //Thresholding
+        SDL_Surface* s = IMG_Load("temp02.png");
+        s = IMGA_ApplyThreshold(s, v, Splitsize);
+        s = CheckInvert(s);
+        s = IMGA_Erosion(s);
+        IMG_SavePNG(s, "temp03.png");
+    }
+    else
+        return TRUE;
 
-    SDL_Surface* s = IMG_Load("temp06.png");
-
-    s = IMGA_Rotate(s, v);
-
-    gtk_range_set_range(range, -180, 180);
-
-    IMG_SavePNG(s, "temp06.png");
+    h->resetSlider = 0;
+    RefreshDisplay(h);
 
     return TRUE;
 }
@@ -354,9 +406,15 @@ int main ()
         return EXIT_FAILURE;
     }
 
+    GtkScale* scale = GTK_SCALE(
+            gtk_builder_get_object(builder, "Scale"));
+
+    gtk_range_set_range(GTK_RANGE(scale), 1, 6);
+
     // Gets the widgets.
     widgets h =
     {
+        b : builder,
         w1 : GTK_WIDGET(
             gtk_builder_get_object(builder, "StartWindow")),
 
@@ -383,13 +441,14 @@ int main ()
 
         ProgressBar : GTK_PROGRESS_BAR(
             gtk_builder_get_object(builder, "ProgressBar")),
-        RotateScale : GTK_RANGE(
-            gtk_builder_get_object(builder, "RotateScale")),
+        Scale : scale,
 
-        path : NULL
+        path : NULL,
+        resetSlider : 1,
     };
 
-    g_signal_connect(h.RotateScale, "value-changed", G_CALLBACK(RotateSlider), &h);
+    gtk_widget_hide(GTK_WIDGET(scale));
+    g_signal_connect(h.Scale, "value-changed", G_CALLBACK(SliderAction), &h);
 
     gtk_widget_hide(GTK_WIDGET(h.NextPageButton));
 
@@ -427,7 +486,7 @@ int main ()
         &h
         );
 
-    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFunc), &h);
+    g_signal_connect(DoNext, "clicked", G_CALLBACK(DoNextFuncHat), &h);
     g_signal_connect(DoAll, "clicked", G_CALLBACK(DoAllFunc), &h);
 
     gtk_main();
