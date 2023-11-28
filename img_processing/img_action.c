@@ -25,12 +25,96 @@ void ErrorMessage()
 }
 
 
+#define sobel(x) (x=='s')
+#define threshold(x) (x=='t' || sobel(x))
+#define blur(x) (x=='b' || threshold(x))
+#define grayscale(x) (x=='g' || blur(x))
+
+
+void normalize(SDL_Surface * s){
+    Uint8 r,g,b;
+    Uint8 m =0;
+
+    Uint32 * pixels = s->pixels;
+    for (int i = 0; i < s->w; i ++)
+    for (int j = 0; j < s->h; j ++)
+    {
+        SDL_GetRGB(pixels[i + (j) * s->w],
+                    s->format,
+                    &r,&g,&b);
+        if (r>m) m= r;
+    }
+
+    for (int i = 0; i < s->w; i ++)
+    for (int j = 0; j < s->h; j ++)
+    {
+        SDL_GetRGB(pixels[i + (j) * s->w],
+                    s->format,
+                    &r,&g,&b);
+        Uint8 a = r * (255.0/m);
+        pixels[i+j*s->w] = SDL_MapRGB(s->format, a, a, a);
+    }
+}
+
+
+int betterMain(char param, char one)
+{
+
+    char* path_in;
+    char* path_out;
+    if(! grayscale(param))
+    {
+        errx(EXIT_FAILURE, "Usage: -g >>> grayscale\n"
+           "\t\t   -b >>> blur\n"
+           "\t\t   -t >>> threshold\n"
+           "\t\t   -s >>> sobel\n");
+    }
+
+    for(int i =1 ; i<7;i++){
+        if (one != '\0' && one -'0' != i)  continue;
+
+        if (asprintf(&path_in,"../test_grid/sudoku0%i.png",i) == -1)
+            errx(EXIT_FAILURE, "asprintf()");
+        if (asprintf(&path_out,"./sudoku0%i.png",i)==-1)
+            errx(EXIT_FAILURE, "asprintf()");
+
+        printf("Attempting to apply all from %s\n", path_in);
+        SDL_Surface* s = IMG_Load(path_in);
+        int AdaptiveFactor = s->w*s->h ;
+        printf("adaptive factor : %i\n",AdaptiveFactor);
+
+        IMGC_surface_to_grayscale(s);
+        if(!blur(param))goto save;
+        s=IMGA_GaussianBlur(s,Blursize, BlurIntensity);
+
+        if(!threshold(param)) goto save;
+        //s=IMGA_Erosion(CheckInvert(IMGA_AdaptiveThresholdDeluxe(s,Splitsize)));
+        //s=IMGA_Erosion(CheckInvert(IMGA_OtsuThreshold(s)));
+        //s=IMGA_Erosion(CheckInvert(IMGA_Sovela(s,3,0.2)));
+        s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
+
+        if(!sobel(param))goto save;
+        s = sobel_gradient(s);
+        save:
+        IMG_SavePNG(s, path_out);
+        printf("Successfully saved the new image at path %s\n", path_out);
+    }
+    return 1;
+}
+
 
 
 int main(int argc, char** argv)
 {
     if (argc == 1)
         ErrorMessage();
+
+    if(argc == 2)
+    {
+        betterMain(argv[1][1],argv[1][2]);
+        return 1;
+    } //ff whats below
+
 
     char* path_in = argv[2];
     char* path_out = argv[3];
@@ -172,7 +256,8 @@ int main(int argc, char** argv)
 		else
             for (int i = 0; i <= threshold; i++)
             {
-                asprintf(&str, "%s/thresholded_%i.png", path_out, i);
+                if(asprintf(&str, "%s/thresholded_%i.png", path_out, i) == -1)
+                    err(EXIT_FAILURE,"asprintf()");
                 IMG_SavePNG(IMGA_ApplyThreshold(IMG_Load(path_in), i, Splitsize), str);
             }
         printf("Successfully saved the new image at path %s\n", path_out);
@@ -271,7 +356,10 @@ int main(int argc, char** argv)
         if (argc ==2)
         {
             for(int i =1 ; i<7;i++){
-                asprintf(&path_in,"../test_grid/sudoku0%i.png",i);
+                if(asprintf(&path_in,"../test_grid/sudoku0%i.png",i) == -1)
+                    err(EXIT_FAILURE,"asprintf()");
+                if (asprintf(&path_out,"./sudoku0%i.png",i)==-1)
+                    err(EXIT_FAILURE,"asprintf()");
                 printf("Attempting to apply all from %s\n", path_in);
                 SDL_Surface* s = IMG_Load(path_in);
                 s = IMGC_surface_to_grayscale(s);
@@ -279,7 +367,6 @@ int main(int argc, char** argv)
                         IMGA_ApplyThreshold(
                             IMGA_GaussianBlur(s,Blursize, BlurIntensity),
                                             AdaptiveThreshold,Splitsize))));
-                asprintf(&path_out,"./sudoku0%i.png",i);
                 Quadrilateral* grid = Find_Grid(s);
                 IMG_SavePNG(s, path_out);
                 if(!grid){
