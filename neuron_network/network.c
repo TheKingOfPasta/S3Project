@@ -32,14 +32,12 @@ NN_Network *NN_create_network(size_t *sizes, size_t num_layers)
         network->weights2[i - 1] = weights_m;
         for (size_t j = 0; j < sizes[i]; ++j)
         {
-            bias_m->matrix[j][0] = random_value();
+            bias_m->matrix[j][0] = 0;//random_value();
             for (size_t k = 0; k < sizes[i - 1]; ++k)
             {
-                weights_m->matrix[j][k] = random_value();
+                weights_m->matrix[j][k] = ((double)rand() / RAND_MAX / sqrt((double)sizes[i])); //random_value();
             }
         }
-        norm_matrix2(weights_m);
-        norm_matrix2(bias_m);
     }
 
     return network;
@@ -191,10 +189,12 @@ void backprop(NN_Network *network, TrainingData *data, Matrix **nabla_b,
 
     // backward ============
     // activ[-1]
+    
+    // compute the matrix cost_derivative * sigmoid_prime(zs[-1])
     for (size_t i = 0; i < activations[n_lay - 1]->m; ++i)
     {
         activations[n_lay - 1]->matrix[i][0] -= data->expected->matrix[i][0];
-        activations[n_lay - 1]->matrix[i][0] *= sigmoid_p(zs[n_lay - 2]->matrix[i][0]);
+        //activations[n_lay - 1]->matrix[i][0] *= sigmoid_p(zs[n_lay - 2]->matrix[i][0]);
         nabla_b[n_lay - 2]->matrix[i][0] += activations[n_lay -
             1]->matrix[i][0];
     }

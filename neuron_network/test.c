@@ -18,7 +18,7 @@
 # define XOR_LAMBDA 5.0
 
 // for the digits function
-# define DIGITS_ETA 10
+# define DIGITS_ETA 1
 # define DIGITS_EPOCHS 30
 # define DIGITS_MINI_BATCH_SIZE 10
 # define DIGITS_LAMBDA 5.0
