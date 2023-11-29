@@ -67,11 +67,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     SDL_Surface* img = IMG_Load(file);
 
-    if (h->resetSlider)
-    {
-        gtk_widget_hide(GTK_WIDGET(h->Scale));
-        gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 9);
-    }
+    gtk_widget_hide(GTK_WIDGET(h->Scale));
+    gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 9);
 
     switch (i)
     {
@@ -84,12 +81,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Adaptive thresholding)");
             break;
         case 2:
+            gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
                 gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
                 gtk_range_set_range(GTK_RANGE(h->Scale), 1.0, 6.0);
-                gtk_widget_show(GTK_WIDGET(h->Scale));
-                gtk_button_set_label(btn, "Next step (Sobel gradient)");
                 img = IMGA_ApplyThreshold(img, AdaptiveThreshold, Splitsize);
             }
             else
@@ -100,6 +96,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             img = CheckInvert(img);
             img = IMGA_Erosion(img);
 
+            gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
         case 3:
             img = sobel_gradient(img);
@@ -112,9 +109,9 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             break;
         case 5:
+            gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
-                gtk_widget_show(GTK_WIDGET(h->Scale));
                 double angle = FindAngle(quad);
                 img = IMGA_Rotate(img, angle);
                 gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
