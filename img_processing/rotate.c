@@ -12,8 +12,8 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
     double sine = sin(angleRad);
 
 	SDL_Surface* newS = SDL_CreateRGBSurface(0,
-							surface->h*sine+surface->w*cosine,
-							surface->w*sine+surface->h*cosine, 32,0,0,0,0);
+							surface->h*fabs(sine)+surface->w*fabs(cosine),
+							surface->w*fabs(sine)+surface->h*fabs(cosine), 32,0,0,0,0);
 
     SDL_LockSurface(surface);
     Uint32* pixels = surface->pixels;

@@ -24,8 +24,8 @@ void ErrorMessage()
            "                   -agd/--all>grid_detect\n");
 }
 
-
-#define sobel(x) (x=='s')
+#define detection(x) (x=='d')
+#define sobel(x) ((x=='s') || detection(x))
 #define threshold(x) (x=='t' || sobel(x))
 #define blur(x) (x=='b' || threshold(x))
 #define grayscale(x) (x=='g' || blur(x))
@@ -67,7 +67,8 @@ int betterMain(char param, char one)
         errx(EXIT_FAILURE, "Usage: -g >>> grayscale\n"
            "\t\t   -b >>> blur\n"
            "\t\t   -t >>> threshold\n"
-           "\t\t   -s >>> sobel\n");
+           "\t\t   -s >>> sobel\n"
+           "\t\t   -d >>> grid detection\n");
     }
 
     for(int i =1 ; i<7;i++){
@@ -95,6 +96,11 @@ int betterMain(char param, char one)
 
         if(!sobel(param))goto save;
         s = sobel_gradient(s);
+        if(!detection(param)) goto save;
+        Quadrilateral* grid = Find_Grid(s);
+        IMG_SavePNG(s, path_out);
+        if(!grid) printf("not found grid :(\n");
+        else printQuad(grid);
         save:
         IMG_SavePNG(s, path_out);
         printf("Successfully saved the new image at path %s\n", path_out);

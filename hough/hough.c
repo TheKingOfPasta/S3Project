@@ -51,12 +51,15 @@ List* HoughLine(SDL_Surface* img)
             accumulator[r][t] = 0;
     }
 
+    Uint32* pixels = img->pixels;
+	Uint8 gray;
 	// Accumulator calculation
 	for (int i = 0; i < width; i++)
 	for (int j = 0; j < height; j++)
 	{
-		int pixel = (int)((Uint32*)(img->pixels))[i + j * width];
-		if (pixel < 127)continue;
+		SDL_GetRGB(pixels[i+j*width],img->format,&gray,&gray,&gray);
+
+		if (gray < 127)continue;
 
 		for (int angle = 0; angle < theta_num; angle += 1)
 		{
@@ -151,7 +154,7 @@ void AveragesCloseLine(List* lLine, int diag_len)
 		{
 			Line* currLine2 = curr2->next->data;
 			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(30)) &&
-				fabs(currLine2->rho - currLine->rho)/diag_len < 0.03)
+				fabs(currLine2->rho - currLine->rho)/diag_len < 0.02)
 				//   ^ I removed a fabs here if something is broken
 			{
 				//printf("			%3i : theta %2.3f (deg %i) rho %5f\n",j,currLine2->theta,(int)((currLine2->theta)*180/M_PI),currLine->rho);
