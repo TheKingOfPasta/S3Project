@@ -130,13 +130,12 @@ List* HoughLine(SDL_Surface* img)
 }
 
 //Removes all lines which are too close to each other
-void Prune(List* lLine)
+void AveragesCloseLine(List* lLine, int diag_len)
 {
 	Node* curr;
-    if (!(curr = lLine->head))
-	{
-        return;
-	}
+    if (!(curr = lLine->head)) return;
+
+
 	int  i =0;
     while (curr)
     {
@@ -152,7 +151,7 @@ void Prune(List* lLine)
 		{
 			Line* currLine2 = curr2->next->data;
 			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(30)) &&
-				fabs( (currLine2->rho / currLine->rho)-1) < 0.05)
+				fabs(currLine2->rho - currLine->rho)/diag_len < 0.03)
 				//   ^ I removed a fabs here if something is broken
 			{
 				//printf("			%3i : theta %2.3f (deg %i) rho %5f\n",j,currLine2->theta,(int)((currLine2->theta)*180/M_PI),currLine->rho);
@@ -182,7 +181,7 @@ void Prune(List* lLine)
 }
 
 //list has at 4 elements
-void ExcludeBorder(List* list, int w, int h, double exthres)
+void ExcludeBorderLine(List* list, int w, int h, double exthres)
 {
     Node* curr = list->head;
     int count = 0;
@@ -230,7 +229,7 @@ void ExcludeBorder(List* list, int w, int h, double exthres)
 	}
 }
 
-void LineFiltering(List *l,int thresh){
+void RemovesStrayLine(List *l,int thresh){
 	int histogram[180];
 	for(int i =0; i<180;i++) histogram[i] =0;
 	Node* curr = l->head;

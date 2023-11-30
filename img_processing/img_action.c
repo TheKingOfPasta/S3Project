@@ -395,11 +395,11 @@ int main(int argc, char** argv)
                                 AdaptiveThreshold,Splitsize))));
 
         Quadrilateral* grid = Find_Grid(s);
-        printQuad(grid);
+        IMG_SavePNG(s, path_out);
         if(!grid)
             printf("not found grid :(\n");
         else{
-            IMG_SavePNG(s, path_out);
+            printQuad(grid);
             printf("Successfully saved the new image at path %s\n", path_out);
         }
     }

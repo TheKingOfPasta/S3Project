@@ -20,9 +20,9 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
 
     //printList(lLine,1);
     DrawLines(s,lLine,255,0,0);
-    ExcludeBorder(lLine, s->w, s->h, 0.015);
-    LineFiltering(lLine,10);
-    Prune(lLine);
+    ExcludeBorderLine(lLine, s->w, s->h, 0.015);
+    //RemovesStrayLine(lLine,10);
+    AveragesCloseLine(lLine,ceil(sqrt(s->w * s->w + s->h * s->h)));
     //printList(lLine,1);
     DrawLines(s,lLine,0,255,255);
 

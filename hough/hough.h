@@ -9,6 +9,6 @@
 #include "visualization.h"
 
 List* HoughLine(SDL_Surface* img);
-void Prune(List* lLine);
-void ExcludeBorder(List* list, int w, int h, double exthres);
-void LineFiltering(List *l,int thresholdDeg);
+void AveragesCloseLine(List* lLine, int diag);
+void ExcludeBorderLine(List* list, int w, int h, double exthres);
+void RemovesStrayLine(List *l,int thresholdDeg);
