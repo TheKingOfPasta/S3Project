@@ -5,6 +5,7 @@
 #define AdaptiveThreshold 3
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
+#define NETWORK_PATH "ai.net"
 
 typedef struct widgets
 {
@@ -29,6 +30,8 @@ typedef struct widgets
 int i = 0;
 Quadrilateral* quad;//The quad used by FindAngle and returned by FindGrid
 short digits[9][9];
+
+NN_Network *network;
 
 // Writes 'digit' on the surface at (x, y)
 void WriteDigit(SDL_Surface* s, int x, int y, int digit)
@@ -95,14 +98,18 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             }
             img = CheckInvert(img);
             img = IMGA_Erosion(img);
+            img = CheckInvert(img);
 
             gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
         case 3:
             img = sobel_gradient(img);
+
             gtk_button_set_label(btn, "Next step (Hough transform)");
             break;
         case 4:
+
+            IMG_SavePNG(img, "AURELIEN.png");
             quad = Find_Grid(img);
 
             gtk_button_set_label(btn, "Next step (Rotation)");
@@ -133,15 +140,33 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
         case 7:
+            Matrix *input = init_matrix2(28, 28);
             for (int j = 1; j <= 81; j++)
             {
                 char* f;
                 if (asprintf(&f, "temp_split/split_%02i.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
+                printf("%s\n", f);
 
+                // put the pixels in a matrix
+                SDL_Surface *s = IMG_Load(f);
+                print("Failed loading?\n");
+                Uint32 *pixels = s->pixels;
+                for (int x = 0; x < 28; ++x)
+                    for (int y = 0; y < 28; ++y)
+                        input->matrix[x][y] = pixels[x * 28 + y];
 
-                //SDL_Surface* s = IMG_Load(f);
-                short foundDigit = 0;
+                // compute the output from the network
+                Matrix *output = NN_feedforward(network, input);
+
+                // get maximum index of output
+                short foundDigit = argmax(output);
+
+                // if you want to verify how sure he is, check the index
+                printf("Network of split_%02i.png: found %hi %f%\n", j,
+                        foundDigit, output->matrix[foundDigit][0]);
+
+                free_matrix2(output);
 
                 // Do neural network stuff
                 // knowing that s is your image
@@ -389,6 +414,8 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
 // Main function.
 int main ()
 {
+
+    network = load_network(NETWORK_PATH);
     // Initializes GTK.
     gtk_init(NULL, NULL);
 
