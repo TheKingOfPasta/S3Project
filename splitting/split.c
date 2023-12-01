@@ -10,10 +10,11 @@ void Split(SDL_Surface* surface, char* folder_out)
 
     int fileIndex = 1;
 
-    for (int j = 0; j < surface->h; j += h9)
+    for (int j = 0; j < surface->h - h9; j += h9)
     {
-        for (int i = 0; i < surface->w; i += w9)
+        for (int i = 0; i < surface->w - w9; i += w9)
         {
+            printf("j: %i, i: %i\n", j, i);
             SDL_Surface* newS = SDL_CreateRGBSurface(0, w9, h9, 32, 0, 0, 0, 0);
             Uint32* newPixels = newS->pixels;
 
@@ -26,11 +27,18 @@ void Split(SDL_Surface* surface, char* folder_out)
             char* str;
             if (asprintf(&str, "%s/split_%02i.png", folder_out, fileIndex) == -1)
                 errx(EXIT_FAILURE, "asprintf failed");
-            IMG_SavePNG(newS, str);
+            printf("saving\n");
+            int e = IMG_SavePNG(newS, str);
+            printf("done saving\n");
+            if (e == -1)
+                err(EXIT_FAILURE, "IMG_SavePNG");
             fileIndex += 1;
             free(str);
         }
     }
 
-    SDL_FreeSurface(surface);
+    // free the input surface but later on we need it so commented out
+    //SDL_FreeSurface(surface);
+
+    printf("done\n");
 }
