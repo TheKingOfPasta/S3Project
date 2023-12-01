@@ -59,6 +59,21 @@ void WriteDigit(SDL_Surface* s, int x, int y, int digit)
     SDL_FreeSurface(inp);
 }
 
+void print_image(Matrix *a)
+{
+    for (size_t i = 0; i < 28; ++i)
+    {
+        for (size_t j = 0; j < 28; ++j)
+            if (a->matrix[i * 28 + j][0] > 0)
+                //printf("%0.3f ", a->matrix[i * 28 + j][0]);
+                printf("@ ");
+            else
+                //printf("%0.3f ", 0.f);
+                printf(". ");
+        printf("\n");
+    }
+}
+
 gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 {
     widgets* h = ptr;
@@ -140,21 +155,34 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
         case 7:
-            Matrix *input = init_matrix2(28, 28);
+            printf("Starting step 7");
+            Matrix *input = init_matrix2(784, 1);
             for (int j = 1; j <= 81; j++)
             {
                 char* f;
+                char *f_out;
                 if (asprintf(&f, "temp_split/split_%02i.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
+                if (asprintf(&f_out, "temp_split/split_%02i_28x28.png", j) == -1)
+                    errx(EXIT_FAILURE, "asprint failed");
                 printf("%s\n", f);
 
                 // put the pixels in a matrix
-                SDL_Surface *s = IMG_Load(f);
-                print("Failed loading?\n");
+                SDL_Surface *s_unknown_size = IMG_Load(f);
+                SDL_Surface *s = downscale_resize (s_unknown_size, 28);
+                SDL_FreeSurface(s_unknown_size);
+                IMG_SavePNG(s, f_out);
+
+                printf("Failed loading?\n");
                 Uint32 *pixels = s->pixels;
                 for (int x = 0; x < 28; ++x)
                     for (int y = 0; y < 28; ++y)
-                        input->matrix[x][y] = pixels[x * 28 + y];
+                    {
+                        Uint8 gray;
+                        SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
+                        input->matrix[x * 28 + y][0] = gray == 255 ? 1 : 0;
+                    }
+                print_image(input);
 
                 // compute the output from the network
                 Matrix *output = NN_feedforward(network, input);
@@ -163,7 +191,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 short foundDigit = argmax(output);
 
                 // if you want to verify how sure he is, check the index
-                printf("Network of split_%02i.png: found %hi %f%\n", j,
+                printf("Network of split_%02i.png: found %hi %f%%\n", j,
                         foundDigit, output->matrix[foundDigit][0]);
 
                 free_matrix2(output);
