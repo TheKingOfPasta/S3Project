@@ -23,3 +23,7 @@
 #include "../solver/solver.h"
 #include <SDL2/SDL_ttf.h>
 #include "../solver/parser.h"
+#include "../neuron_network/network.h"
+#include "../neuron_network/network_loader.h"
+#include "../neuron_network/helper.h"
+#include "../resize/resize.h"

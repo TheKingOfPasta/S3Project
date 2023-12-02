@@ -409,6 +409,26 @@ int main(int argc, char** argv)
             printf("Successfully saved the new image at path %s\n", path_out);
         }
     }
+    else if (CompareStrings(argv[1], "-ho") ||
+                CompareStrings(argv[1], "--all>hough"))
+    {
+        if (argc != 4)
+            errx(EXIT_FAILURE, "-agd/--all>grid_detect : "
+                "applies every function then "
+                "applies the grid detection algorithm(s) "
+                "(path_in path_out)\n");
+
+        printf("Attempting to apply all from %s\n", path_in);
+        SDL_Surface* s = IMG_Load(path_in);
+        Quadrilateral* grid = Find_Grid(s);
+        IMG_SavePNG(s, path_out);
+        if(!grid)
+            printf("not found grid :(\n");
+        else{
+            printQuad(grid);
+            printf("Successfully saved the new image at path %s\n", path_out);
+        }
+    }
     else
         ErrorMessage();
 

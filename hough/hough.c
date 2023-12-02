@@ -1,6 +1,6 @@
 #include "hough.h"
 
-#define LINE_THRESHOLD 40 // percent
+#define LINE_THRESHOLD 70 // percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {
@@ -51,15 +51,16 @@ List* HoughLine(SDL_Surface* img)
             accumulator[r][t] = 0;
     }
 
-    Uint32* pixels = img->pixels;
-	Uint8 gray;
-	// Accumulator calculation
+    Uint8 gray;
+    Uint32 *pixels = img->pixels;
+    // Accumulator calculation
 	for (int i = 0; i < width; i++)
 	for (int j = 0; j < height; j++)
 	{
-		SDL_GetRGB(pixels[i+j*width],img->format,&gray,&gray,&gray);
+	    SDL_GetRGB(pixels[i+j*width],img->format,&gray,&gray,&gray);
 
-		if (gray < 127)continue;
+            int pixel = gray;
+		if (pixel < 127)continue;
 
 		for (int angle = 0; angle < theta_num; angle += 1)
 		{

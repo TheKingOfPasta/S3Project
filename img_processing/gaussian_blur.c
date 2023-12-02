@@ -1,16 +1,16 @@
 #include "gaussian_blur.h"
 
-void print_matrix(double** arr, size_t size)
-{
-	for (size_t j = 0; j < size; j++)
-	{
-		for (size_t i = 0; i < size; i++)
-		{
-			printf("%02f", arr[i][j]);
-		}
-		printf("\n");
-	}
-}
+//void print_matrix(double** arr, size_t size)
+//{
+//	for (size_t j = 0; j < size; j++)
+//	{
+//		for (size_t i = 0; i < size; i++)
+//		{
+//			printf("%02f", arr[i][j]);
+//		}
+//		printf("\n");
+//	}
+//}
 
 SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 {
