@@ -73,8 +73,7 @@ int betterMain(char param, char one)
 
     for(int i =1 ; i<7;i++){
         if (one != '\0' && one -'0' != i)  continue;
-
-        if (asprintf(&path_in,"../test_grid/sudoku0%i.png",i) == -1)
+        if (asprintf(&path_in,"../test_grid/image_0%i.jpeg",i) == -1)
             errx(EXIT_FAILURE, "asprintf()");
         if (asprintf(&path_out,"./sudoku0%i.png",i)==-1)
             errx(EXIT_FAILURE, "asprintf()");
@@ -82,27 +81,28 @@ int betterMain(char param, char one)
         printf("Attempting to apply all from %s\n", path_in);
         SDL_Surface* s = IMG_Load(path_in);
         int AdaptiveFactor = s->w*s->h ;
-        printf("adaptive factor : %i\n",AdaptiveFactor);
+        //printf("adaptive factor : %i\n",AdaptiveFactor);
 
-        IMGC_surface_to_grayscale(s);
+        s= IMGC_surface_to_grayscale(s);
+
         if(!blur(param))goto save;
         s=IMGA_GaussianBlur(s,Blursize, BlurIntensity);
 
         if(!threshold(param)) goto save;
         //s=IMGA_Erosion(CheckInvert(IMGA_AdaptiveThresholdDeluxe(s,Splitsize)));
         //s=IMGA_Erosion(CheckInvert(IMGA_OtsuThreshold(s)));
-        //s=IMGA_Erosion(CheckInvert(IMGA_Sovela(s,3,0.2)));
-        s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
+        s=IMGA_Erosion(CheckInvert(IMGA_Sovela(s,3,0.2)));
+        //s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
 
         if(!sobel(param))goto save;
         s = sobel_gradient(s);
         if(!detection(param)) goto save;
         Quadrilateral* grid = Find_Grid(s);
-        IMG_SavePNG(s, path_out);
         if(!grid) printf("not found grid :(\n");
         else printQuad(grid);
         save:
         IMG_SavePNG(s, path_out);
+        SDL_FreeSurface(s);
         printf("Successfully saved the new image at path %s\n", path_out);
     }
     return 1;

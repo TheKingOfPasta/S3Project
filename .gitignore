@@ -6,3 +6,6 @@ img_processing/*.png
 #ignore compiled files
 img_processing/img_action
 *.o
+#gui outputs
+gui/*.png
+gui/temp_split/

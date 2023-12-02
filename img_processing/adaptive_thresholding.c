@@ -169,7 +169,7 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
     for (int j = size; j<s->h-size; j++)
     {
         double sumMean = 0;
-        double s1=0;
+        double sumsquared=0;
         for (int k = i-size; k <= i+size; k++)
         for (int l = j-size; l <= j+size; l++)
         {
@@ -177,13 +177,13 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
                     s->format,
                     &gray, &gray, &gray);
             sumMean += gray;
-            s1 += gray*gray;
+            sumsquared += gray*gray;
         }
         double mean = sumMean / (n*n);
-        //double stdDeviation = s1 - 2*mean*sumMean + mean*mean*n*n;
-        double stdDeviation = s1 + mean* (-2*sumMean + mean*n*n);
-
-        int threshold = mean * ( 1+ k  * (stdDeviation/128.0 -1));
+        //double stdDeviation = sumsquared - 2*mean*sumMean + mean*mean*n*n;
+        double stdDeviation = sumsquared + mean* (-2*sumMean + mean*n*n);
+        double range = 128;
+        int threshold = mean * ( 1.0+ (k  * ((stdDeviation/range) -1.0)));
 
         SDL_GetRGB( pixels[i + (j) * s->w],
                 s->format,
