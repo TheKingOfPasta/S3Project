@@ -38,6 +38,8 @@ void WriteDigit(SDL_Surface* s, int x, int y, int digit)
 {
     char* file;
 
+    if (digit == 0)
+        digit = 1;
     if (asprintf(&file, "templates/number%i.png", digit) == -1)
         errx(EXIT_FAILURE, "asprintf failed");
 
