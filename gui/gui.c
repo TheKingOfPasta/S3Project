@@ -180,7 +180,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                     {
                         Uint8 gray;
                         SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
-                        input->matrix[x * 28 + y][0] = gray == 255 ? 1 : 0;
+                        input->matrix[x * 28 + y][0] = gray / 255.f;
                     }
                 print_image(input);
 
