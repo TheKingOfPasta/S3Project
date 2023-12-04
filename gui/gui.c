@@ -86,6 +86,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
+    SDL_Surface *img_for_split;
 
     gtk_widget_hide(GTK_WIDGET(h->Scale));
     gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 9);
@@ -126,18 +127,19 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             break;
         case 4:
 
-            IMG_SavePNG(img, "AURELIEN.png");
             quad = Find_Grid(img);
 
             gtk_button_set_label(btn, "Next step (Rotation)");
 
             break;
         case 5:
+            img_for_split = IMG_Load("temp03.png");
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
                 double angle = FindAngle(quad);
                 img = IMGA_Rotate(img, angle);
+                img_for_split = IMGA_Rotate(img_for_split, angle);
                 gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
                 gtk_range_set_value(GTK_RANGE(h->Scale), angle);
             }
@@ -145,14 +147,19 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             {
                 float f = (float)(gtk_range_get_value(GTK_RANGE(h->Scale)));
                 img = IMGA_Rotate(img, f);
+                img_for_split = IMGA_Rotate(img_for_split, f);
             }
+            IMG_SavePNG(img_for_split, "temp_split05.png");
 
             gtk_button_set_label(btn, "Next step (Splitting)");
             break;
         case 6:
             mkdir("temp_split", S_IRWXU);
+            img_for_split = IMG_Load("temp_split05.png");
 
             Split(img, "temp_split");
+            mkdir("temp_split2", S_IRWXU);
+            Split(img_for_split, "temp_split2");
 
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
@@ -163,7 +170,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             {
                 char* f;
                 char *f_out;
-                if (asprintf(&f, "temp_split/split_%02i.png", j) == -1)
+                if (asprintf(&f, "temp_split2/split_%02i.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
                 if (asprintf(&f_out, "temp_split/split_%02i_28x28.png", j) == -1)
                     errx(EXIT_FAILURE, "asprint failed");
@@ -171,14 +178,14 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
                 // put the pixels in a matrix
                 SDL_Surface *s_unknown_size = IMG_Load(f);
-                SDL_Surface *s = downscale_resize (s_unknown_size, 28);
+                SDL_Surface *s = downscale_resize (s_unknown_size, 28, 28);
                 SDL_FreeSurface(s_unknown_size);
                 IMG_SavePNG(s, f_out);
 
-                printf("Failed loading?\n");
                 Uint32 *pixels = s->pixels;
-                for (int x = 0; x < 28; ++x)
-                    for (int y = 0; y < 28; ++y)
+                int margin = 5;
+                for (int x = margin; x < 28 - margin; ++x)
+                    for (int y = margin; y < 28 - margin; ++y)
                     {
                         Uint8 gray;
                         SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
@@ -209,8 +216,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
                 digits[j % 9][j / 9] = foundDigit;
 
+                SDL_FreeSurface(s);
                 free(f);
             }
+
+            free_matrix2(input);
 
             gtk_button_set_label(btn, "Next step (Solving)");
             break;
@@ -296,7 +306,29 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     gtk_widget_show(GTK_WIDGET(h->DoNextButton));
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
 
-    IMG_SavePNG(IMG_Load(h->path), "temp00.png");
+    SDL_Surface *s = IMG_Load(h->path);
+    //if (s->w > 1000)
+    //{
+    //    const int new_width = 1000;
+    //    float ratio = new_width / s->w;
+    //    int new_height = (int)ceil(s->h * ratio);
+    //    SDL_Surface *r = downscale_resize(s, new_width, new_height);
+    //    SDL_FreeSurface(s);
+    //    s = r;
+    //    printf("Resizing\n");
+    //}
+    //else if (s->h > 1000)
+    //{
+    //    const int new_height = 1000;
+    //    float ratio = new_height / s->h;
+    //    int new_width = (int)ceil(s->w * ratio);
+    //    SDL_Surface *r = downscale_resize(s, new_width, new_height);
+    //    SDL_FreeSurface(s);
+    //    s = r;
+    //    printf("Resizing\n");
+    //}
+    printf("Saving\n");
+    IMG_SavePNG(s, "temp00.png");
 
     gtk_progress_bar_set_fraction(h->ProgressBar, 0);
 
@@ -309,9 +341,39 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
 
     char* path = gtk_file_chooser_get_filename(file_picker);
 
-    h->path = path;
+    h->path = "temp00.png";
 
-    gtk_image_set_from_file(h->ImagePicking, path);
+    SDL_Surface *s = IMG_Load(path);
+    if (s->w > 1000)
+    {
+        const int new_width = 1000;
+        float ratio = (float)new_width / s->w;
+        int new_height = (int)ceil(s->h * ratio);
+        printf("Resizing width from %ix%i to %ix%i\n",
+                s->w, s->h, new_width, new_height);
+
+        SDL_Surface *r = downscale_resize(s, new_width, new_height);
+        
+        SDL_FreeSurface(s);
+        s = r;
+            }
+    else if (s->h > 1000)
+    {
+        const int new_height = 1000;
+        float ratio = (float)new_height / s->h;
+        int new_width = (int)ceil(s->w * ratio);
+        printf("Resizing height from %ix%i to %ix%i\n",
+                s->w, s->h, new_width, new_height);
+
+        SDL_Surface *r = downscale_resize(s, new_width, new_height);
+
+            SDL_FreeSurface(s);
+        s = r;
+    }
+    IMG_SavePNG(s, "temp00.png");
+    SDL_FreeSurface(s);
+
+    gtk_image_set_from_file(h->ImagePicking, "temp00.png");
     gtk_widget_show(GTK_WIDGET(h->NextPageButton));
 
     return TRUE;
