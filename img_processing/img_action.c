@@ -22,7 +22,7 @@ void ErrorMessage()
 #define threshold(x) (x=='t' || sobel(x))
 #define blur(x) (x=='b' || threshold(x))
 #define grayscale(x) (x=='g' || blur(x))
-
+//#define wrapping(x) ((x == 'w') || grayscale(x))
 
 int betterMain(char param, char one)
 {
@@ -35,10 +35,12 @@ int betterMain(char param, char one)
            "\t\t   -b >>> blur\n"
            "\t\t   -t >>> threshold\n"
            "\t\t   -s >>> sobel\n"
-           "\t\t   -d >>> grid detection\n");
+           "\t\t   -d >>> grid detection\n"
+           "\t\t   -w >>> wrapping\n");
     }
 
     for(int i =1 ; i<7;i++){
+        if (i!=5) {
         if (one != '\0' && one -'0' != i)  continue;
         if (asprintf(&path_in,"../test_grid/image_0%i.jpeg",i) == -1)
             errx(EXIT_FAILURE, "asprintf()");
@@ -80,12 +82,23 @@ int betterMain(char param, char one)
 
         Quadrilateral* grid = Find_Grid(s);
         if(!grid) printf("not found grid :(\n");
-        else printQuad(grid);
+        else {
+            printQuad(grid);
+            printf("Attempting to Wrap\n");
+            SDL_Surface* wrapped = WrappingSurface(s, grid);
+            char* path;
+            if (asprintf(&path, "hough_0%i.png", i) == -1)
+                errx(EXIT_FAILURE, "asprintf()");
+            printf("Wrapped, saving at %s\n", path);
+            IMG_SavePNG(wrapped, path);
+            SDL_FreeSurface(wrapped);
+        }
         goto save;
         save:
         IMG_SavePNG(s, path_out);
         SDL_FreeSurface(s);
         printf("Successfully saved the new image at path %s\n", path_out);
+    }
     }
     return 1;
 }
