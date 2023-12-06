@@ -115,33 +115,15 @@ int ContainsQuad(List* lquad, Quadrilateral* quad){
 Quadrilateral* InitializeQuad(Point* p1, Point* p2, Point* p3, Point* p4){
 	Quadrilateral *quad =malloc(sizeof(Quadrilateral));
 
-	double l1 =sqrt(p1->x*p1->x+p1->y*p1->y);
-	double l2 =sqrt(p2->x*p2->x+p2->y*p2->y);
-	double l3 =sqrt(p3->x*p3->x+p3->y*p3->y);
-	double l4 =sqrt(p4->x*p4->x+p4->y*p4->y);
-	if(l1<=l2 && l1<=l3 && l1<=l4){
-		quad->p1 = *p1;
+	quad->p1 = *p1;
+	quad->p3 = *p3;
+	if(abs(p1->x - p4->x) <abs(p1->x - p2->x)){
 		quad->p2 = *p2;
-		quad->p3 = *p3;
 		quad->p4 = *p4;
-	}
-	else if(l2<=l3 && l2<=l4){
-		quad->p1 = *p2;
-		quad->p2 = *p3;
-		quad->p3 = *p4;
-		quad->p4 = *p1;
-	}
-	else if(l3<=l4){
-		quad->p1 = *p3;
-		quad->p2 = *p4;
-		quad->p3 = *p1;
+	}else{
 		quad->p4 = *p2;
+		quad->p2 = *p4;
 	}
-	else{
-		quad->p1 = *p4;
-		quad->p2 = *p1;
-		quad->p3 = *p2;
-		quad->p4 = *p3;
-	}
+
 	return quad;
 }

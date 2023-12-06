@@ -62,13 +62,13 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     Node* curr = lquad->head;
     while (curr)
     {
-        DrawSquare(s, curr->data, 0, 255, 0);
+        DrawSquare(s, curr->data, 0, 255, 0,0);
         curr = curr->next;
     }
 
     Quadrilateral *bestSquare = BestSquare(lquad);
     printf("found grid !\n");
-    DrawSquare(s, bestSquare, 255, 0, 255);
+    DrawSquare(s, bestSquare, 255, 0, 255,1);
 
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));
     grid->p1 =bestSquare->p1;
