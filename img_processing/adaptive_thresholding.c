@@ -101,23 +101,23 @@ SDL_Surface* IMGA_AdaptiveThresholdDeluxe(SDL_Surface* s, int split)
 
     long sumImg[h*w];
     long sum = 0;
-    for (int j = 0; j < h; j++)
+    for (int i = 0; i < w; i++)
     {
-        SDL_GetRGB(pixels[j*w],
+        SDL_GetRGB(pixels[i],
             s->format,
             &gray,&gray,&gray);
         sum += gray;
-        sumImg[j*w] = sum;
+        sumImg[i] = sum;
     }
     for(int i = 0; i<w; i++){
         sum = 0;
         for(int j = 1; j<h; j++)
         {
-            SDL_GetRGB(pixels[i*w],
+            SDL_GetRGB(pixels[i+j*w],
                 s->format,
                 &gray,&gray,&gray);
             sum += gray;
-            sumImg[i+j*w]= sumImg[i+(j-1)*w] + sum;
+            sumImg[i+j*w] = sumImg[i+(j-1)*w] + sum;
         }
     }
 
@@ -131,15 +131,16 @@ SDL_Surface* IMGA_AdaptiveThresholdDeluxe(SDL_Surface* s, int split)
         x2 =  i + halfSplit < w - 1 ? i + halfSplit : w - 1;
         y2 =  j + halfSplit < h - 1 ? j + halfSplit : h - 1;
         count = (x2 - x1) * (y2 - y1);
+        x1--;y1--;
         sum = sumImg[x2 + w*y2]
-            - sumImg[x2 + w* (y1 - 1)]
-            - sumImg[(x1 - 1) + w*y2]
-            + sumImg[(x1 - 1) + w*(y1 - 1)];
+            - sumImg[x2 + w*y1]
+            - sumImg[x1 + w*y2]
+            + sumImg[x1 + w*y1];
         double avg = ((double)(sum))/count;
         SDL_GetRGB(pixels[i],
             s->format,
             &gray,&gray,&gray);
-        newPixels[i+j*s->w] = gray< otsuThreshold*avg/2 ?
+        newPixels[i+j*s->w] = gray< avg ?
             SDL_MapRGB(s->format, 255, 255, 255) :
             0;
     }
@@ -149,10 +150,7 @@ SDL_Surface* IMGA_AdaptiveThresholdDeluxe(SDL_Surface* s, int split)
     return newS;
 }
 
-
-
-
-SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
+SDL_Surface* IMGA_Sauvola(SDL_Surface *s,int n, double k)
 {
     SDL_Surface* newS =
         SDL_CreateRGBSurface(0, s->w, s->h, 32,0,0,0,0);
@@ -161,6 +159,7 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
     Uint32* newPixels = (Uint32*)(newS->pixels);
     Uint8 gray;
 
+    n = s->w/100;
     if (!(n % 2)) n++;
     int size  = (n)>>1;
     SDL_LockSurface(newS);
@@ -170,12 +169,14 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
     {
         double sumMean = 0;
         double sumsquared=0;
+        Uint8 max = 0;
         for (int k = i-size; k <= i+size; k++)
         for (int l = j-size; l <= j+size; l++)
         {
             SDL_GetRGB(pixels[k + (l) * s->w],
                     s->format,
                     &gray, &gray, &gray);
+            if(max < gray) max = gray;
             sumMean += gray;
             sumsquared += gray*gray;
         }
@@ -183,7 +184,8 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
         //double stdDeviation = sumsquared - 2*mean*sumMean + mean*mean*n*n;
         double stdDeviation = sumsquared + mean* (-2*sumMean + mean*n*n);
         double range = 128;
-        int threshold = mean * ( 1.0+ (k  * ((stdDeviation/range) -1.0)));
+        mean  = (mean + max)/2;
+        int threshold = mean * ( 1.0- k*(1 - stdDeviation/range ));
 
         SDL_GetRGB( pixels[i + (j) * s->w],
                 s->format,
@@ -192,6 +194,7 @@ SDL_Surface* IMGA_Sovela(SDL_Surface *s,int n, double k)
             0:
             SDL_MapRGB(s->format, 255, 255, 255) ;
     }
+
     SDL_UnlockSurface(newS);
     SDL_FreeSurface(s);
     return newS;

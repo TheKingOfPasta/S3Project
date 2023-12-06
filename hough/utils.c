@@ -1,12 +1,49 @@
 #include "utils.h"
 
+void PreppendNode(List* l, Node* nd){
+    nd->next = l->head;
+	l->head = nd;
+	l->length++;
+}
+
 // the data is allocated
 void Preppend(List* l, void* data){
 	Node * nd = malloc(sizeof(Node));
-    nd->next = l->head;
     nd->data = data;
-	l->head = nd;
-	l->length++;
+	PreppendNode(l,nd);
+}
+
+Node* PrepopNode(List* l){
+	Node * nd  = l->head;
+	l->head = nd->next;
+	return nd;
+}
+
+void InsertNode(List* l, Node* nd){
+	Node* curr  = l->head;
+	double r = ((Line *)(nd->data))->rho;
+
+	if(curr == NULL || ((Line *)(curr->data))->rho >r)
+	{
+		PreppendNode(l,nd);
+		return;
+	}
+
+	l->length ++;
+
+	while(curr->next && ((Line *)(curr->next->data))->rho<r)
+		curr= curr->next;
+
+	nd->next = curr->next;
+	curr->next = nd;
+}
+
+
+List* InitList(){
+	List* list = malloc(sizeof(List));
+	list->head = NULL;
+	list->length =0;
+	return list;
 }
 
 void FreeNode(Node * nd){

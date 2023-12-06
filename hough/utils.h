@@ -1,6 +1,7 @@
 #pragma once
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 typedef struct Line{
 	double rho;
@@ -27,9 +28,14 @@ typedef struct List{
 } List ;
 
 void Preppend(List* l, void* value);
-void FreeList(List *l);
+Node* PrepopNode(List* l);
+void InsertNode(List * l , Node* nd);
+List* InitList();
+void FreeNode(Node* nd);
+void FreeList(List* l);
 void RemoveNextNode(List *l , Node *nd);
 void Tail(List *l );
+void mergeSort(struct Node** headRef);
 int CloseAngle(double t1, double t2, double threshold);
 double ToRad(int t);
 int ContainsQuad(List* lquad, Quadrilateral* quad);
