@@ -1,12 +1,19 @@
-all: mnist_reader.o neural_network.o
-	gcc -Wall -Wextra -fsanitize=address mnist_reader.o neural_network.o -o network
+CC = gcc
+CPPFLAGS =
+CFLAGS = -Wall -Wextra -O0 -g
+LDFLAGS = -lm -fsanitize=address -lpthread
+LDLIBS =
 
-mnist_reader.o: mnist_reader.c
-	gcc -Wall -Wextra mnist_reader.c -c
+SRC = second_network.c test.c helper.c network_loader.c mnist_reader.c
+OBJ = ${SRC:.c=.o}
+EXE = ${SRC:.c=}
 
-neural_network.o: neural_network.c
-	gcc -Wall -Wextra neural_network.c -c
+all: test
+
+test: ${OBJ}
+
+
+.PHONY: clean
 
 clean:
-	rm network
-	rm *.o
+	${RM} ${OBJ} ${EXE}
