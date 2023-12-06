@@ -257,7 +257,7 @@ void RemovesStrayLine(List *l,int thresh, List* LVer, List* LHor){
 	};
 
 
-	printf("indexMax %i   SecondMax %i\n", indexMax,secondMax);
+	//printf("indexMax %i   SecondMax %i\n", indexMax,secondMax);
 	Node* tmp;
 	curr = l->head;
 

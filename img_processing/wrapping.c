@@ -28,13 +28,29 @@ SDL_Surface* Wrapping(char* path, Quadrilateral* quad) {
 	double angle = FindAngle(quad);
 	printf("Angle is : %f\n",angle);
 	SDL_Surface* surface = IMGA_Rotate_from(path,angle);
-	SDL_Surface* wrapped = SDL_CreateRGBSurface(0,quad->p2.x-quad->p1.x,quad->p4.y-quad->p1.y,32,0,0,0,0);
+	IMG_SavePNG(surface, "Rotated.png");
+	printf("Rotated the image :)\n");
+	SDL_Surface* wrapped = SDL_CreateRGBSurface(0,quad->p4.x-quad->p1.x,quad->p2.y-quad->p1.y,32,0,0,0,0);
 	Uint32* newPixels = wrapped->pixels;
 	Uint32* pixels = surface->pixels;
 	int i = 0;
 	for(int h = quad->p1.y; h<quad->p4.y; h++) {
 		for(int w = quad->p1.x;w<quad->p2.x;w++) {
 			newPixels[i] = pixels[h*surface->w+w];
+			i++;
+		}
+	}
+	return wrapped;
+}
+
+SDL_Surface* WrappingSurface(SDL_Surface* sur, Quadrilateral* quad) {
+	SDL_Surface* wrapped = SDL_CreateRGBSurface(0, quad->p2.x - quad->p1.x, quad->p4.y - quad->p1.y, 32, 0, 0, 0, 0);
+	Uint32* newPixels = wrapped->pixels;
+	Uint32* pixels = sur->pixels;
+	int i = 0;
+	for (int h = quad->p1.y; h < quad->p4.y; h++) {
+		for (int w = quad->p1.x; w < quad->p2.x; w++) {
+			newPixels[i] = pixels[h * sur->w + w];
 			i++;
 		}
 	}

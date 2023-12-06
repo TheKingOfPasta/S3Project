@@ -24,6 +24,7 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 
 	double gaussianWeights[size + 1][size + 1];
 
+    double sig = 2*sigma*sigma;
 	for (int j = 0; j <= size; j++)
 	{
 		for (int i = 0; i <= size; i++)
@@ -31,8 +32,8 @@ SDL_Surface* IMGA_GaussianBlur(SDL_Surface* surface, int size, double sigma)
 			double i2 = i - size / 2;
 			double j2 = j - size / 2;
 			gaussianWeights[i][j] =
-				1000 * exp(-(i2*i2 + j2*j2) / (2 * sigma * sigma))
-				/ (2 * M_PI * sigma * sigma);
+				1000 * exp(-(i2*i2 + j2*j2) / (sig))
+				/ ( M_PI * sig);
 		}
 	}
 

@@ -16,9 +16,9 @@
 #include "../hough/utils.h"
 #include "../hough/hough.h"
 #include "../hough/visualization.h"
-#include "../hough/square_detection.h"
 #include "wrapping.h"
 #include "../hough/grid_detection.h"
+#include "../resize/resize.h"
 
 #define Blursize 13
 #define BlurIntensity 3

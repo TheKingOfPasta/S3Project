@@ -85,15 +85,22 @@ SDL_Surface* DrawLines(SDL_Surface* s,List* list,int r,int g,int b)
 	return s;
 }
 
-void DrawSquare(SDL_Surface* s, Quadrilateral *q,int r,int g,int b)
+void DrawSquare(SDL_Surface* s, Quadrilateral *q,int r,int g,int b, int thick)
 {
 	SDL_LockSurface(s);
-    MyDrawLine(s, q->p1.x , q->p1.y , q->p2.x , q->p2.y ,r,g,b);
-    MyDrawLine(s, q->p2.x , q->p2.y , q->p3.x , q->p3.y ,r,g,b);
-    MyDrawLine(s, q->p3.x , q->p3.y , q->p4.x , q->p4.y ,r,g,b);
-    MyDrawLine(s, q->p4.x , q->p4.y , q->p1.x , q->p1.y ,r,g,b);
+	for(int i = -thick; i<=thick; i++){
+		MyDrawLine(s, q->p1.x+i , q->p1.y , q->p2.x+i , q->p2.y ,r,g,b);
+		MyDrawLine(s, q->p1.x , q->p1.y+i , q->p2.x , q->p2.y+i ,r,g,b);
+		MyDrawLine(s, q->p2.x+i , q->p2.y , q->p3.x+i , q->p3.y ,r,g,b);
+		MyDrawLine(s, q->p2.x , q->p2.y+i , q->p3.x , q->p3.y+i ,r,g,b);
+		MyDrawLine(s, q->p3.x+i , q->p3.y , q->p4.x+i , q->p4.y ,r,g,b);
+		MyDrawLine(s, q->p3.x , q->p3.y+i , q->p4.x , q->p4.y+i ,r,g,b);
+		MyDrawLine(s, q->p4.x+i , q->p4.y , q->p1.x+i , q->p1.y ,r,g,b);
+		MyDrawLine(s, q->p4.x , q->p4.y+i , q->p1.x , q->p1.y+i ,r,g,b);
+	}
 	SDL_UnlockSurface(s);
 }
+
 
 void printQuad(Quadrilateral* q){
 	printf("	square pointer %p\n",q);
