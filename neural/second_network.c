@@ -47,12 +47,7 @@ Matrix* new_Random_Matrix(size_t w, size_t h)
     for (size_t i = 0; i < w; i++)
     for (size_t j = 0; j < h; j++)
     {
-        double u1 = rand() / (double)RAND_MAX;
-        double u2 = rand() / (double)RAND_MAX;
-        double z1 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
-        //Box-Muller transform for normal distribution
-
-        m->values[i][j] = z1 > 1 ? 1 : (z1 < -1 ? -1 : z1);
+        m->values[i][j] = (rand() / (double)RAND_MAX - 0.5);
     }
 
     return m;
@@ -274,7 +269,7 @@ Network* new_Network(size_t* sizesArr, size_t len)
     n->biases = new_List();
     for (DoubleNode* curr = n->sizes->head->next; curr; curr = curr->next)
     {
-        append(n->biases, new_Random_Matrix(1, curr->d));
+        append(n->biases, new_Matrix(1, curr->d));
     }
 
     n->weights = new_List();
@@ -560,6 +555,37 @@ size_t argmax_m(Matrix* m)
     return vX + vY * m->w;
 }
 
+char print_img_(Matrix *a)
+{
+    char f = 0;
+
+    for (size_t i = 0; i < a->w; i++)
+    for (size_t j = 0; j < a->h; j++)
+        if (a->values[i][j] != 0)
+        {
+            f = 1;
+            break;
+        }
+    if (!f)
+        return 0;
+
+    for (size_t i = 0; i < 28; ++i)
+    {
+        for (size_t j = 0; j < 28; ++j)
+            if (a->values[0][i * 28 + j])
+            {
+                printf("@ ");
+            }
+            else
+            {
+                printf(". ");
+            }
+        printf("\n");
+    }
+
+    return 1;
+}
+
 size_t evaluate(Network* n, Tuple_m* test_results, size_t len)
 {
     size_t sum = 0;
@@ -567,6 +593,13 @@ size_t evaluate(Network* n, Tuple_m* test_results, size_t len)
     for (size_t i = 0; i < len; i++)
     {
         Matrix* ff = feedforward(n, test_results[i].x);
+
+        if (0 && print_img_(test_results[i].x))
+        {
+            print_m(ff);
+            printf("-------------->  %zu\n", argmax_m(ff));
+        }
+
         if (argmax_m(ff) == test_results[i].y->values[0][0])
             sum += 1;
 
@@ -691,9 +724,13 @@ void SGD(Network* n,
             update_mini_batch(n, mini_batches[i], mini_batch_size, eta);
         }
 
+        if (0)
         if (test_data)
-            printf("Epoch %li: %li / %li\n", j,
-                    evaluate(n, test_data, n_test), n_test);
+        {
+            size_t ev = evaluate(n, test_data, n_test);
+            printf("Epoch %li: %li / %li = %f%%\n", j,
+                    ev, n_test, 100 * (double)ev / n_test);
+        }
         else
             printf("Epoch %li complete\n", j);
 
