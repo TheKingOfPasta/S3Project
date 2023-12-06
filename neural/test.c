@@ -1,9 +1,13 @@
+#define _GNU_SOURCE
+
 # include <stdlib.h>
 # include <stdio.h>
 # include <err.h>
 # include <string.h>
 # include <time.h>
 # include <mcheck.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 # include "second_network.h"
 # include "mnist_reader.h"
@@ -55,6 +59,7 @@ void test_feedforward()
 
     printf("output: \n");
     print_m(output);
+    free_m(input);
     free_m(output);
 
     Free_Network(network);
@@ -211,31 +216,109 @@ void test_sdg()
     print_list_m(network->biases);
     print_list_m(network->weights);
 
+    free_m(input);
     free_m(output);
     Free_Network(network);
 
 }
 
+Tuple_m* Load_Images(size_t* index)
+{
+    // num = the number of pics per digit we choose, 0 < num < 3500
+    size_t num = 1000;
+    Tuple_m* arr = malloc(sizeof(Tuple_m) * num * 10);
+    *index = 0;
+
+    for (size_t i = 0; i <= 9; i++)
+    {
+        for (size_t j = 0; j < num; j++)
+        {
+            char* s;
+            if (asprintf(&s, "database/%zu_%zu.png", i, j) != -1)
+            {
+                SDL_Surface* surf = IMG_Load(s);
+                if (!surf)
+                    continue;
+
+                Uint32* pixels = surf->pixels;
+
+                Matrix* m = new_Matrix(1, 784);
+
+                for (size_t k = 0; k < 784; k++)
+                {
+                    Uint8 col;
+                    int offset = (k/28) * surf->pitch + (k%28) * surf->format->BytesPerPixel;
+                    SDL_GetRGB((*(Uint32*)((Uint8*)pixels + offset)), surf->format, &col, &col, &col);
+                    m->values[0][k] = col + 1 < 0.1 ? 1 : 0;//-1 == white
+                }
+
+                Matrix* res = new_Matrix(1,10);
+                res->values[0][i] = 1;
+
+                arr[*index].x = m;
+                arr[*index].y = res;
+
+                *index += 1;
+
+                SDL_FreeSurface(surf);
+            }
+            free(s);
+        }
+    }
+
+    arr = realloc(arr, (*index) * sizeof(Tuple_m));
+
+    return arr;
+}
+
+#include <time.h>
+
 void test_digit()
 {
+    clock_t t = clock();
     size_t neurons[] = {784, 32, 10};
 
     Network *network = new_Network(neurons, 3);
 
-    Tuple_m* data;
-    Tuple_m* tests;
     printf("Loading training set...\n");
-    size_t n = load_images_m(TRAINING_SET_IMAGE, TRAINING_SET_LABEL, &data);
-    printf(" Done !\n");
+    size_t n;
+    Tuple_m* data = Load_Images(&n);
+    printf("Done in %fs\n", (double)(clock() - t)/1000000);
+    t = clock();
     printf("Loading test set...\n");
-    size_t n_tests = load_images_m(TEST_SET_IMAGE, TEST_SET_LABEL, &tests);
-    printf(" Done !\n");
+    size_t n_tests;
+    Tuple_m* tests = Load_Images(&n_tests);
+    printf("Done in %fs\n", (double)(clock() - t)/1000000);
+    t = clock();
     printf("Starting Scalar Gradient descent\n");
-    SGD(network, data, n, DIGITS_EPOCHS,DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
+    SGD(network, data, n, 30, DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
             tests, n_tests);
 
+    printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
+
+    save_network(network, "networko");
+
+    printf("Biases\n");
+    print_list_m(network->biases);
+    printf("\n\n\n\nWeights\n");
+    print_list_m(network->weights);
+
     Free_Network(network);
-    //TODO free training data
+
+    printf("Freeing\n");
+    for (size_t i = 0; i < n; i++)
+    {
+        free_m(data[i].x);
+        free_m(data[i].y);
+    }
+
+    for (size_t i = 0; i < n_tests; i++)
+    {
+        free_m(tests[i].x);
+        free_m(tests[i].y);
+    }
+    free(tests);
+    free(data);
 }
 
 void train_load_digit(char *path)
@@ -249,8 +332,8 @@ void train_load_digit(char *path)
     size_t n_tests = load_images_m(TEST_SET_IMAGE, TEST_SET_LABEL, &tests);
     printf(" Done !\n");
     printf("Starting Scalar Gradient descent\n");
-    SGD(network, data, n, DIGITS_EPOCHS,DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
-            tests, n_tests);
+    SGD(network, data, n, DIGITS_EPOCHS, DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
+                tests, n_tests);
 
     Free_List(network->sizes);
     Free_Network(network);

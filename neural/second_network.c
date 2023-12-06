@@ -47,18 +47,23 @@ Matrix* new_Random_Matrix(size_t w, size_t h)
     for (size_t i = 0; i < w; i++)
     for (size_t j = 0; j < h; j++)
     {
-        m->values[i][j] = 2 * ((double)rand() / RAND_MAX - 0.5);
+        double u1 = rand() / (double)RAND_MAX;
+        double u2 = rand() / (double)RAND_MAX;
+        double z1 = sqrt(-2.0 * log(u1)) * cos(2.0 * M_PI * u2);
+        //Box-Muller transform for normal distribution
+
+        m->values[i][j] = z1 > 1 ? 1 : (z1 < -1 ? -1 : z1);
     }
 
     return m;
 }
 
-void Free_Matrix_List(List* l)
+void Free_Matrix_List(List_m* l)
 {
-    for (Node* n = l->head; n;)
+    for (Node_m* n = l->head; n;)
     {
         free_m(n->m);
-        Node* curr = n;
+        Node_m* curr = n;
         n = n->next;
         free(curr);
     }
@@ -78,9 +83,9 @@ void Free_List(DoubleList* l)
     free(l);
 }
 
-void append(List* l, Matrix* v)
+void append(List_m* l, Matrix* v)
 {
-    Node* new = malloc(sizeof(Node));
+    Node_m* new = malloc(sizeof(Node_m));
     new->m = v;
     new->next = NULL;
     if (l->tail)
@@ -110,12 +115,12 @@ void append_d(DoubleList* l, size_t v)
     l->len += 1;
 }
 
-Node* atIndex(List* l, ssize_t i)
+Node_m* atIndex(List_m* l, ssize_t i)
 {
     while (i < 0)
         i += l->len;
 
-    Node* n = l->head;
+    Node_m* n = l->head;
     while (n && i)
     {
         n = n->next;
@@ -155,18 +160,18 @@ DoubleList* new_DoubleList()
     return l;
 }
 
-List* new_List()
+List_m* new_List()
 {
-    List* l = malloc(sizeof(List));
+    List_m* l = malloc(sizeof(List_m));
     l->head = NULL;
     l->tail = NULL;
     l->len = 0;
     return l;
 }
 
-/*List* splice(List* l, ssize_t start, ssize_t end)
+/*List_m* splice(List_m* l, ssize_t start, ssize_t end)
 {
-    List* res = new_List();
+    List_m* res = new_List();
 
     while (start < 0)
         start += l->len;
@@ -178,17 +183,17 @@ List* new_List()
 
     end -= 1;//end is exclusive
 
-    Node* n = atIndex(l, start);
+    Node_m* n = atIndex(l, start);
 
     res->head = NULL;
-    Node* curr = NULL;
+    Node_m* curr = NULL;
     if (n)
     {
-        res->head = malloc(sizeof(Node));
+        res->head = malloc(sizeof(Node_m));
         res->head->m = Copy_m(n->m);
         for (curr = res->head; end > start; curr = curr->next)
         {
-            curr->next = malloc(sizeof(Node));
+            curr->next = malloc(sizeof(Node_m));
             curr->next->m = Copy_m(n->m);
 
             n = n->next;
@@ -248,9 +253,9 @@ void print_list(DoubleList* l)
     return res;
 }*/
 
-void print_list_m(List* l)
+void print_list_m(List_m* l)
 {
-    for (Node* n = l->head; n; n = n->next)
+    for (Node_m* n = l->head; n; n = n->next)
     {
         print_m(n->m);
         printf("\n\n---------------------------------------------------------\n\n");
@@ -393,10 +398,17 @@ Matrix* feedforward(Network* n, Matrix* a)
 {
     // a = column matrix of input (1 * 784)  apparently :(
 
-    for (Node *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
+    char f = 0;
+
+    for (Node_m *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
     {
         Matrix* mult = Multiply_m(w->m, a);
         Matrix* add = Add_m(mult, b->m);
+
+        if (f)
+            free_m(a);
+        else
+            f = 1;
 
         a = sigmoid_m(add);
 
@@ -442,10 +454,10 @@ Matrix* kysnumpy(Matrix* a, Matrix* b)
 
 ListTup* backprop(Network* n, Matrix* x, Matrix* y)
 {
-    List* nabla_b = new_List();
-    List* nabla_w = new_List();
+    List_m* nabla_b = new_List();
+    List_m* nabla_w = new_List();
 
-    for (Node *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
+    for (Node_m *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
     {
         Matrix* b_m = b->m;
         append(nabla_b, new_Matrix(b_m->w, b_m->h));
@@ -455,12 +467,12 @@ ListTup* backprop(Network* n, Matrix* x, Matrix* y)
 
     Matrix* activation = Copy_m(x);
 
-    List* activations = new_List();
+    List_m* activations = new_List();
     append(activations, activation);
 
-    List* zs = new_List();
+    List_m* zs = new_List();
 
-    for (Node *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
+    for (Node_m *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
     {
         Matrix* mult = Multiply_m(w->m, activation);
 
@@ -578,10 +590,10 @@ Matrix* Mul_m_d(Matrix* m, double d)
 
 void update_mini_batch(Network* n, Tuple_m* mini_batch, size_t len, double eta)
 {
-    List* nabla_b = new_List();
-    List* nabla_w = new_List();
+    List_m* nabla_b = new_List();
+    List_m* nabla_w = new_List();
 
-    for (Node *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
+    for (Node_m *b = n->biases->head, *w = n->weights->head; b && w; b = b->next, w = w->next)
     {
         Matrix* b_m = b->m;
         append(nabla_b, new_Matrix(b_m->w, b_m->h));
@@ -595,20 +607,20 @@ void update_mini_batch(Network* n, Tuple_m* mini_batch, size_t len, double eta)
         Matrix* y = mini_batch[i].y;
 
         ListTup* tup = backprop(n, x, y);
-        List* delta_nabla_b = tup->x;
-        List* delta_nabla_w = tup->y;
+        List_m* delta_nabla_b = tup->x;
+        List_m* delta_nabla_w = tup->y;
         free(tup);
 
-        Node* nb = nabla_b->head;
-        for (Node* dnb = delta_nabla_b->head; dnb && nb; dnb = dnb->next, nb = nb->next)
+        Node_m* nb = nabla_b->head;
+        for (Node_m* dnb = delta_nabla_b->head; dnb && nb; dnb = dnb->next, nb = nb->next)
         {
             Matrix* add = Add_m(nb->m, dnb->m);
             free_m(nb->m);
             nb->m = add;
         }
 
-        Node* nw = nabla_w->head;
-        for (Node* dnw = delta_nabla_w->head; dnw && nw; dnw = dnw->next, nw = nw->next)
+        Node_m* nw = nabla_w->head;
+        for (Node_m* dnw = delta_nabla_w->head; dnw && nw; dnw = dnw->next, nw = nw->next)
         {
             Matrix* add = Add_m(nw->m, dnw->m);
             free_m(nw->m);
@@ -621,8 +633,8 @@ void update_mini_batch(Network* n, Tuple_m* mini_batch, size_t len, double eta)
 
     double frac = eta / len;
 
-    Node* w = n->weights->head;
-    for (Node* nw = nabla_w->head; nw && w; nw = nw->next, w = w->next)
+    Node_m* w = n->weights->head;
+    for (Node_m* nw = nabla_w->head; nw && w; nw = nw->next, w = w->next)
     {
         Matrix* mult = Mul_m_d(nw->m, frac);
         Matrix* sub = Sub_m(w->m, mult);
@@ -631,8 +643,8 @@ void update_mini_batch(Network* n, Tuple_m* mini_batch, size_t len, double eta)
         free_m(mult);
     }
 
-    Node* b = n->biases->head;
-    for (Node* nb = nabla_b->head; nb && b; nb = nb->next, b = b->next)
+    Node_m* b = n->biases->head;
+    for (Node_m* nb = nabla_b->head; nb && b; nb = nb->next, b = b->next)
     {
         Matrix* mult = Mul_m_d(nb->m, frac);
         Matrix* sub = Sub_m(b->m, mult);
@@ -654,10 +666,12 @@ void SGD(Network* n,
          Tuple_m* test_data,
          size_t n_test)
 {
+    size_t mini_b_len = n_training / mini_batch_size;
     for (size_t j = 0; j < epochs; j++)
     {
+        //print_list_m(n->biases);
+        //print_list_m(n->weights);
         shuffle(training_data, n_training);
-        size_t mini_b_len = n_training / mini_batch_size;
         Tuple_m** mini_batches = malloc(sizeof(Tuple_m*) * mini_b_len);
         size_t index = 0;
 
@@ -683,7 +697,7 @@ void SGD(Network* n,
         else
             printf("Epoch %li complete\n", j);
 
-        for (size_t i = 0; i < mini_b_len; i++)
+        for (size_t i = 0; i < index; i++)
         {
             free(mini_batches[i]);
         }

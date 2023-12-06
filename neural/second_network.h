@@ -25,18 +25,18 @@ typedef struct Tuple
     size_t y;
 } Tuple;
 
-typedef struct Node
+typedef struct Node_m
 {
-    struct Node* next;
+    struct Node_m* next;
     Matrix* m;
-} Node;
+} Node_m;
 
-typedef struct List
+typedef struct List_m
 {
-    Node* head;
-    Node* tail;
+    Node_m* head;
+    Node_m* tail;
     size_t len;
-} List;
+} List_m;
 
 typedef struct DoubleNode
 {
@@ -56,21 +56,21 @@ typedef struct Network
     size_t num_layers;
     DoubleList* sizes;
     //weights and biases = list of matrix pointers
-    List* biases;
-    List* weights;
+    List_m* biases;
+    List_m* weights;
 } Network;
 
 typedef struct ListTup
 {
-    List* x;
-    List* y;
+    List_m* x;
+    List_m* y;
 } ListTup;
 
-void print_list_m(List* l);
+void print_list_m(List_m* l);
 
 void Free_List(DoubleList* l);
 
-Node* atIndex(List* l, ssize_t i);
+Node_m* atIndex(List_m* l, ssize_t i);
 
 void print_m(Matrix* m);
 
