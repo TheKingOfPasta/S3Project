@@ -32,3 +32,75 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 	SDL_FreeSurface(input);
 	return output;
 }
+
+SDL_Surface* IMGA_Erode(SDL_Surface* s, int size){
+	SDL_Surface* newS =
+	   	SDL_CreateRGBSurface(0,s->w,s->h,32,0,0,0,0);
+  	SDL_PixelFormat* format = s->format;
+
+    Uint32* inpPixels = s->pixels;
+    Uint32* outPixels = newS->pixels;
+
+	if(!size%2) size++;
+	Uint8 min,gray;
+	int midRange = size>>1;
+
+
+    SDL_LockSurface(newS);
+	for (int i = 0; i < s->w; i++)
+	for (int j = 0; j < s->h; j++)
+	{
+        min=255;
+		for (int k =i-midRange; k <=i+midRange; k++)
+		for (int l =j-midRange; l <=j+midRange; l++)
+		{
+			if(k<0 || l<0 || k>s->w || l>s->h) continue;
+            int offset = l * s->pitch + k * format->BytesPerPixel;
+    		SDL_GetRGB(( *(Uint32*)((Uint8*)inpPixels + offset)), format,
+      			&gray, &gray, &gray);
+			if(min > gray) min = gray;
+		}
+
+		outPixels[i+s->w*j] = SDL_MapRGB(newS->format, min, min, min);
+	}
+
+	SDL_UnlockSurface(newS);
+	SDL_FreeSurface(s);
+	return newS;
+}
+
+SDL_Surface* IMGA_Dilate(SDL_Surface* s, int size){
+	SDL_Surface* newS =
+	   	SDL_CreateRGBSurface(0,s->w,s->h,32,0,0,0,0);
+  	SDL_PixelFormat* format = s->format;
+
+    Uint32* inpPixels = s->pixels;
+    Uint32* outPixels = newS->pixels;
+
+	if(!size%2) size++;
+	Uint8 max,gray;
+	int midRange = size>>1;
+
+
+    SDL_LockSurface(newS);
+	for (int i = 0; i < s->w; i++)
+	for (int j = 0; j < s->h; j++)
+	{
+        max=0;
+		for (int k =i-midRange; k <=i+midRange; k++)
+		for (int l =j-midRange; l <=j+midRange; l++)
+		{
+			if(k<0 || l<0 || k>s->w || l>s->h) continue;
+            int offset = l * s->pitch + k * format->BytesPerPixel;
+    		SDL_GetRGB(( *(Uint32*)((Uint8*)inpPixels + offset)), format,
+      			&gray, &gray, &gray);
+			if(max < gray) max = gray;
+		}
+
+		outPixels[i+s->w*j] = SDL_MapRGB(newS->format, max, max, max);
+	}
+
+	SDL_UnlockSurface(newS);
+	SDL_FreeSurface(s);
+	return newS;
+}

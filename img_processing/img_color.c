@@ -6,9 +6,8 @@
 /**
   * Convert the given surface into grayscale
   */
-SDL_Surface* IMGC_surface_to_grayscale(SDL_Surface* surface)
+SDL_Surface* IMGC_Grayscale(SDL_Surface* surface)
 {
-
   SDL_Surface* newS =
       SDL_CreateRGBSurface(0, surface->w, surface->h, 32,0,0,0,0);
 
@@ -25,11 +24,128 @@ SDL_Surface* IMGC_surface_to_grayscale(SDL_Surface* surface)
   {
     int offset = j * surface->pitch + i * format->BytesPerPixel;
     SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format, &r, &g, &b);
-    Uint8 avr = 0.3 * r + 0.59 * g + 0.11 * b;
+    Uint8 avr = 0.4 * r + 0.35 * g + 0.25 * b;
     newPixels[i+surface->w*j] = SDL_MapRGB(newS->format, avr, avr, avr);
   }
 
   SDL_UnlockSurface(newS);
   SDL_FreeSurface(surface);
   return newS;
+}
+
+SDL_Surface* IMGC_Gamma_Correction(SDL_Surface* surface, int gamma)
+{
+  Uint32* pixels = surface->pixels;
+
+  SDL_PixelFormat* format = surface->format;
+
+  SDL_LockSurface(surface);
+  Uint8 gray;
+
+  for (int i = 0; i < surface->w; ++i)
+  for (int j = 0; j < surface->h; ++j)
+  {
+    int offset = j * surface->pitch + i * format->BytesPerPixel;
+    SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
+       &gray, &gray, &gray);
+
+    double a = pow(gray / 255.0, gamma / 128.0) * 255.0;
+
+    Uint8 newVal = a> 255 ?  255 : a;
+
+    pixels[i+surface->w*j] = SDL_MapRGB(format, newVal, newVal, newVal);
+  }
+
+  SDL_UnlockSurface(surface);
+  return surface;
+}
+
+SDL_Surface* IMGC_Contrast_Correction(SDL_Surface* surface, int contrast)
+{
+  Uint32* pixels = surface->pixels;
+  SDL_PixelFormat* format = surface->format;
+
+  SDL_LockSurface(surface);
+  Uint8 gray;
+
+  for (int i = 0; i < surface->w; ++i)
+  for (int j = 0; j < surface->h; ++j)
+  {
+    int offset = j * surface->pitch + i * format->BytesPerPixel;
+    SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
+      &gray, &gray, &gray);
+
+    contrast = contrast> 128? 128 : contrast;
+    double a = (259.0 * (contrast + 255.0)) / (255.0 * (259.0 - contrast));
+    double b = a*(gray - 128) + 128;
+    Uint8 newVal =b < 0 ? 0 : (b>255? 255 : b);
+
+    pixels[i+surface->w*j] = SDL_MapRGB(format, newVal, newVal, newVal);
+  }
+
+  SDL_UnlockSurface(surface);
+  return surface;
+}
+
+SDL_Surface* IMGC_Normalize_Brigthness(SDL_Surface* surface)
+{
+  Uint32* pixels = surface->pixels;
+  SDL_PixelFormat* format = surface->format;
+
+  SDL_LockSurface(surface);
+
+  Uint8 gray,max =0;
+  for (int i = 0; i < surface->w; ++i)
+  for (int j = 0; j < surface->h; ++j)
+  {
+    int offset = j * surface->pitch + i * format->BytesPerPixel;
+    SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
+      &gray, &gray, &gray);
+
+    if(max<gray) max=gray;
+  }
+
+  for (int i = 0; i < surface->w; ++i)
+  for (int j = 0; j < surface->h; ++j)
+  {
+    int offset = j * surface->pitch + i * format->BytesPerPixel;
+    SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
+      &gray, &gray, &gray);
+
+    Uint8 newVal = gray *(255.f /max);
+
+    pixels[i+surface->w*j] = SDL_MapRGB(format, newVal, newVal, newVal);
+  }
+
+  SDL_UnlockSurface(surface);
+  return surface;
+}
+
+SDL_Surface* IMGC_Level_Colors(SDL_Surface* surface, int n)
+{
+  Uint32* pixels = surface->pixels;
+  SDL_PixelFormat* format = surface->format;
+
+  SDL_LockSurface(surface);
+
+  Uint8 gray,newVal;
+
+  for (int i = 0; i < surface->w; ++i)
+  for (int j = 0; j < surface->h; ++j)
+  {
+    int offset = j * surface->pitch + i * format->BytesPerPixel;
+    SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
+      &gray, &gray, &gray);
+
+    for (int k = 0; i < n; i++)
+    {
+      if (gray >= k * (255.f / n) && gray <= (newVal = (k + 1) * (255.f / n)) )
+        pixels[i+surface->w*j] = SDL_MapRGB(format, newVal, newVal, newVal);
+
+    }
+
+  }
+
+  SDL_UnlockSurface(surface);
+  return surface;
 }

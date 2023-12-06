@@ -52,6 +52,9 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
         printf("no quadrilateral found\n");
         return NULL;
     }
+    FreeList(LVer);
+    FreeList(LHor);
+
 
     printf("found quad list\n");
     //printList(lLine,0);
