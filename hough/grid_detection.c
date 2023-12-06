@@ -16,26 +16,37 @@ SDL_Surface* load_image(const char* path)
 Quadrilateral* Find_Grid(SDL_Surface *s )
 {
     List* lLine = HoughLine(s);
-    //printf("Hough transform done\n");
+    printf("Hough transform done\n");
 
-    //printList(lLine,1);
-    DrawLines(s,lLine,255,0,0);
-    ExcludeBorderLine(lLine, s->w, s->h, 0.015);
-    //RemovesStrayLine(lLine,10);
+    printList(lLine,1);
+    //DrawLines(s,lLine,255,0,0);
     AveragesCloseLine(lLine,ceil(sqrt(s->w * s->w + s->h * s->h)));
-    //printList(lLine,1);
-    DrawLines(s,lLine,0,255,255);
+    ExcludeBorderLine(lLine, s->w, s->h, 0.015);
+    List* LVer = InitList();
+	List* LHor = InitList();
 
-    if(lLine->length >150){
+    RemovesStrayLine(lLine,10,LVer,LHor);
+
+	printf("vertical Line list\n");
+    printList(LVer,1);
+	printf("horizontal Line list\n");
+	printList(LHor,1);
+
+    FreeList(lLine);
+    DrawLines(s,LVer,255,0,0);
+    DrawLines(s,LHor,0,0,255);
+
+    int nbLines = LVer->length + LHor->length;
+    if(nbLines >150){
         printf("too many lines found -> preprocessing is at fault\n");
         return NULL;
     }
-    if(lLine->length <4){
+    if(nbLines<4){
         printf("not enough lines found\n");
         return NULL;
     }
 
-    List* lquad =  FindSquares(lLine,s->w,s->h);
+    List* lquad =  FindSquares(LVer,LHor,s->w,s->h);
     if (lquad->length ==0)
     {
         printf("no quadrilateral found\n");
@@ -52,10 +63,12 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
         curr = curr->next;
     }
 
-
     Quadrilateral *bestSquare = BestSquare(lquad);
     printf("found grid !\n");
     DrawSquare(s, bestSquare, 255, 0, 255);
+
+    printf("ending early\n");
+    return NULL;
 
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));
     grid->p1 =bestSquare->p1;

@@ -4,6 +4,7 @@
 #include <math.h>
 #include <err.h>
 #include "utils.h"
+#include "visualization.h"
 
-List* FindSquares(List* lLine,int width, int height);
+List* FindSquares(List* lHor, List* lVer,int width, int height);
 Quadrilateral* BestSquare(List * lQuad);

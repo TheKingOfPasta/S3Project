@@ -103,6 +103,11 @@ void printQuad(Quadrilateral* q){
 	printf("	p4 x: %3i  y: %3i \n",q->p4.x,q->p4.y);
 }
 
+void printLine(Line * l){
+	printf("theta %2.3f (deg %i) rho %3.2f\n",l->theta,
+					 (int)((l->theta)*180/M_PI),l->rho);
+}
+
 void printList(List* l, int line)
 {
 	if(line){
@@ -111,15 +116,14 @@ void printList(List* l, int line)
 		if(!temp) printf("empty\n");
 		int i =1;
 		while(temp){
-			Line line = *(Line*)(temp->data);
-			printf("%3i : theta %2.3f (deg %i) rho %3.2f\n",i,line.theta,
-					 (int)((line.theta)*180/M_PI),line.rho);
+			printf("%3i : ",i);
+			printLine((Line *)(temp->data));
 			i++;
 			temp = temp->next;
 		}
 	}
 	else{
-		printf("line list = \n");
+		printf("quad list = \n");
 		Node* temp = l->head;
 		if(!temp) printf("empty\n");
 		int i =1;

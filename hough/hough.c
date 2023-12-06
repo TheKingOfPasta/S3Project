@@ -1,6 +1,6 @@
 #include "hough.h"
 
-#define LINE_THRESHOLD 70 // percent
+#define LINE_THRESHOLD 40 // percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {
@@ -86,9 +86,7 @@ List* HoughLine(SDL_Surface* img)
     int step = diag_len*2 / 60;
 
 
-	List* list = malloc(sizeof(List));
-	list->head = NULL;
-	list->length =0;
+	List* list = InitList();
 
 	for (int t = 0; t < theta_num; t += step)
     for (int r = 0; r < rho_num; r += step)
@@ -233,7 +231,7 @@ void ExcludeBorderLine(List* list, int w, int h, double exthres)
 	}
 }
 
-void RemovesStrayLine(List *l,int thresh){
+void RemovesStrayLine(List *l,int thresh, List* LVer, List* LHor){
 	int histogram[180];
 	for(int i =0; i<180;i++) histogram[i] =0;
 	Node* curr = l->head;
@@ -253,30 +251,30 @@ void RemovesStrayLine(List *l,int thresh){
 	}
 
 	int secondMax = (indexMax +90) %180;
-	if(indexMax >90) indexMax-=180;
-	if (secondMax>90) secondMax-=180;
-	//double maxRad =fmod( ToRad(indexMax ),M_PI) - M_PI_2;
-	//double scndMaxRad = fmod(ToRad(secondMax),M_PI) - M_PI_2;
 
-	//printf("filter out %i  %i \n",indexMax,secondMax);
-	//printList(l,1);
+	int checkAngles(int a, int b){
+		return abs(a - b)<thresh || abs(a-b)> 180- thresh;
+	};
 
+
+	printf("indexMax %i   SecondMax %i\n", indexMax,secondMax);
+	Node* tmp;
 	curr = l->head;
+
 	while(curr)
 	{
 		int currAngle = fabs((((Line*)(curr->data))->theta)*180/M_PI);
-		if( abs(currAngle - indexMax)>thresh
-		&& abs(currAngle - secondMax)>thresh){
-			Tail(l);
-			curr = l->head;
+		if( checkAngles(currAngle,indexMax)){
+			tmp = curr->next;
+			curr = PrepopNode(l);
+			InsertNode(LVer,curr);
+			curr = tmp;
 		}
-		else break;
-	}
-	if(!l->head) return;
-	while(curr->next){
-		int currAngle = (((Line*)(curr->next->data))->theta)*180/M_PI;
-		if( abs(currAngle-indexMax)>thresh && abs(currAngle-secondMax)>thresh){
-			RemoveNextNode(l,curr);
+		else if(checkAngles(currAngle,secondMax)){
+			tmp = curr->next;
+			curr = PrepopNode(l);
+			InsertNode(LHor,curr);
+			curr = tmp;
 		}
 		else{
 			curr = curr->next;

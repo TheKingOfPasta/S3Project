@@ -81,25 +81,25 @@ int betterMain(char param, char one)
         printf("Attempting to apply all from %s\n", path_in);
         SDL_Surface* s = IMG_Load(path_in);
         int AdaptiveFactor = s->w*s->h ;
-        //printf("adaptive factor : %i\n",AdaptiveFactor);
+        printf("adaptive factor : %i\n",AdaptiveFactor);
 
         s= IMGC_surface_to_grayscale(s);
 
         if(!blur(param))goto save;
-        s=IMGA_GaussianBlur(s,Blursize, BlurIntensity);
+        s=IMGA_GaussianBlur(s,9, 2);
 
         if(!threshold(param)) goto save;
-        //s=IMGA_Erosion(CheckInvert(IMGA_AdaptiveThresholdDeluxe(s,Splitsize)));
-        //s=IMGA_Erosion(CheckInvert(IMGA_OtsuThreshold(s)));
-        s=IMGA_Erosion(CheckInvert(IMGA_Sovela(s,3,0.2)));
+        s=IMGA_Erosion(IMGA_Sauvola(s,5,0.2));
         //s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
 
         if(!sobel(param))goto save;
         s = sobel_gradient(s);
         if(!detection(param)) goto save;
+
         Quadrilateral* grid = Find_Grid(s);
         if(!grid) printf("not found grid :(\n");
         else printQuad(grid);
+        goto save;
         save:
         IMG_SavePNG(s, path_out);
         SDL_FreeSurface(s);
