@@ -59,14 +59,15 @@ int betterMain(char param, char one)
 
         s= IMGC_Grayscale(s);
         //s = IMGC_Level_Colors(s,10);
-        s= IMGC_Gamma_Correction(s,128);
-        s= IMGC_Contrast_Correction(s,64);
-        //s = IMGC_Normalize_Brigthness(s);
+        s = IMGC_Normalize_Brigthness(s);
+       //s= IMGC_Gamma_Correction(s,200);
+        s= IMGC_Contrast_Correction(s,128);
 
         if(!blur(param))goto save;
         s=IMGA_GaussianBlur(s,7, 1.5);
-        s= IMGA_Erode(s,10);
-        s= IMGA_Dilate(s,10);
+        s= IMGA_Erode(s,7);
+        s= IMGA_Dilate(s,7);
+        //s= IMGC_Contrast_Correction(s,32);
 
         //s = IMGC_Level_Colors(s,10);
 

@@ -60,7 +60,7 @@ List* FindSquares(List* lHor, List* lVer,int width, int height){
 		printf("\n");
 	}
 	printf( " Lver%i  Lhor%i \n",lVer->length,lHor->length);
- */
+*/
 
 	Point p1,p2,p3,p4;
 	List *lquad = InitList();
@@ -76,13 +76,7 @@ List* FindSquares(List* lHor, List* lVer,int width, int height){
 						for (int i4 = i2+1; i4 < lHor->length; i4++)
 							if((p3=intersection[i3][i4]).x !=-1 &&
 								(p4=intersection[i1][i4]).x != -1){
-								Quadrilateral *quad = malloc(sizeof(Quadrilateral));
-								quad->p1 = p1;
-								quad->p2 = p2;
-								quad->p3 = p3;
-								quad->p4 = p4;
-
-								//Quadrilateral *quad =InitializeQuad(&p1,&p2,&p3,&p4);
+								Quadrilateral *quad =InitializeQuad(&p1,&p2,&p3,&p4);
 								if(!ContainsQuad(lquad,quad)){
 									//printf("			i4: %i\n",i4);
 									Preppend(lquad,quad);
