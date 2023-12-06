@@ -22,7 +22,7 @@ void ErrorMessage()
 #define threshold(x) (x=='t' || sobel(x))
 #define blur(x) (x=='b' || threshold(x))
 #define grayscale(x) (x=='g' || blur(x))
-//#define wrapping(x) ((x == 'w') || grayscale(x))
+#define wrapping(x) ((x == 'w') || grayscale(x))
 
 int betterMain(char param, char one)
 {
@@ -40,7 +40,6 @@ int betterMain(char param, char one)
     }
 
     for(int i =1 ; i<7;i++){
-        if (i!=5) {
         if (one != '\0' && one -'0' != i)  continue;
         if (asprintf(&path_in,"../test_grid/image_0%i.jpeg",i) == -1)
             errx(EXIT_FAILURE, "asprintf()");
@@ -61,20 +60,19 @@ int betterMain(char param, char one)
 
         s= IMGC_Grayscale(s);
         //s = IMGC_Level_Colors(s,10);
-        s = IMGC_Normalize_Brigthness(s);
-       //s= IMGC_Gamma_Correction(s,200);
-        s= IMGC_Contrast_Correction(s,128);
+        s= IMGC_Gamma_Correction(s,128);
+        s= IMGC_Contrast_Correction(s,64);
+        //s = IMGC_Normalize_Brigthness(s);
 
         if(!blur(param))goto save;
-        s=IMGA_GaussianBlur(s,7, 1.5);
-        s= IMGA_Erode(s,7);
-        s= IMGA_Dilate(s,7);
-        //s= IMGC_Contrast_Correction(s,32);
+        s=IMGA_GaussianBlur(s,3, 1);
+        s= IMGA_Erode(s,9);
+        s= IMGA_Dilate(s,9);
 
         //s = IMGC_Level_Colors(s,10);
 
         if(!threshold(param)) goto save;
-        s=IMGA_Erosion(IMGA_Sauvola(s,sizeFactor,0.5));
+        s=IMGA_Erosion(IMGA_Sauvola(s,sizeFactor,0.25));
         //s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
 
         if(!sobel(param))goto save;
@@ -85,6 +83,7 @@ int betterMain(char param, char one)
         if(!grid) printf("not found grid :(\n");
         else {
             printQuad(grid);
+            if (!wrapping(param)) goto save;
             printf("Attempting to Wrap\n");
             SDL_Surface* wrapped = WrappingSurface(s, grid);
             char* path;
@@ -99,7 +98,6 @@ int betterMain(char param, char one)
         IMG_SavePNG(s, path_out);
         SDL_FreeSurface(s);
         printf("Successfully saved the new image at path %s\n", path_out);
-    }
     }
     return 1;
 }
