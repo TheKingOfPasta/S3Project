@@ -75,7 +75,6 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     grid->p2 =bestSquare->p2;
     grid->p3 =bestSquare->p3;
     grid->p4 =bestSquare->p4;
-    FreeList(lLine);
     FreeList(lquad);
     return grid;
 }
