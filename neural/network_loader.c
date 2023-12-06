@@ -89,8 +89,8 @@ Matrix *read_matrix(int fd)
   */
 void write_weights(int fd, Network *network)
 {
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-        write_matrix(fd, atIndex(network->weights, i)->m);
+  for (Node_m* curr = network->weights->head; curr; curr = curr->next)
+    write_matrix(fd, curr->m);
 }
 
 /**
@@ -101,8 +101,8 @@ void write_weights(int fd, Network *network)
   */
 void read_weights(int fd, Network *network)
 {
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-        atIndex(network->weights, i)->m = read_matrix(fd);
+    for (Node_m* curr = network->weights->head; curr; curr = curr->next)
+      curr->m = read_matrix(fd);
 }
 
 /**
@@ -113,8 +113,8 @@ void read_weights(int fd, Network *network)
   */
 void write_biases(int fd, Network *network)
 {
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-        write_matrix(fd, atIndex(network->biases, i)->m);
+  for (Node_m* curr = network->biases->head; curr; curr = curr->next)
+    write_matrix(fd, curr->m);
 }
 
 /**
@@ -125,8 +125,8 @@ void write_biases(int fd, Network *network)
   */
 void read_biases(int fd, Network *network)
 {
-    for (size_t i = 0; i < network->num_layers - 1; ++i)
-        atIndex(network->biases, i)->m = read_matrix(fd);
+    for (Node_m* curr = network->biases->head; curr; curr = curr->next)
+        curr->m = read_matrix(fd);
 }
 
 /**
@@ -136,8 +136,8 @@ void read_biases(int fd, Network *network)
 void write_layers(int fd, Network *network)
 {
     write(fd, &network->num_layers, sizeof(network->num_layers));
-    for (size_t i = 0; i < network->num_layers; ++i)
-        write(fd, &network->sizes[i], sizeof(size_t));
+    for (DoubleNode* curr = network->sizes->head; curr; curr = curr->next)
+        write(fd, &(curr->d), sizeof(size_t));
 }
 
 /**
@@ -151,18 +151,22 @@ void write_layers(int fd, Network *network)
   */
 void read_layers(int fd, Network *network)
 {
-    size_t num_layers;
-    if (read(fd, &num_layers, sizeof(size_t)) < 8)
-        err(EXIT_FAILURE, "Could not read num_layers");
-    network->num_layers = num_layers;
+  size_t num_layers;
+  if (read(fd, &num_layers, sizeof(size_t)) < 8)
+    err(EXIT_FAILURE, "Could not read num_layers");
+  network->num_layers = num_layers;
 
-    network->sizes = malloc(num_layers * sizeof(size_t));
-    network->weights = malloc((num_layers - 1) * sizeof(double *));
-    network->biases = malloc((num_layers - 1) * sizeof(double *));
-    assert(network->sizes != NULL);
-    for (size_t i = 0; i < num_layers; ++i)
-        if (read(fd, &network->sizes[i], sizeof(size_t)) < 8)
-            err(EXIT_FAILURE, "Could not read layers sizes");
+  network->sizes = malloc(num_layers * sizeof(size_t));
+  network->weights = malloc((num_layers - 1) * sizeof(double *));
+  network->biases = malloc((num_layers - 1) * sizeof(double *));
+  assert(network->sizes != NULL);
+
+  for (DoubleNode* curr = network->sizes->head; curr; curr = curr->next)
+  {
+    size_t r = read(fd, &(curr->d), sizeof(size_t));
+    if (r < 8)
+        err(EXIT_FAILURE, "Could not read layers sizes, read %zu", r);
+  }
 }
 
 /**
@@ -206,19 +210,23 @@ void save_network(Network *network, char *path)
   */
 Network *load_network(char *path)
 {
-    int fd = open(path, O_RDONLY);
-    if (fd < 0)
-        err(EXIT_FAILURE, "save_network() - open()");
+  int fd = open(path, O_RDONLY);
+  if (fd < 0)
+    err(EXIT_FAILURE, "save_network() - open()");
 
-    Network *n = malloc(sizeof(Network));
+  Network *n = malloc(sizeof(Network));
 
-    read_header(fd);
-    read_layers(fd, n);
-    read_weights(fd, n);
-    read_biases(fd, n);
+  printf("Getting headers\n");
+  read_header(fd);
+  printf("Got headers\nGetting layers\n");
+  read_layers(fd, n);
+  printf("Got layers\nGetting weights\n");
+  read_weights(fd, n);
+  printf("Got weights\nGetting biases\n");
+  read_biases(fd, n);
+  printf("Got biases\n");
 
-    //NN_print_biases(n);
-    close(fd);
-    return n;
-
+  //NN_print_biases(n);
+  close(fd);
+  return n;
 }

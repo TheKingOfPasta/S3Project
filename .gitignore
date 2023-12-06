@@ -8,4 +8,6 @@ img_processing/img_action
 *.o
 #gui outputs
 gui/*.png
+neural/database/
+neural/fonts
 gui/temp_split/

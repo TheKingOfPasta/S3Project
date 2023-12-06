@@ -5,7 +5,6 @@
 #define AdaptiveThreshold 3
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
-#define NETWORK_PATH "ai.net"
 
 typedef struct widgets
 {
@@ -31,7 +30,7 @@ int i = 0;
 Quadrilateral* quad;//The quad used by FindAngle and returned by FindGrid
 short digits[9][9];
 
-NN_Network *network;
+Network *network;
 
 // Writes 'digit' on the surface at (x, y)
 void WriteDigit(SDL_Surface* s, int x, int y, int digit)
@@ -66,8 +65,8 @@ void print_image(Matrix *a)
     for (size_t i = 0; i < 28; ++i)
     {
         for (size_t j = 0; j < 28; ++j)
-            if (a->matrix[i * 28 + j][0] > 0)
-                //printf("%0.3f ", a->matrix[i * 28 + j][0]);
+            if (a->values[i * 28 + j][0] > 0)
+                //printf("%0.3f ", a->values[i * 28 + j][0]);
                 printf("@ ");
             else
                 //printf("%0.3f ", 0.f);
@@ -165,7 +164,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             break;
         case 7:
             printf("Starting step 7");
-            Matrix *input = init_matrix2(784, 1);
+            Matrix *input = new_Matrix(1, 784);
             for (int j = 1; j <= 81; j++)
             {
                 char* f;
@@ -189,21 +188,21 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                     {
                         Uint8 gray;
                         SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
-                        input->matrix[x * 28 + y][0] = gray / 255.f;
+                        input->values[x * 28 + y][0] = gray / 255.f;
                     }
                 print_image(input);
 
                 // compute the output from the network
-                Matrix *output = NN_feedforward(network, input);
+                Matrix *output = feedforward(network, input);
 
                 // get maximum index of output
-                short foundDigit = argmax(output);
+                short foundDigit = argmax_m(output);
 
                 // if you want to verify how sure he is, check the index
                 printf("Network of split_%02i.png: found %hi %f%%\n", j,
-                        foundDigit, output->matrix[foundDigit][0]);
+                        foundDigit, output->values[foundDigit][0]);
 
-                free_matrix2(output);
+                free_m(output);
 
                 // Do neural network stuff
                 // knowing that s is your image
@@ -220,7 +219,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 free(f);
             }
 
-            free_matrix2(input);
+            free_m(input);
 
             gtk_button_set_label(btn, "Next step (Solving)");
             break;
@@ -506,8 +505,7 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
 // Main function.
 int main ()
 {
-
-    network = load_network(NETWORK_PATH);
+    network = load_network("../neural/networko");
     // Initializes GTK.
     gtk_init(NULL, NULL);
 
