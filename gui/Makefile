@@ -8,7 +8,7 @@ SRC = $(shell find ../Img_Processing -name "*.c" ! -name "img_action.c" )	\
  	  $(shell find ../Img_Transformation -name "*.c" )						\
 	  $(shell find ../Grid_Detection -name "*.c" )							\
 	  $(shell find ../Solver -name "*.c")									\
-		gui.c ../neural/second_network.c ../neural/network_loader.c
+		gui.c ../neural/second_network.c ../neural/network_loader.c ../utils/matrix.c
 
 OBJ = ${SRC:.c=.o}
 
