@@ -263,7 +263,10 @@ Tuple_m* Load_Images(char* path, size_t* index, size_t num)
             {
                 SDL_Surface* surf = IMG_Load(s);
                 if (!surf)
+                {
+                    free(s);
                     continue;
+                }
 
                 Matrix* m = new_Matrix(1, 784);
 
@@ -297,6 +300,62 @@ Tuple_m* Load_Images(char* path, size_t* index, size_t num)
 
 void test_digit()
 {
+    /*
+    for (size_t i = 0; i < 50000; i++)
+    {
+        char* c;
+        asprintf(&c, "database/testing/0/%zu.png", i);
+        SDL_Surface* s = IMG_Load(c);
+        if (!s)
+        {
+            free(c);
+            continue;
+        }
+
+        for (size_t j = 0; j < 784; j++)
+        {
+            if (rand() / (double)RAND_MAX < 0.002)
+            {
+                *(Uint32*)(s->pixels + j) = -1;
+            }
+            else
+            {
+                *(Uint32*)(s->pixels + j) = 0;
+            }
+        }
+
+        IMG_SavePNG(s, c);
+        SDL_FreeSurface(s);
+        free(c);
+    }
+    for (size_t i = 0; i < 50000; i++)
+    {
+        char* c;
+        asprintf(&c, "database/training/0/%zu.png", i);
+        SDL_Surface* s = IMG_Load(c);
+        if (!s)
+        {
+            free(c);
+            continue;
+        }
+
+        for (size_t j = 0; j < 784; j++)
+        {
+            if ((rand() / (double)RAND_MAX) < 0.002)
+            {
+                *(Uint32*)(s->pixels + j) = -1;
+            }
+            else
+            {
+                *(Uint32*)(s->pixels + j) = 0;
+            }
+        }
+
+        IMG_SavePNG(s, c);
+        SDL_FreeSurface(s);
+        free(c);
+    }*/
+
     clock_t t = clock();
     size_t neurons[] = {784, 32, 10};
 
@@ -304,51 +363,17 @@ void test_digit()
 
     printf("Loading training set...\n");
     size_t n;
-    Tuple_m* data = Load_Images("database/training", &n, 800);
+    Tuple_m* data = Load_Images("database/training", &n, 8000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Loading test set...\n");
     size_t n_tests;
-    Tuple_m* tests = Load_Images("database/testing", &n_tests, 3000);
+    Tuple_m* tests = Load_Images("database/testing", &n_tests, 30000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
-    printf("Starting Scalar Gradient descent\n");
+    printf("Starting stochastic Gradient descent\n");
 
-    size_t max = 0;
-    size_t maxBatchSize = 0;
-    double maxEta = 0;
-
-    for (double j = 0.1; j < 10; j += 0.1)
-    for (size_t i = 1; i < 100; i++)
-    {
-        for (size_t k = 0; k < 10; k++)
-        {
-            SGD(network, data, n, 1, i, j, tests, n_tests);
-            size_t c = evaluate(network, tests, n_tests);
-            if ((int)((double)rand() / RAND_MAX * 100)  == 2)
-                printf("[%zu %f] -> %zu / %zu (%f%%)\n", i, j, c, n_tests, 100 * (double)c / n_tests);
-            if (c > max)
-            {
-                maxBatchSize = i;
-                maxEta = j;
-                max = c;
-                printf("                                                New max :O     [%zu %f] -> %zu / %zu (%f%%)\n", maxBatchSize, maxEta, c, n_tests, 100 * (double)max / n_tests);
-
-                FILE *fptr;
-
-                // Open a file in writing mode
-                fptr = fopen("result", "w");
-
-                // Write some text to the file
-                fprintf(fptr, "[%zu %f] -> %zu / %zu (%f%%)\n", maxBatchSize, maxEta, c, n_tests, 100 * (double)max / n_tests);
-
-                // Close the file
-                fclose(fptr);
-            }
-        }
-    }
-    printf("\n\n\n\n\n\n\n\n\n\nFinal results: [%zu %f] -> %zu / %zu  (%f%%)\n", maxBatchSize, maxEta, max, n_tests, 100 * (double)max / n_tests);
-
+    SGD(network, data, n, 30, 100, 1, tests, n_tests);
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
