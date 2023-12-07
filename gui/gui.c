@@ -505,7 +505,7 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
 // Main function.
 int main ()
 {
-    network = load_network("../neural/networko");
+    network = Load_Network("../neural/networko");
     // Initializes GTK.
     gtk_init(NULL, NULL);
 

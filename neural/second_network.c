@@ -1,4 +1,4 @@
-#include "second_network.h"
+#include "Neural_Network/second_network.h"
 
 Network* new_Network(size_t* sizesArr, size_t len)
 {

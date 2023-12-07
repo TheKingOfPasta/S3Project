@@ -9,9 +9,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-# include "second_network.h"
-# include "mnist_reader.h"
-# include "network_loader.h"
+# include "Neural_Network/second_network.h"
+# include "Neural_Network/network_loader.h"
 
 # define SEED time(NULL)
 
@@ -252,7 +251,9 @@ void train_load_digit(char *path)
     printf("\n\n\n\n\n\n\n\nWeights\n\n\n");
     print_list_m(network->weights);
 
-    //SGD(network, data, n, 30, 10, 1, tests, n_tests);
+    printf("\n\nDone loading...\n");
+
+    SGD(network, data, n, 30, 10, 1, tests, n_tests);
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
