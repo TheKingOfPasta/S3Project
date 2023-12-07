@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "second_network.h"
+#include "Neural_Network/second_network.h"
 
 int main(int argc, char** argv)
 {

@@ -1,16 +1,30 @@
-all:
-	cd gui && make
-	cd solver && make
-	cd img_processing && make
-	cd hough && make
-	cd gauss_dist && make
-	cd neuron_network && make
+CC = gcc -IIncludes
+CPPFLAGS =
+CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image` -fsanitize=address
+LDFLAGS = -fsanitize=address
+LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image`
+
+SOURCE_DIR := Src
+SRC = $(shell find Src/Img_Processing -name "*.c" ! -name "Src/Img_Processing/img_action.c") \
+	  $(shell find Src/Img_Transformation -name "*.c" ) \
+	  $(shell find Src/Grid_Detection -name "*.c" )	\
+OBJ = ${SRC:.c=.o}
+EXE = img_action gui networkTest
+
+all:  ${EXE}
+
+img_action: ${OBJ} Src/Img_Processing/img_action.o
+
+gui: $(shell find Src/Solver -name "*.o") Src/gui/gui.o \
+		 Src/neural/second_network.o Src/neural/network_loader.o Src/Utils/matrix.o
+
+networkTest: Src/neural/second_network.o Src/neural/test.o \
+				Src/neural/network_loader.o Src/Utils/matrix.o
+
+.PHONY: clean
 
 clean:
-	cd solver && make clean
-	cd hough && make clean
-	cd gauss_dist && make clean
-	cd gui && rm *.o gui
-	cd splitting && rm *.o
-	cd img_processing && rm img_action *.o
-	cd neuron_network && make clean
+	rm Src/gui/gui
+	rm Src/Img_Processing/img_action
+	rm Src/neural/networkTest
+	rm ****.o

@@ -5,7 +5,7 @@
 #include <err.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include "../utils/matrix.h"
+#include "../Utils/matrix.h"
 
 typedef struct Network
 {

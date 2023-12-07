@@ -1,4 +1,4 @@
-#include "matrix.h"
+#include "Utils/matrix.h"
 
 Matrix* Mul_m_d(Matrix* m, double d)
 {
