@@ -2,7 +2,7 @@
 .vscode/**
 .vs/
 #ignore program output
-Src/Img_Processing/*png
+Src/Img_Processing/*.png
 #ignore compiled files
 Src/Img_Processing/img_action
 *.o

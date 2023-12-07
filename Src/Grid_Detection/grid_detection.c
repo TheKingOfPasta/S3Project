@@ -24,7 +24,7 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     List* LVer = InitList();
 	List* LHor = InitList();
 
-    RemovesStrayLine(lLine,5,LVer,LHor);
+    RemovesStrayLine(lLine,3,LVer,LHor);
 
     // printList(lLine,1);
 	// printf("vertical Line list\n");

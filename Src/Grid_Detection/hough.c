@@ -93,8 +93,9 @@ List* HoughLine(SDL_Surface* img)
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
 
-	int makeShiftVariance = ((thirdMax*thirdMax)/(maxVal*maxVal));
-    int line_threshold = maxVal * (LINE_THRESHOLD/100.0) * makeShiftVariance ;
+	int a = thirdMax/maxVal;
+	int b = a*a;
+    int line_threshold = maxVal * (LINE_THRESHOLD/100.0) *b*b;
 
     int maxTheta, maxRho;
     int step = diag_len*2 / 60;
