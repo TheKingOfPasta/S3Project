@@ -20,9 +20,8 @@ void ErrorMessage()
 
 }
 
-#define wrapping(x) (x == 'w')
-#define rotate(x) ((x== 'r') || wrapping(x))
-#define detection(x) ((x=='d') || rotate(x))
+#define perspective(x) (x== 'r')
+#define detection(x) ((x=='d') || perspective(x))
 #define sobel(x) ((x=='s') || detection(x))
 #define threshold(x) (x=='t' || sobel(x))
 #define blur(x) (x=='b' || threshold(x))
@@ -87,21 +86,9 @@ int betterMain(char param, char one)
         }
         printQuad(grid);
 
-        if (!rotate(param)) goto save;
+        if (!perspective(param)) goto save;
 
-        int angle = FindAngle(grid,s->w,s->h);
-        printf("Attempting to rotate : angle %i\n",angle);
-        s = IMGA_Rotate(s, angle);
-        printf("rotating done \n");
-        // if (asprintf(&path, "rotated_0%i.png", i) == -1)
-        //     errx(EXIT_FAILURE, "asprintf()");
-        // IMG_SavePNG(s, path);
-        // printf("     saved at %s\n", path);
 
-        if(!wrapping(param)) goto save;
-        printf("Attempting to Wrap\n");
-        s = WrappingSurface(s, grid);
-        printf("wrapping done \n");
 
         goto save;
         save:
