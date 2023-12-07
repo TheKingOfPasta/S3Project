@@ -102,24 +102,27 @@ Network* Load_Network(char* path)
         for (size_t j = 0; j < h; j++)
         {
             getline(&line, &len, fp);
-            size_t width = 0;
+
+            ssize_t tot = -1;
 
             //line contains a whole row of digits, need to splice by spaces
-            for (size_t i = 0; i < len; i++)
+            for (size_t i = 0; i < w; i++)
             {
                 char val[20];
-                for (size_t k = 0; k < 19; k++)
+                size_t k = 0;
+                for (; k < 19; k++)
                 {
-                    if (line[i + k] == '\n')
+                    tot += 1;
+                    if (line[tot] == '\n' || line[tot] == ' ')
                     {
                         val[k] = '\0';
                         break;
                     }
                     else
-                        val[k] = line[i + k];
+                        val[k] = line[tot];
                 }
 
-                m->values[width][h] = strtod(val, NULL);
+                m->values[i][j] = strtod(val, NULL);
             }
         }
 

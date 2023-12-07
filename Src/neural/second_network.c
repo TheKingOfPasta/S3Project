@@ -142,6 +142,7 @@ ListTup* backprop(Network* n, Matrix* x, Matrix* y)
         tr = Transpose_m(atIndex(n->weights, -l+1)->m);
 
         Matrix* mult = Multiply_m(tr, delta);
+        //delta = Multiply_m(tr, delta);
         delta = Sum_product_m(mult, sp);
 
         free_m(atIndex(nabla_b, -l)->m);
