@@ -115,7 +115,7 @@ int main(int argc, char** argv)
         betterMain(argv[1][1],argv[1][2]);
         return 1;
     } //ff whats below
-
+/*
     SDL_Surface* sur = IMG_Load(argv[1]);
     printf("Attempting to rotate from %s\n", argv[1]);
     sur = IMGA_Rotate(sur, argc==3 ? 10 : atoi(argv[3]));
@@ -124,4 +124,4 @@ int main(int argc, char** argv)
     SDL_FreeSurface(sur);
 
         return EXIT_SUCCESS;
-}
+*/}
