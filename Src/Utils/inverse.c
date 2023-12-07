@@ -1,14 +1,16 @@
-#include "inverse.h"
+#include "Utils/inverse.h"
 
 /*For calculating Determinant of the Matrix */
 double determinant(Matrix* m1)
 {
     double s = 1, det = 0;
-    Matrix* b = new_Matrix(m1->w - 1, m1->h - 1);
-    int i, j, m, n, c;
-    if (m1->w == 1)
+    Matrix* b = new_Matrix(m1->w-1, m1->h-1);
+    size_t i, j, m, n, c;
+    if (m1->w == 2)
     {
-        return (m1->values[0][0]);
+	double bs = m1->values[0][0] * m1->values[1][1] - m1->values[0][1] * m1->values[1][0];
+
+        return bs;
     }
     else
     {
@@ -21,9 +23,10 @@ double determinant(Matrix* m1)
             {
                 for (j = 0; j < m1->w; j++)
                 {
-                    b->values[i][j] = 0;
+//                  b->values[i][j] = 0;
                     if (i != 0 && j != c)
                     {
+
                         b->values[m][n] = m1->values[i][j];
                         if (n < (m1->w - 2))
                             n++;
@@ -35,8 +38,8 @@ double determinant(Matrix* m1)
                     }
                 }
             }
-            det = det + s * (m1->values[0][c] * determinant(b));
-            s = -1 * s;
+            det = det + s * (m1->values[c][0] * determinant(b));
+	    s = -1 * s;
         }
     }
 
@@ -45,12 +48,12 @@ double determinant(Matrix* m1)
 
 Matrix* cofactor(Matrix* m1)
 {
-    Matrix* b = new_Matrix(m1->w - 1, m1->h - 1);
-    Matrix* fac = new_Matrix(m1->w - 1, m1->h - 1);
-    int p, q, m, n, i, j;
+    Matrix* b = new_Matrix(m1->w-1, m1->h-1);
+    Matrix* fac = new_Matrix(m1->w, m1->h);
+    size_t  p, q, m, n, i, j;
     for (q = 0; q < m1->w; q++)
     {
-        for (p = 0; p < m1->w; p++)
+        for (p = 0; p < m1->h; p++)
         {
             m = 0;
             n = 0;
@@ -80,7 +83,8 @@ Matrix* cofactor(Matrix* m1)
 /*Finding transpose of matrix*/
 Matrix* transpose(Matrix* m1, Matrix* m2)
 {
-    int i, j;
+	printf("am transposing :)\n");
+    size_t i, j;
     double d;
     Matrix* b = new_Matrix(m1->w, m1->h);
     Matrix* inverse = new_Matrix(m1->w, m1->h);
@@ -100,32 +104,71 @@ Matrix* transpose(Matrix* m1, Matrix* m2)
         }
     }
     printf("\n\n\nThe inverse of matrix is : \n");
-
-    print_m(inverse);
-
     return inverse;
 }
 
+Matrix* inverse(Matrix* m){
+	size_t k,i,j;
+	double temp;
+	Matrix* I = new_Matrix(m->w,m->h);
+	for(size_t t = 0; t<m->w;t++){
+		I->values[t][t] = 1;
+	}
+	for(k=0;k<m->w;k++)
+	{ 
+        	temp=m->values[k][k];
+        	for(j=0;j<m->w;j++)
+        	{
+        	    m->values[k][j]/=temp;
+        	    I->values[k][j]/=temp;
+        	}                 
+		for(i=0;i<m->w;i++)
+		{
+		    temp=m->values[i][k];
+		    for(j=0;j<m->w;j++) 
+		    {
+		        if(i==k)
+		            break;
+		        m->values[i][j]-=m->values[k][j]*temp;
+		        I->values[i][j]-=I->values[k][j]*temp;
+		    }
+		}
+        }
+	return I;
+}
+/*
 int main()
 {
-    double k, d;
-    int i, j;
+    double d;
     printf("Enter the order of the Matrix : ");
-    Matrix* a = new_Matrix(3, 3);
-    print_m(a);
-    printf("Enter the elements of %.0fX%.0f Matrix : \n", k, k);
-    for (i = 0; i < 3; i++)
-    {
-        for (j = 0; j < 3; j++)
-        {
-            a->values[i][j] = i * 3 + j;
-        }
-    }
+    Matrix* a = new_Matrix(4,4);
+//    printf("Enter the elements of %.0fX%.0f Matrix : \n", k, k);
+    double** mat = a->values;
+    mat[0][0] = 1;
+    mat[0][1] = 9;
+    mat[0][2] = 3;
+    mat[0][3] = -3;
+    mat[1][0] = 1;
+    mat[1][1] = -5;
+    mat[1][2] = 2;
+    mat[1][3] = 4;
+    mat[2][0] = 1;
+    mat[2][1] = 2;
+    mat[2][2] = 7;
+    mat[2][3] = 4;
+    mat[3][0] = 3;
+    mat[3][1] = 5;
+    mat[3][2] = -6;
+    mat[3][3] = 8;
+ //print_m(a);
     print_m(a);
     d = determinant(a);
     printf("determinant : %f\n", d);
     if (d == 0)
         printf("\nInverse of Entered Matrix is not possible\n");
-    else
+    else{
         print_m(cofactor(a));
+    	print_m(inverse(a));
+    }
 }
+*/
