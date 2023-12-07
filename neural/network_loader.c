@@ -1,232 +1,137 @@
 # include "network_loader.h"
 
-# define MAGIC 8629
-
-/**
-  * Write the magic number to the file (8629)
-  */
-void write_header(int fd)
+void Save_Network(Network* n, char* path)
 {
-    int magic = MAGIC;
-    ssize_t written = write(fd, &magic, sizeof(magic));
-    if (written < (ssize_t)sizeof(MAGIC))
-        err(EXIT_FAILURE, "Could not write the network's header");
-}
+    FILE* f = fopen(path, "w");
+    //This empties the file
+    fclose(f);
+    f = fopen(path, "a");
 
-/**
-  * Read the magic number from the file descriptor.
-  * Throw an error if it is not the magic number
-  */
-void read_header(int fd)
-{
-    int magic;
-    ssize_t readb = read(fd, &magic, sizeof(magic));
-    if (readb < (ssize_t)sizeof(MAGIC))
-        err(EXIT_FAILURE, "Could not read the network's header");
-    if (magic != MAGIC)
-        err(EXIT_FAILURE, "Wrong magic number");
-    printf("Magic: %i\n", magic);
-}
 
-/**
-  * Write the given matrix into the file.
-  *
-  * The format is the following:
-  * The numbers of rows (m) then columns (n) is written
-  * then followed by the matrix values row-wise.
-  *
-  * Fail if the matrix could not be entirely written.
-  */
-void write_matrix(int fd, Matrix *a)
-{
-    write(fd, &a->w, sizeof(a->w));
-    write(fd, &a->h, sizeof(a->h));
-
-    for (size_t i = 0; i < a->w; ++i)
+    fprintf(f,"%zu\n", n->num_layers);
+    for (DoubleNode* curr = n->sizes->head; curr; curr = curr->next)
     {
-        for (size_t j = 0; j < a->h; ++j)
+        fprintf(f,"%zu\n", curr->d);
+    }
+
+    for (Node_m* curr = n->biases->head; curr; curr = curr->next)
+    {
+        fprintf(f, "%zu\n", curr->m->w);
+        fprintf(f, "%zu\n", curr->m->h);
+
+        for (size_t j = 0; j < curr->m->h; j++)
         {
-            size_t s = sizeof(a->values[i][j]);
-            if (write(fd, &(a->values[i][j]), s) < (ssize_t)s)
-                err(EXIT_FAILURE, "write_matrix");
+            for (size_t i = 0; i < curr->m->w; i++)
+            {
+                fprintf(f, "%f ", curr->m->values[i][j]);
+            }
+            fprintf(f, "\n");
         }
     }
-}
 
-/**
-  * Reverse operation of write_matrix.
-  * Read the file at the current position and expect a matrix of it.
-  * Return a freshly allocated matrix pointer contaning the matrix at this position.
-  *
-  * Fail if the matrix dimensions or values could not be read.
-  */
-Matrix *read_matrix(int fd)
-{
-    size_t m, n;
-    if (read(fd, &m, sizeof(size_t)) < (ssize_t)(sizeof(size_t)))
-        err(EXIT_FAILURE, "Could not read dimensions of matrix");
-    if (read(fd, &n, sizeof(size_t)) < (ssize_t)(sizeof(size_t)))
-        err(EXIT_FAILURE, "Could not read dimensions of matrix");
-    Matrix *a = new_Matrix(m, n);
-
-    for (size_t i = 0; i < m; ++i)
+    for (Node_m* curr = n->weights->head; curr; curr = curr->next)
     {
-        for (size_t j = 0; j < n; ++j)
+        fprintf(f, "%zu\n", curr->m->w);
+        fprintf(f, "%zu\n", curr->m->h);
+
+        for (size_t j = 0; j < curr->m->h; j++)
         {
-            if (read(fd, &a->values[i][j], sizeof(double)) <
-                    (ssize_t)(sizeof(double)))
-                err(EXIT_FAILURE, "Could not read matrix");
+            for (size_t i = 0; i < curr->m->w; i++)
+            {
+                fprintf(f, "%f ", curr->m->values[i][j]);
+            }
+            fprintf(f, "\n");
         }
     }
-    return a;
+
+    fclose(f);
 }
 
-/**
-  * Write the weight matrices of the given network one by one into the file.
-  * num_layers - 1 matrices are written.
-  *
-  * Fail if a matrix could not be written
-  */
-void write_weights(int fd, Network *network)
+/// @brief The string is assumed correct and ends with a \n
+size_t StrToSize_t(char* s)
 {
-  for (Node_m* curr = network->weights->head; curr; curr = curr->next)
-    write_matrix(fd, curr->m);
+    size_t n = 0;
+
+    for (size_t i = 0; s[i] != '\n'; i++)
+        n = n * 10 + s[i] - '0';
+
+    return n;
 }
 
-/**
-  * Read the weight matrices from the given file one by one into the network.
-  * num_layers - 1 matrices are expected.
-  *
-  * Fail if a matrix could not be read
-  */
-void read_weights(int fd, Network *network)
+Network* Load_Network(char* path)
 {
-    for (Node_m* curr = network->weights->head; curr; curr = curr->next)
-      curr->m = read_matrix(fd);
-}
+    Network* n = calloc(1, sizeof(Network));
+    n->sizes = new_DoubleList();
+    n->biases = new_List();
+    n->weights = new_List();
 
-/**
-  * Write the biases matrices of the given network one by one into the file.
-  * num_layers - 1 matrices are written.
-  *
-  * Fail if a matrix could not be written
-  */
-void write_biases(int fd, Network *network)
-{
-  for (Node_m* curr = network->biases->head; curr; curr = curr->next)
-    write_matrix(fd, curr->m);
-}
+    //file reading line per line taken from stackoverflow
+    FILE* fp;
+    char* line = NULL;
+    size_t len = 0;
 
-/**
-  * Read the biases matrices from the given file one by one into the network.
-  * num_layers - 1 matrices are expected.
-  *
-  * Fail if a matrix could not be read
-  */
-void read_biases(int fd, Network *network)
-{
-    for (Node_m* curr = network->biases->head; curr; curr = curr->next)
-        curr->m = read_matrix(fd);
-}
+    fp = fopen(path, "r");
+    if (fp == NULL)
+        exit(EXIT_FAILURE);
 
-/**
-  * Write the number of layers of the network into the file,
-  * followed by the number of neurons in each layer
-  */
-void write_layers(int fd, Network *network)
-{
-    write(fd, &network->num_layers, sizeof(network->num_layers));
-    for (DoubleNode* curr = network->sizes->head; curr; curr = curr->next)
-        write(fd, &(curr->d), sizeof(size_t));
-}
+    getline(&line, &len, fp);
 
-/**
-  * Reverse operation of write_layers.
-  * Read the number of layers then the number of neurons in each.
-  *
-  * Allocate enough memory for:
-  * - sizes
-  * - weights
-  * - biases
-  */
-void read_layers(int fd, Network *network)
-{
-  size_t num_layers;
-  if (read(fd, &num_layers, sizeof(size_t)) < 8)
-    err(EXIT_FAILURE, "Could not read num_layers");
-  network->num_layers = num_layers;
+    n->num_layers = StrToSize_t(line);
 
-  network->sizes = malloc(num_layers * sizeof(size_t));
-  network->weights = malloc((num_layers - 1) * sizeof(double *));
-  network->biases = malloc((num_layers - 1) * sizeof(double *));
-  assert(network->sizes != NULL);
+    for (size_t i = 0; i < n->num_layers; i++)
+    {
+        getline(&line, &len, fp);
+        append_d(n->sizes, StrToSize_t(line));
+    }
 
-  for (DoubleNode* curr = network->sizes->head; curr; curr = curr->next)
-  {
-    size_t r = read(fd, &(curr->d), sizeof(size_t));
-    if (r < 8)
-        err(EXIT_FAILURE, "Could not read layers sizes, read %zu", r);
-  }
-}
+    for (size_t count = 0; count < 2 * (n->num_layers - 1); count++)
+    {
+        //read is length of line
+        //line is the char* with the text
 
-/**
-  * Write the given network into a file located in path
-  *
-  * The file written is in a binary format. A magic number identifies it and
-  * should not be modified manually as it may cause unexpected issues.
-  *
-  * Every fields of the network is written inside:
-  * - num_layers
-  * - sizes
-  * - weights
-  * - biases
-  *
-  * Fail if a field could not be written correctly or the given path is invalid
-  */
-void save_network(Network *network, char *path)
-{
-    int fd = creat(path, S_IRUSR | S_IWUSR);
-    if (fd < 0)
-        err(EXIT_FAILURE, "save_network() - creat()");
-    write_header(fd);
-    write_layers(fd, network);
-    write_weights(fd, network);
-    write_biases(fd, network);
+        size_t w;
+        size_t h;
 
-    close(fd);
-}
+        getline(&line, &len, fp);
+        w = StrToSize_t(line);
+        getline(&line, &len, fp);
+        h = StrToSize_t(line);
 
-/**
-  * Read the file at the path given and return the network contained inside
-  *
-  * The path should be a file written in the save_network(2) format.
-  * Return a freshly allocated Network.
-  *
-  * Fail if:
-  * - File could not be read
-  * - File is not recognisable (Magic number unknown)
-  * - Unable to allocate enough memory
-  * - File is corrupted/has been modified
-  */
-Network *load_network(char *path)
-{
-  int fd = open(path, O_RDONLY);
-  if (fd < 0)
-    err(EXIT_FAILURE, "save_network() - open()");
+        Matrix* m = new_Matrix(w, h);
 
-  Network *n = malloc(sizeof(Network));
+        for (size_t j = 0; j < h; j++)
+        {
+            getline(&line, &len, fp);
+            size_t width = 0;
 
-  printf("Getting headers\n");
-  read_header(fd);
-  printf("Got headers\nGetting layers\n");
-  read_layers(fd, n);
-  printf("Got layers\nGetting weights\n");
-  read_weights(fd, n);
-  printf("Got weights\nGetting biases\n");
-  read_biases(fd, n);
-  printf("Got biases\n");
+            //line contains a whole row of digits, need to splice by spaces
+            for (size_t i = 0; i < len; i++)
+            {
+                char val[20];
+                for (size_t k = 0; k < 19; k++)
+                {
+                    if (line[i + k] == '\n')
+                    {
+                        val[k] = '\0';
+                        break;
+                    }
+                    else
+                        val[k] = line[i + k];
+                }
 
-  //NN_print_biases(n);
-  close(fd);
-  return n;
+                m->values[width][h] = strtod(val, NULL);
+            }
+        }
+
+        if (count >= n->num_layers - 1)
+            append(n->weights, m);
+        else
+            append(n->biases, m);
+    }
+
+    fclose(fp);
+    if (line)
+        free(line);
+
+    return n;
 }
