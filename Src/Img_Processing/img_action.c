@@ -15,12 +15,11 @@ void ErrorMessage()
            "\t\t   -t >>> threshold\n"
            "\t\t   -s >>> sobel\n"
            "\t\t   -d >>> grid detection\n"
-           "\t\t   -r >>> rotate\n"
-           "\t\t   -w >>> wrapping\n");
+           "\t\t   -p >>> perspective correction\n");
 
 }
 
-#define perspective(x) (x== 'r')
+#define perspective(x) (x== 'p')
 #define detection(x) ((x=='d') || perspective(x))
 #define sobel(x) ((x=='s') || detection(x))
 #define threshold(x) (x=='t' || sobel(x))
@@ -87,8 +86,9 @@ int betterMain(char param, char one)
         printQuad(grid);
 
         if (!perspective(param)) goto save;
-
-
+        printf("attempt at fixing perspective\n");
+        s = CorrectImage(s,grid);
+        printf("fixed perspective\n");
 
         goto save;
         save:

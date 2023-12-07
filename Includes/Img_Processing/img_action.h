@@ -14,6 +14,7 @@
 #include "../Img_Transformation/wrapping.h"
 #include "../Img_Transformation/resize.h"
 #include "../Img_Transformation/split.h"
+#include "../Img_Transformation/correct.h"
 #include "../Grid_Detection/utils.h"
 #include "../Grid_Detection/hough.h"
 #include "../Grid_Detection/visualization.h"

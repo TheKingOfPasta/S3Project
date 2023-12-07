@@ -8,7 +8,7 @@ SOURCE_DIR := ..
 SRC = $(shell find ${SOURCE_DIR}/Img_Processing -name "*.c" ! -name "img_action.c") \
 	  $(shell find ${SOURCE_DIR}/Img_Transformation -name "*.c" ) 	\
 	  $(shell find ${SOURCE_DIR}/Grid_Detection -name "*.c" ) \
-	  ../Utils/matrix.c ../Utils/inverse.c
+	  ../Utils/matrix.c ../Utils/inverse.c ../Img_Transformation/correct.c
 OBJ = ${SRC:.c=.o}
 
 all: img_action
