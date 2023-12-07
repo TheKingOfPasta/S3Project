@@ -85,8 +85,7 @@ int betterMain(char param, char one)
 
         if (!rotate(param)) goto save;
 
-        char* path;
-        int angle = FindAngle(grid);
+        int angle = FindAngle(grid,s->w,s->h);
         printf("Attempting to rotate : angle %i\n",angle);
         s = IMGA_Rotate(s, angle);
         printf("rotating done \n");
