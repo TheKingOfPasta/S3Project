@@ -82,16 +82,32 @@ int betterMain(char param, char one)
         Quadrilateral* grid = Find_Grid(s);
         if(!grid) printf("not found grid :(\n");
         else {
-            printQuad(grid);
             if (!wrapping(param)) goto save;
             printf("Attempting to Wrap\n");
-            SDL_Surface* wrapped = WrappingSurface(s, grid);
+            printQuad(grid);
+
+            double angle = FindAngle(grid,s->w,s->h);
+            printf("angle: %f\n", angle);
+
+            char* path2;
+            if (asprintf(&path2, "haha_0%i.png", i) == -1)
+                errx(EXIT_FAILURE, "asprintf()");
+            
+            printf("Rotating surface\n");
+            SDL_Surface* surface = IMG_Load(path_in);
+            surface = IMGA_Rotate(surface, angle);
+
+            IMG_SavePNG(surface, path2);
+
+            printQuad(grid);
+            SDL_Surface* wrapped = WrappingSurface(surface, grid);
             char* path;
             if (asprintf(&path, "hough_0%i.png", i) == -1)
                 errx(EXIT_FAILURE, "asprintf()");
             printf("Wrapped, saving at %s\n", path);
             IMG_SavePNG(wrapped, path);
             SDL_FreeSurface(wrapped);
+            SDL_FreeSurface(surface);
         }
         goto save;
         save:
