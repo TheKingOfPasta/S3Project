@@ -12,7 +12,7 @@ val[0][5] = 0;
 val[0][6] = m1->values[0][0]*m2->values[0][0];
 val[0][7] = m1->values[0][1]*m2->values[0][0];
 val[0][8] = m2->values[0][0];
-    
+
     val[1][0] = 0;
 val[1][1] = 0;
 val[1][2] = 0;
@@ -32,7 +32,7 @@ val[2][5] = 0;
 val[2][6] = m1->values[1][0]*m2->values[1][0];
 val[2][7] = m1->values[1][1]*m2->values[1][0];
 val[2][8] = m2->values[1][0];
-    
+
     val[3][0] = 0;
 val[3][1] = 0;
 val[3][2] = 0;
@@ -52,7 +52,7 @@ val[4][5] = 0;
 val[4][6] = m1->values[2][0]*m2->values[2][0];
 val[4][7] = m1->values[2][1]*m2->values[2][0];
 val[4][8] = m2->values[2][0];
-    
+
     val[5][0] = 0;
 val[5][1] = 0;
 val[5][2] = 0;
@@ -72,7 +72,7 @@ val[6][5] = 0;
 val[6][6] = m1->values[3][0]*m2->values[3][0];
 val[6][7] = m1->values[3][1]*m2->values[3][0];
 val[6][8] = m2->values[3][0];
-    
+
     val[7][0] = 0;
 val[7][1] = 0;
 val[7][2] = 0;
@@ -104,10 +104,10 @@ val[0][8] = 1;
     {
         for (int j = 0; j < 3; j++, v++)
         {
-            lul[i][j] = cor[v];
+            lul->values[i][j] = cor->values[0][v];
         }
     }
-    free_m(cor);
+    //free_m(cor); //no bad Alekushi
     free_m(inv);
     free_m(R);
     free_m(P);
