@@ -1,4 +1,4 @@
-#include "gui.h"
+#include "GUI/gui.h"
 
 #define Blursize 13
 #define BlurIntensity 3
@@ -93,7 +93,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     switch (i)
     {
         case 0:
-            img = IMGC_surface_to_grayscale(img);
+            img = IMGC_Grayscale(img);
             gtk_button_set_label(btn, "Next step (Gaussian blur)");
             break;
         case 1:
@@ -136,7 +136,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
-                double angle = FindAngle(quad);
+                double angle = FindAngle(quad,img->w,img->h);
                 img = IMGA_Rotate(img, angle);
                 img_for_split = IMGA_Rotate(img_for_split, angle);
                 gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
@@ -352,7 +352,7 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
                 s->w, s->h, new_width, new_height);
 
         SDL_Surface *r = downscale_resize(s, new_width, new_height);
-        
+
         SDL_FreeSurface(s);
         s = r;
             }
