@@ -132,7 +132,7 @@ SDL_Surface* CorrectImage(SDL_Surface* surface, Quadrilateral* grid) {
 	d[3][0] = max;
 	d[3][1] = max;
 
-	Matrix* inv = CorrectMatrix(src,d);
+	Matrix* inv = CorrectMatrix(s,de);
 
 	SDL_Surface* sur = SDL_CreateRGBSurface(0, max, max, 32, 0, 0, 0, 0);
 
