@@ -7,8 +7,8 @@
 #include "../hough/utils.h"
 #include "rotate.h"
 
-double FindAngle(Quadrilateral* quad);
+double FindAngle(Quadrilateral* quad,int width, int height);
 
-SDL_Surface* Wrapping(char* path, Quadrilateral* quad);
+SDL_Surface* Wrapping(char* path, Quadrilateral* quad, int width, int height);
 
 SDL_Surface* WrappingSurface(SDL_Surface* sur, Quadrilateral* quad);
