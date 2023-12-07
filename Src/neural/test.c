@@ -177,12 +177,12 @@ void test_digit()
 
     printf("Loading training set...\n");
     size_t n;
-    Tuple_m* data = Load_Images("database/training", &n, 800);
+    Tuple_m* data = Load_Images("database/training", &n, 5000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Loading test set...\n");
     size_t n_tests;
-    Tuple_m* tests = Load_Images("database/testing", &n_tests, 3000);
+    Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Starting stochastic Gradient descent\n");
@@ -253,7 +253,11 @@ void train_load_digit(char *path)
 
     printf("\n\nDone loading...\n");
 
-    SGD(network, data, n, 30, 10, 1, tests, n_tests);
+    while (1)
+    {
+        SGD(network, data, n, 1, 10, 1, tests, n_tests);
+        Save_Network(network, "networko");
+    }
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
@@ -273,8 +277,6 @@ void train_load_digit(char *path)
     }
     free(tests);
     free(data);
-    //free_all_training_data(tests, n_tests);
-    //free_all_training_data(data, n);
 }
 
 int main(int argc, char **argv)

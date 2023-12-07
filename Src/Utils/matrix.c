@@ -90,7 +90,7 @@ Matrix* new_Random_Matrix(size_t w, size_t h)
     for (size_t i = 0; i < w; i++)
     for (size_t j = 0; j < h; j++)
     {
-        m->values[i][j] = 2 * (rand() / (double)RAND_MAX - 0.5);
+        m->values[i][j] = (rand() / (double)RAND_MAX) / sqrt(w);
     }
 
     return m;
