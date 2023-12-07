@@ -18,13 +18,11 @@ img_action: ${OBJ} Src/Img_Processing/img_action.o
 gui: $(shell find Src/Solver -name "*.o") Src/gui/gui.o \
 	Src/neural/second_network.o Src/neural/network_loader.o Src/Utils/matrix.o
 
-networkTest: Src/neural/second_network.o Src/neural/test.o \
-	Src/neural/network_loader.o Src/Utils/matrix.o
-
+networkTest: Src/neural/second_network.o Src/neural/test.o Src/neural/network_loader.o Src/Utils/matrix.o
 .PHONY: clean
 
 clean:
+	rm ****.o
 	rm Src/gui/gui
 	rm Src/Img_Processing/img_action
 	rm Src/neural/networkTest
-	rm ****.o

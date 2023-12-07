@@ -128,10 +128,13 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             quad = Find_Grid(img);
 
-            gtk_button_set_label(btn, "Next step (Rotation)");
+            gtk_button_set_label(btn, "Next step (Correction)");
 
             break;
         case 5:
+		img = CorrectImage(img,quad);
+		gtk_button_set_label(btn, "Next step (Rotation)");
+        case 6:
             img_for_split = IMG_Load("temp03.png");
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
@@ -152,7 +155,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Splitting)");
             break;
-        case 6:
+        case 7:
             mkdir("temp_split", S_IRWXU);
             img_for_split = IMG_Load("temp_split05.png");
 
@@ -162,7 +165,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
-        case 7:
+        case 8:
             printf("Starting step 7");
             Matrix *input = new_Matrix(1, 784);
             for (int j = 1; j <= 81; j++)
@@ -223,7 +226,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Solving)");
             break;
-        case 8:
+        case 9:
             SLV_solve(digits);
             //digits is filled in place with values from the neural network
 

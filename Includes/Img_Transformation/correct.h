@@ -3,6 +3,9 @@
 #include <err.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include "../Utils/matrix.h"
+#include "../Utils/inverse.h"
+#include "../Grid_Detection/utils.h"
 
 Matrix* Inverse(Matrix* m);
 
