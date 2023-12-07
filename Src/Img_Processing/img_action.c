@@ -38,45 +38,49 @@ int betterMain(char param, char one)
 
     for(int i =1 ; i<7;i++){
         if (one != '\0' && one -'0' != i)  continue;
-        if (asprintf(&path_in,"../test_grid/image_0%i.jpeg",i) == -1)
+        Quadrilateral* grid = NULL;
+        if (asprintf(&path_in,"../../test_grid/image_0%i.jpeg",i) == -1)
             errx(EXIT_FAILURE, "asprintf()");
         if (asprintf(&path_out,"./sudoku0%i.png",i)==-1)
             errx(EXIT_FAILURE, "asprintf()");
 
         printf("Attempting to apply all from %s\n", path_in);
-        SDL_Surface* sur = IMG_Load(path_in);
 
+        SDL_Surface* s = IMG_Load(path_in);
         const int new_width = 1000;
 
-        int new_height = (int)ceil(sur->h * (float)new_width / sur->w);
-        SDL_Surface *s = downscale_resize(sur, new_width, new_height);
+
+        int new_height = ceil((float)s->h * (float)new_width / s->w);
+
+        s = downscale_resize(s, new_width, new_height);
         printf("Resized width from %ix%i to %ix%i\n",
-                sur->w, sur->h, new_width, new_height);
+                s->w, s->h, new_width, new_height);
 
         int sizeFactor = s->w*s->h / 100000;
 
         s= IMGC_Grayscale(s);
         //s = IMGC_Level_Colors(s,10);
-        s= IMGC_Gamma_Correction(s,128);
-        s= IMGC_Contrast_Correction(s,64);
-        //s = IMGC_Normalize_Brigthness(s);
+       // s= IMGC_Gamma_Correction(s,128);
+        //s= IMGC_Contrast_Correction(s,64);
+        s = IMGC_Normalize_Brigthness(s);
 
         if(!blur(param))goto save;
         s=IMGA_GaussianBlur(s,3, 1);
-        s= IMGA_Erode(s,9);
-        s= IMGA_Dilate(s,9);
+        //s= IMGA_Erode(s,9);
+        //s= IMGA_Dilate(s,9);
 
         //s = IMGC_Level_Colors(s,10);
 
         if(!threshold(param)) goto save;
-        s=IMGA_Erosion(IMGA_Sauvola(s,sizeFactor,0.25));
-        //s=IMGA_Erosion(CheckInvert(IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize)));
+        s=IMGA_Sauvola(s,sizeFactor,0.27);
+        //s=IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize);
+        s= IMGA_Erosion(CheckInvert(s));
 
         if(!sobel(param))goto save;
         s = sobel_gradient(s);
         if(!detection(param)) goto save;
 
-        Quadrilateral* grid = Find_Grid(s);
+        grid = Find_Grid(s);
         if(!grid) {
             printf("grid not found :(\n");
             goto save;
@@ -104,7 +108,11 @@ int betterMain(char param, char one)
         IMG_SavePNG(s, path_out);
         SDL_FreeSurface(s);
         printf("Successfully saved the new image at path %s\n", path_out);
+        free(path_in);
+        free(path_out);
+        if (grid)  free(grid);
     }
+
     return 1;
 }
 

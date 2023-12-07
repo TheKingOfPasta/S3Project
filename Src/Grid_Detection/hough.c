@@ -1,6 +1,6 @@
 #include "Grid_Detection/hough.h"
 
-#define LINE_THRESHOLD 40 // percent
+#define LINE_THRESHOLD 50// percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {
@@ -71,16 +71,30 @@ List* HoughLine(SDL_Surface* img)
 
 	// getting the max value
 	int maxVal = 0;
+	int secondMax = 0;
+	int thirdMax = 0;
 	for (int t = 0; t < theta_num; t++)
 	for (int r = 0; r < rho_num; r++)
 	{
 		if (accumulator[r][t] > maxVal)
+		{
+			thirdMax = secondMax;
+			secondMax = maxVal;
 			maxVal = accumulator[r][t];
+		}
+		else if (accumulator[r][t] > secondMax){
+			thirdMax = secondMax;
+			secondMax = accumulator[r][t];
+		}
+		else if (accumulator[r][t] > thirdMax){
+			thirdMax = accumulator[r][t];
+		}
 	}
 
 	Visualize_Acc(accumulator, diag_len * 2, maxVal);
 
-    int line_threshold = maxVal * (LINE_THRESHOLD/100.0);
+	int makeShiftVariance = ((thirdMax*thirdMax)/(maxVal*maxVal));
+    int line_threshold = maxVal * (LINE_THRESHOLD/100.0) * makeShiftVariance ;
 
     int maxTheta, maxRho;
     int step = diag_len*2 / 60;
@@ -253,9 +267,8 @@ void RemovesStrayLine(List *l,int thresh, List* LVer, List* LHor){
 	int secondMax = (indexMax +90) %180;
 
 
-
+	//printList(l,1);
 	//printf("indexMax %i   SecondMax %i\n", indexMax,secondMax);
-	Node* tmp;
 	curr = l->head;
 
 	while(curr)
@@ -263,21 +276,20 @@ void RemovesStrayLine(List *l,int thresh, List* LVer, List* LHor){
 		int currAngle = fabs((((Line*)(curr->data))->theta)*180/M_PI);
 		if( abs(currAngle- indexMax)<thresh ||
 				abs(currAngle-indexMax)> 180- thresh){
-			tmp = curr->next;
 			curr = PrepopNode(l);
 			InsertNode(LVer,curr);
-			curr = tmp;
 		}
 		else if(abs(currAngle- secondMax)<thresh ||
 				abs(currAngle-secondMax)> 180- thresh){
-			tmp = curr->next;
 			curr = PrepopNode(l);
 			InsertNode(LHor,curr);
-			curr = tmp;
 		}
 		else{
-			curr = curr->next;
+			curr = PrepopNode(l);
+			free(curr->data);
+    		free(curr);
 		}
+		curr = l->head;
 	}
 
 }

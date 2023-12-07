@@ -18,19 +18,20 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     List* lLine = HoughLine(s);
     printf("Hough transform done\n");
 
-    //DrawLines(s,lLine,255,0,0);
+    //DrawLines(s,lLine,100,0,0);
     AveragesCloseLine(lLine,ceil(sqrt(s->w * s->w + s->h * s->h)));
     ExcludeBorderLine(lLine, s->w, s->h, 0.015);
     List* LVer = InitList();
 	List* LHor = InitList();
 
-    RemovesStrayLine(lLine,10,LVer,LHor);
+    RemovesStrayLine(lLine,5,LVer,LHor);
 
-    //printList(lLine,1);
+    // printList(lLine,1);
 	// printf("vertical Line list\n");
     // printList(LVer,1);
 	// printf("horizontal Line list\n");
 	// printList(LHor,1);
+
 
     FreeList(lLine);
     DrawLines(s,LVer,255,0,0);
@@ -39,24 +40,30 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     int nbLines = LVer->length + LHor->length;
     if(nbLines >150){
         printf("too many lines found -> preprocessing is at fault\n");
+        FreeList(LVer);
+        FreeList(LHor);
         return NULL;
     }
     if(nbLines<4){
         printf("not enough lines found\n");
+        FreeList(LVer);
+        FreeList(LHor);
         return NULL;
     }
 
     List* lquad =  FindSquares(LVer,LHor,s->w,s->h);
+    FreeList(LVer);
+    FreeList(LHor);
+
     if (lquad->length ==0)
     {
         printf("no quadrilateral found\n");
         return NULL;
     }
-    FreeList(LVer);
-    FreeList(LHor);
 
 
-    printf("found quad list\n");
+
+    //printf("found quad list\n");
     //printList(lLine,0);
 
     Node* curr = lquad->head;
@@ -67,7 +74,7 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     }
 
     Quadrilateral *bestSquare = BestSquare(lquad);
-    printf("found grid !\n");
+    //printf("found grid !\n");
     DrawSquare(s, bestSquare, 255, 0, 255,1);
 
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));

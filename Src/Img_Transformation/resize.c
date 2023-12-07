@@ -107,6 +107,7 @@ SDL_Surface *downscale_resize(SDL_Surface *surface, int new_width, int
 
     SDL_UnlockSurface(r_surface);
     SDL_UnlockSurface(surface);
+    SDL_FreeSurface(surface);
     return r_surface;
 }
 

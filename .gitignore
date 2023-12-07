@@ -2,9 +2,9 @@
 .vscode/**
 .vs/
 #ignore program output
-img_processing/*.png
+Src/Img_Processing/*png
 #ignore compiled files
-img_processing/img_action
+Src/Img_Processing/img_action
 *.o
 #gui outputs
 gui/*.png
