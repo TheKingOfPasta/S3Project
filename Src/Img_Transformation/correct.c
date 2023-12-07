@@ -97,6 +97,17 @@ val[0][8] = 1;
 
     Matrix* inv = inverse(P);
     Matrix* cor = Multiply_m(inv,R);
+
+    Matrix* lul = new_Matrix(3,3);
+    int v = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++, v++)
+        {
+            lul[i][j] = cor[v];
+        }
+    }
+    free_m(cor);
     free_m(inv);
     free_m(R);
     free_m(P);
