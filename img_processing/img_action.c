@@ -14,15 +14,19 @@ void ErrorMessage()
            "\t\t   -b >>> blur\n"
            "\t\t   -t >>> threshold\n"
            "\t\t   -s >>> sobel\n"
-           "\t\t   -d >>> grid detection\n");
+           "\t\t   -d >>> grid detection\n"
+           "\t\t   -r >>> rotate\n"
+           "\t\t   -w >>> wrapping\n");
+
 }
 
-#define detection(x) (x=='d')
+#define wrapping(x) (x == 'w')
+#define rotate(x) ((x== 'r') || wrapping(x))
+#define detection(x) ((x=='d') || rotate(x))
 #define sobel(x) ((x=='s') || detection(x))
 #define threshold(x) (x=='t' || sobel(x))
 #define blur(x) (x=='b' || threshold(x))
 #define grayscale(x) (x=='g' || blur(x))
-#define wrapping(x) ((x == 'w') || grayscale(x))
 
 int betterMain(char param, char one)
 {
@@ -30,14 +34,7 @@ int betterMain(char param, char one)
     char* path_in;
     char* path_out;
     if(! grayscale(param))
-    {
-        errx(EXIT_FAILURE, "Usage: -g >>> grayscale\n"
-           "\t\t   -b >>> blur\n"
-           "\t\t   -t >>> threshold\n"
-           "\t\t   -s >>> sobel\n"
-           "\t\t   -d >>> grid detection\n"
-           "\t\t   -w >>> wrapping\n");
-    }
+        ErrorMessage();
 
     for(int i =1 ; i<7;i++){
         if (one != '\0' && one -'0' != i)  continue;
@@ -80,19 +77,29 @@ int betterMain(char param, char one)
         if(!detection(param)) goto save;
 
         Quadrilateral* grid = Find_Grid(s);
-        if(!grid) printf("not found grid :(\n");
-        else {
-            printQuad(grid);
-            if (!wrapping(param)) goto save;
-            printf("Attempting to Wrap\n");
-            SDL_Surface* wrapped = WrappingSurface(s, grid);
-            char* path;
-            if (asprintf(&path, "hough_0%i.png", i) == -1)
-                errx(EXIT_FAILURE, "asprintf()");
-            printf("Wrapped, saving at %s\n", path);
-            IMG_SavePNG(wrapped, path);
-            SDL_FreeSurface(wrapped);
+        if(!grid) {
+            printf("grid not found :(\n");
+            goto save;
         }
+        printQuad(grid);
+
+        if (!rotate(param)) goto save;
+
+        char* path;
+        int angle = FindAngle(grid);
+        printf("Attempting to rotate : angle %i\n",angle);
+        s = IMGA_Rotate(s, angle);
+        printf("rotating done \n");
+        // if (asprintf(&path, "rotated_0%i.png", i) == -1)
+        //     errx(EXIT_FAILURE, "asprintf()");
+        // IMG_SavePNG(s, path);
+        // printf("     saved at %s\n", path);
+
+        if(!wrapping(param)) goto save;
+        printf("Attempting to Wrap\n");
+        s = WrappingSurface(s, grid);
+        printf("wrapping done \n");
+
         goto save;
         save:
         IMG_SavePNG(s, path_out);
@@ -115,6 +122,12 @@ int main(int argc, char** argv)
         return 1;
     } //ff whats below
 
+    SDL_Surface* sur = IMG_Load(argv[1]);
+    printf("Attempting to rotate from %s\n", argv[1]);
+    sur = IMGA_Rotate(sur, argc==3 ? 10 : atoi(argv[3]));
+    printf("rotated done \n");
+    IMG_SavePNG(sur, argv[2]);
+    SDL_FreeSurface(sur);
 
         return EXIT_SUCCESS;
 }
