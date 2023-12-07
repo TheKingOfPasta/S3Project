@@ -237,12 +237,12 @@ void train_load_digit(char *path)
     clock_t t = clock();
     printf("Loading training set...\n");
     size_t n;
-    Tuple_m* data = Load_Images("database/training", &n, 800);
+    Tuple_m* data = Load_Images("database/training", &n, 5000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Loading test set...\n");
     size_t n_tests;
-    Tuple_m* tests = Load_Images("database/testing", &n_tests, 3000);
+    Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Starting stochastic Gradient descent\n");

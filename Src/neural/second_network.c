@@ -177,7 +177,7 @@ size_t evaluate(Network* n, Tuple_m* test_results, size_t len)
         Matrix* ff = feedforward(n, test_results[i].x);
         size_t index = argmax_m(ff);
 
-        if (ff->values[0][index] > 0.5 && index == argmax_m(test_results[i].y))
+        if (index == argmax_m(test_results[i].y))
         {
             sum += 1;
             /*if (print_matrix_as_image(test_results[i].x))
