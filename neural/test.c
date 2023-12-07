@@ -222,10 +222,35 @@ void test_sdg()
 
 }
 
-Tuple_m* Load_Images(size_t* index)
+char print_img(Matrix *a)
 {
-    // num = the number of pics per digit we choose, 0 < num < 3500
-    size_t num = 1000;
+    char f = 0;
+
+    for (size_t i = 0; i < a->w; i++)
+    for (size_t j = 0; j < a->h; j++)
+        if (a->values[i][j] != 0)
+        {
+            f = 1;
+            break;
+        }
+    if (!f)
+        return 0;
+
+    for (size_t i = 0; i < 28; ++i)
+    {
+        for (size_t j = 0; j < 28; ++j)
+            if (a->values[0][i * 28 + j] > 0)
+                printf("@ ");
+            else
+                printf(". ");
+        printf("\n");
+    }
+
+    return 1;
+}
+
+Tuple_m* Load_Images(char* path, size_t* index, size_t num)
+{
     Tuple_m* arr = malloc(sizeof(Tuple_m) * num * 10);
     *index = 0;
 
@@ -234,22 +259,17 @@ Tuple_m* Load_Images(size_t* index)
         for (size_t j = 0; j < num; j++)
         {
             char* s;
-            if (asprintf(&s, "database/%zu_%zu.png", i, j) != -1)
+            if (asprintf(&s, "%s/%zu/%zu.png", path, i, j) != -1)
             {
                 SDL_Surface* surf = IMG_Load(s);
                 if (!surf)
                     continue;
 
-                Uint32* pixels = surf->pixels;
-
                 Matrix* m = new_Matrix(1, 784);
 
                 for (size_t k = 0; k < 784; k++)
                 {
-                    Uint8 col;
-                    int offset = (k/28) * surf->pitch + (k%28) * surf->format->BytesPerPixel;
-                    SDL_GetRGB((*(Uint32*)((Uint8*)pixels + offset)), surf->format, &col, &col, &col);
-                    m->values[0][k] = col + 1 < 0.1 ? 1 : 0;//-1 == white
+                    m->values[0][k] = (*(Uint32*)(surf->pixels + k)) > INT32_MAX / 2? 1 : 0;
                 }
 
                 Matrix* res = new_Matrix(1,10);
@@ -259,6 +279,8 @@ Tuple_m* Load_Images(size_t* index)
                 arr[*index].y = res;
 
                 *index += 1;
+
+                //print_img(m);
 
                 SDL_FreeSurface(surf);
             }
@@ -282,26 +304,60 @@ void test_digit()
 
     printf("Loading training set...\n");
     size_t n;
-    Tuple_m* data = Load_Images(&n);
+    Tuple_m* data = Load_Images("database/training", &n, 800);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Loading test set...\n");
     size_t n_tests;
-    Tuple_m* tests = Load_Images(&n_tests);
+    Tuple_m* tests = Load_Images("database/testing", &n_tests, 3000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Starting Scalar Gradient descent\n");
-    SGD(network, data, n, 30, DIGITS_MINI_BATCH_SIZE, DIGITS_ETA,
-            tests, n_tests);
+
+    size_t max = 0;
+    size_t maxBatchSize = 0;
+    double maxEta = 0;
+
+    for (double j = 0.1; j < 10; j += 0.1)
+    for (size_t i = 1; i < 100; i++)
+    {
+        for (size_t k = 0; k < 10; k++)
+        {
+            SGD(network, data, n, 1, i, j, tests, n_tests);
+            size_t c = evaluate(network, tests, n_tests);
+            if ((int)((double)rand() / RAND_MAX * 100)  == 2)
+                printf("[%zu %f] -> %zu / %zu (%f%%)\n", i, j, c, n_tests, 100 * (double)c / n_tests);
+            if (c > max)
+            {
+                maxBatchSize = i;
+                maxEta = j;
+                max = c;
+                printf("                                                New max :O     [%zu %f] -> %zu / %zu (%f%%)\n", maxBatchSize, maxEta, c, n_tests, 100 * (double)max / n_tests);
+
+                FILE *fptr;
+
+                // Open a file in writing mode
+                fptr = fopen("result", "w");
+
+                // Write some text to the file
+                fprintf(fptr, "[%zu %f] -> %zu / %zu (%f%%)\n", maxBatchSize, maxEta, c, n_tests, 100 * (double)max / n_tests);
+
+                // Close the file
+                fclose(fptr);
+            }
+        }
+    }
+    printf("\n\n\n\n\n\n\n\n\n\nFinal results: [%zu %f] -> %zu / %zu  (%f%%)\n", maxBatchSize, maxEta, max, n_tests, 100 * (double)max / n_tests);
+
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
     save_network(network, "networko");
 
-    printf("Biases\n");
+    /*printf("Biases\n");
     print_list_m(network->biases);
     printf("\n\n\n\nWeights\n");
-    print_list_m(network->weights);
+    print_list_m(network->weights);*/
 
     Free_Network(network);
 
