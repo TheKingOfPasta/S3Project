@@ -1,0 +1,27 @@
+#pragma once
+#define _GNU_SOURCE
+
+#include <stdio.h>
+#include <gtk/gtk.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <sys/stat.h>
+#include "../Img_Processing/gaussian_blur.h"
+#include "../Img_Processing/adaptive_thresholding.h"
+#include "../Img_Processing/filter.h"
+#include "../Img_Processing/canny_edge_detector.h"
+#include "../Img_Processing/img_color.h"
+#include "../Img_Transformation/rotate.h"
+#include "../Img_Transformation/wrapping.h"
+#include "../Img_Transformation/resize.h"
+#include "../Img_Transformation/split.h"
+#include "../Grid_Detection/hough.h"
+#include "../Grid_Detection/utils.h"
+#include "../Grid_Detection/grid_detection.h"
+#include "../Grid_Detection/visualization.h"
+#include "../Grid_Detection/square_detection.h"
+#include "../Solver/parser.h"
+#include "../Solver/solver.h"
+#include "../Neural_Network/network_loader.h"
+#include "../Neural_Network/second_network.h"
