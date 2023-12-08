@@ -106,12 +106,21 @@ int betterMain(char param, char one)
         free(path_in);
         free(path_out);
     }
-    
 
     return 1;
 }
 
+void extractProcess(char* path_in, char* path_out){
+     printf("Attempting to extract from %s\n", path_in);
 
+    SDL_Surface* s = IMG_Load(path_in);
+
+    s = DigitExtraction (s);
+
+    IMG_SavePNG(s, path_out);
+    SDL_FreeSurface(s);
+
+}
 
 int main(int argc, char** argv)
 {
@@ -128,6 +137,11 @@ int main(int argc, char** argv)
 
     char* path_in = argv[2];
     char* path_out = argv[3];
+
+    if(param == 'e'){
+        extractProcess(path_in,path_out);
+        return EXIT_SUCCESS;
+    }
 
     process(path_in,path_out,param);
 

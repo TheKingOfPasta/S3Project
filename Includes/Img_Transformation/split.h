@@ -5,4 +5,5 @@
 #include <err.h>
 #include <stdlib.h>
 
+SDL_Surface* DigitExtraction(SDL_Surface* s);
 void Split(SDL_Surface* surface, char* folder_out);
