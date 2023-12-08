@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include "../Utils/matrix.h"
+#include <time.h>
 
 typedef struct Network
 {
