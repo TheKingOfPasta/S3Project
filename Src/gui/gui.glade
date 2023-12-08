@@ -2,6 +2,1541 @@
 <!-- Generated with glade 3.38.2 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
+  <object class="GtkWindow" id="OverrideWindow">
+    <property name="can-focus">False</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <!-- n-columns=3 n-rows=3 -->
+          <object class="GtkGrid">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="row-spacing">20</property>
+            <property name="column-spacing">20</property>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input1">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input2">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input3">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input10">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input11">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input12">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input19">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input20">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input21">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input4">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input5">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input6">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input13">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input14">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input15">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input22">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input23">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input24">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input7">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input8">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input9">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input16">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input17">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input18">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input25">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input26">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input27">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">0</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input28">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input29">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input30">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input37">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input38">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input39">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input46">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input47">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input48">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input31">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input32">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input33">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input40">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input41">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input42">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input49">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input50">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input51">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input34">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input35">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input36">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input43">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input44">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input45">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input52">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input53">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input54">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">1</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input55">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input56">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input57">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input64">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input65">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input66">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input73">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input74">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input75">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">0</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input61">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input62">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input63">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input70">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input71">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input72">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input79">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input80">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input81">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">2</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <!-- n-columns=3 n-rows=3 -->
+              <object class="GtkGrid">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="row-spacing">5</property>
+                <property name="column-spacing">5</property>
+                <child>
+                  <object class="GtkEntry" id="input58">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input59">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input60">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input67">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input68">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input69">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input76">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">0</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input77">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">1</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="input78">
+                    <property name="width-request">50</property>
+                    <property name="height-request">50</property>
+                    <property name="visible">True</property>
+                    <property name="can-focus">True</property>
+                    <property name="max-length">1</property>
+                    <property name="width-chars">3</property>
+                    <property name="max-width-chars">0</property>
+                    <property name="overwrite-mode">True</property>
+                    <property name="input-purpose">digits</property>
+                  </object>
+                  <packing>
+                    <property name="left-attach">2</property>
+                    <property name="top-attach">2</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="left-attach">1</property>
+                <property name="top-attach">2</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="backToSteps">
+            <property name="label" translatable="yes">Go back</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
   <object class="GtkFileFilter" id="filefilter1">
     <patterns>
       <pattern>*.png</pattern>
@@ -99,7 +1634,6 @@
                 <property name="name">DisplayImage</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="pixbuf">../../test_grid/image_03.jpeg</property>
               </object>
               <packing>
                 <property name="index">-1</property>
@@ -133,6 +1667,7 @@
               <object class="GtkButton" id="SaveButton">
                 <property name="label">Save</property>
                 <property name="name">CancelButton</property>
+                <property name="width-request">70</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
@@ -160,1461 +1695,19 @@
               </packing>
             </child>
             <child type="overlay">
-              <object class="GtkEntry" id="input1">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
+              <object class="GtkButton" id="OverrideWindowButton">
+                <property name="label">Override values</property>
+                <property name="name">CancelButton</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
+                <property name="receives-default">True</property>
+                <property name="halign">start</property>
+                <property name="valign">start</property>
+                <property name="margin-start">70</property>
+                <property name="image-position">right</property>
               </object>
               <packing>
                 <property name="index">4</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input2">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">5</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input3">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">6</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input4">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">7</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input5">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">8</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input6">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">9</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input7">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">10</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input8">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">11</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input9">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">12</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input10">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">13</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input11">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">14</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input12">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">15</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input13">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">16</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input14">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">17</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input15">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">18</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input16">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">19</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input17">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">20</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input18">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">21</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input19">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">22</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input20">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">23</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input21">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">24</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input22">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">25</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input23">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">26</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input24">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">27</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input25">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">28</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input26">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">29</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input27">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">30</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input28">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">31</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input29">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">32</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input30">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">33</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input31">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">34</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input32">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">35</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input33">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">36</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input34">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">37</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input35">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">38</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input36">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">39</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input37">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">40</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input38">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">41</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input39">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">42</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input40">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">43</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input41">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">44</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input42">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">45</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input43">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">46</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input44">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">47</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input45">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">48</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input46">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">49</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input47">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">50</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input48">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">51</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input49">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">52</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input50">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">53</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input51">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">54</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input52">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">55</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input53">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">56</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input54">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">57</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input55">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">58</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input56">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">59</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input57">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">60</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input58">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">61</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input59">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">62</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input60">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">63</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input61">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">64</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input62">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">65</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input63">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">66</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input64">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">67</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input65">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">68</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input66">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">69</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input67">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">70</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input68">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">71</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input69">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">72</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input70">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">73</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input71">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">74</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input72">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">75</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input73">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">76</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input74">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">77</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input75">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">78</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input76">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">79</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input77">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">80</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input78">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">81</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input79">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">82</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input80">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">83</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkEntry" id="input81">
-                <property name="width-request">50</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="max-length">1</property>
-                <property name="width-chars">3</property>
-                <property name="max-width-chars">0</property>
-                <property name="overwrite-mode">True</property>
-                <property name="input-purpose">digits</property>
-              </object>
-              <packing>
-                <property name="index">84</property>
               </packing>
             </child>
           </object>

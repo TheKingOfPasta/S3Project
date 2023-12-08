@@ -36,6 +36,10 @@ typedef struct widgets
     char* path;
     int resetSlider;
     GtkEntry* forceInputs[81];
+
+    GtkButton* OverrideWindowButton;
+    GtkButton* backToSteps;
+    GtkWindow* OverrideWindow;
 } widgets;
 
 int i = 0;
@@ -87,6 +91,44 @@ void print_image(Matrix *a)
     }
 }
 
+gboolean Window3(GtkButton* btn, gpointer ptr)
+{
+    btn = btn;
+    widgets* h = ptr;
+
+    gtk_widget_hide(h->w2);
+    gtk_widget_show(GTK_WIDGET(h->OverrideWindow));
+
+    for (int j = 0; j < 81; j++)
+    {
+        char text[2];
+
+        if (digits[j / 9][j % 9] == DEFAULT_CELL_VALUE)
+        {
+            text[0] = ' ';
+        }
+        else
+        {
+            text[0] = '0' + digits[j / 9][j % 9];
+        }
+        text[1] = '\0';
+        gtk_entry_set_text(h->forceInputs[j], text);
+    }
+
+    return FALSE;
+}
+
+gboolean Window2(GtkButton* btn, gpointer ptr)
+{
+    btn = btn;
+    widgets* h = ptr;
+
+    gtk_widget_show(h->w2);
+    gtk_widget_hide(GTK_WIDGET(h->OverrideWindow));
+
+    return FALSE;
+}
+
 gboolean ChangeInput(GtkEntry* e)
 {
     const char* name = gtk_widget_get_name(GTK_WIDGET(e));// input1-81
@@ -117,7 +159,10 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     SDL_Surface *img_for_split;
 
     gtk_widget_hide(GTK_WIDGET(h->Scale));
-    gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 9);
+    gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 10);
+
+    if (i == NEURON_NETWORK_STEP - 1 || i == NEURON_NETWORK_STEP + 1)
+        gtk_widget_hide(GTK_WIDGET(h->OverrideWindowButton));
 
     switch (i)
     {
@@ -197,6 +242,9 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             break;
         case NEURON_NETWORK_STEP:
             printf("Starting step 7");
+
+            gtk_widget_show(GTK_WIDGET(h->OverrideWindowButton));
+
             Matrix *input = new_Matrix(1, 784);
             for (int j = 1; j <= 81; j++)
             {
@@ -238,12 +286,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
                 free_m(output);
 
-                // Do neural network stuff
-                // knowing that s is your image
-                // You need to fill foundDigit
-                // @Ilan
-                // 0 for no digit (blank cell)
-
                 if (!foundDigit)
                     foundDigit = DEFAULT_CELL_VALUE;
 
@@ -271,18 +313,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                             j * 44,//44 = 396 / 9 (396 = new->width)
                             k * 44,
                             digits[k][j]);
-                    gtk_widget_show(GTK_WIDGET(h->forceInputs[j + k * 9]));
-                    char text[2];
-                    if (digits[k][j] == DEFAULT_CELL_VALUE)
-                    {
-                        text[0] = ' ';
-                    }
-                    else
-                    {
-                        text[0] = '0' + digits[k][j];
-                    }
-                    text[1] = '\0';
-                    gtk_entry_set_text(h->forceInputs[j + k*9], text);
                 }
             }
 
@@ -319,7 +349,6 @@ gboolean DoNextFuncHat(GtkButton* btn, gpointer ptr)
     return TRUE;
 }
 
-    
 gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
 {
     btn = btn;
@@ -335,7 +364,6 @@ gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
         {
             gtk_main_iteration();
         }
-                
     }
     return TRUE;
 }
@@ -616,7 +644,13 @@ int main ()
 
         path : NULL,
         resetSlider : 1,
+
+        OverrideWindowButton : GTK_BUTTON(gtk_builder_get_object(builder, "OverrideWindowButton")),
+        backToSteps : GTK_BUTTON(gtk_builder_get_object(builder, "backToSteps")),
+        OverrideWindow : GTK_WINDOW(gtk_builder_get_object(builder, "OverrideWindow")),
     };
+
+    gtk_widget_hide(GTK_WIDGET(h.OverrideWindowButton));
 
     for (int i = 0; i < 81; i++)
     {
@@ -626,12 +660,12 @@ int main ()
 
         h.forceInputs[i] = GTK_ENTRY(gtk_builder_get_object(builder, s));
 
-        gtk_widget_hide(GTK_WIDGET(h.forceInputs[i]));
-
         g_signal_connect(h.forceInputs[i], "activate", G_CALLBACK(ChangeInput), NULL);
 
         free(s);
     }
+
+    g_signal_connect(h.OverrideWindowButton, "clicked", G_CALLBACK(Window3), &h);
 
     gtk_widget_hide(GTK_WIDGET(scale));
     g_signal_connect(h.Scale, "value-changed", G_CALLBACK(SliderAction), &h);
