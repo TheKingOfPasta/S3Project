@@ -6,6 +6,17 @@
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
+# define GRAYSCALE_STEP                 0
+# define GAUSSIAN_BLUR_STEP             1
+# define ADAPTATIVE_THRESHOLDING_STEP   2
+# define SOBEL_GRADIENT_STEP            3
+# define HOUGH_TRANSFORM_STEP           4
+# define CORRECTION_STEP                5
+# define ROTATION_STEP                  6
+# define SPLIT_STEP                     7
+# define NEURON_NETWORK_STEP            8
+# define SOLVING_STEP                   9
+
 typedef struct widgets
 {
     GtkBuilder* b;
@@ -65,7 +76,7 @@ void print_image(Matrix *a)
     for (size_t i = 0; i < 28; ++i)
     {
         for (size_t j = 0; j < 28; ++j)
-            if (a->values[i * 28 + j][0] > 0)
+            if (a->values[0][i * 28 + j] > 0)
                 //printf("%0.3f ", a->values[i * 28 + j][0]);
                 printf("@ ");
             else
@@ -92,15 +103,15 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     switch (i)
     {
-        case 0:
+        case GRAYSCALE_STEP:
             img = IMGC_Grayscale(img);
             gtk_button_set_label(btn, "Next step (Gaussian blur)");
             break;
-        case 1:
+        case GAUSSIAN_BLUR_STEP:
             img = IMGA_GaussianBlur(img, Blursize, BlurIntensity);
             gtk_button_set_label(btn, "Next step (Adaptive thresholding)");
             break;
-        case 2:
+        case ADAPTATIVE_THRESHOLDING_STEP:
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
@@ -119,22 +130,23 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
-        case 3:
+        case SOBEL_GRADIENT_STEP:
             img = sobel_gradient(img);
 
             gtk_button_set_label(btn, "Next step (Hough transform)");
             break;
-        case 4:
+        case HOUGH_TRANSFORM_STEP:
 
             quad = Find_Grid(img);
 
             gtk_button_set_label(btn, "Next step (Correction)");
 
             break;
-        case 5:
+        case CORRECTION_STEP:
 		img = CorrectImage(img,quad);
 		gtk_button_set_label(btn, "Next step (Rotation)");
-        case 6:
+                break;
+        case ROTATION_STEP:
             img_for_split = IMG_Load("temp03.png");
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
@@ -155,7 +167,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Splitting)");
             break;
-        case 7:
+        case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
             img_for_split = IMG_Load("temp_split05.png");
 
@@ -165,7 +177,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Digit recognition)");
             break;
-        case 8:
+        case NEURON_NETWORK_STEP:
             printf("Starting step 7");
             Matrix *input = new_Matrix(1, 784);
             for (int j = 1; j <= 81; j++)
@@ -181,7 +193,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 // put the pixels in a matrix
                 SDL_Surface *s_unknown_size = IMG_Load(f);
                 SDL_Surface *s = downscale_resize (s_unknown_size, 28, 28);
-                SDL_FreeSurface(s_unknown_size);
+                // downscale free it for now
+                //SDL_FreeSurface(s_unknown_size);
                 IMG_SavePNG(s, f_out);
 
                 Uint32 *pixels = s->pixels;
@@ -191,7 +204,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                     {
                         Uint8 gray;
                         SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
-                        input->values[x * 28 + y][0] = gray / 255.f;
+                        input->values[0][x * 28 + y] = gray / 255.f;
                     }
                 print_image(input);
 
@@ -203,7 +216,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
                 // if you want to verify how sure he is, check the index
                 printf("Network of split_%02i.png: found %hi %f%%\n", j,
-                        foundDigit, output->values[foundDigit][0]);
+                        foundDigit, output->values[0][foundDigit]);
 
                 free_m(output);
 
@@ -226,7 +239,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             gtk_button_set_label(btn, "Next step (Solving)");
             break;
-        case 9:
+        case SOLVING_STEP:
             SLV_solve(digits);
             //digits is filled in place with values from the neural network
 
@@ -276,18 +289,28 @@ gboolean DoNextFuncHat(GtkButton* btn, gpointer ptr)
     return TRUE;
 }
 
+    
 gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
 {
     btn = btn;
     widgets* h = ptr;
 
-    for (; i < 9;)
+    for (; i <= SOLVING_STEP;)
     {
         DoNextFunc(h->NextPageButton, h);
-    }
 
+        // since we are dealing with a heavy function,
+        // refresh the ui after each step
+        while (gtk_events_pending())
+        {
+            gtk_main_iteration();
+        }
+                
+    }
     return TRUE;
 }
+
+
 
 gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
 {
@@ -356,7 +379,8 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
 
         SDL_Surface *r = downscale_resize(s, new_width, new_height);
 
-        SDL_FreeSurface(s);
+        // for now downscale_resize free the input
+        //SDL_FreeSurface(s);
         s = r;
             }
     else if (s->h > 1000)
@@ -369,7 +393,7 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
 
         SDL_Surface *r = downscale_resize(s, new_width, new_height);
 
-            SDL_FreeSurface(s);
+        //SDL_FreeSurface(s);
         s = r;
     }
     IMG_SavePNG(s, "temp00.png");

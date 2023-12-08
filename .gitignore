@@ -11,5 +11,5 @@ Src/gui/gui
 Src/gui/*.png
 Src/gui/temp_split/*
 Src/gui/temp_split2/*
-neural/database/*jpg
+Src/neural/database/
 Src/gui/temp_split/split_01.png
