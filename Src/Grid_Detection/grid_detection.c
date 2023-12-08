@@ -18,22 +18,28 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     List* lLine = HoughLine(s);
     printf("Hough transform done\n");
 
-    //DrawLines(s,lLine,100,0,0);
+    //DrawLines(s,lLine,50,0,0);
     AveragesCloseLine(lLine,ceil(sqrt(s->w * s->w + s->h * s->h)));
+
+
     ExcludeBorderLine(lLine, s->w, s->h, 0.015);
     List* LVer = InitList();
 	List* LHor = InitList();
 
-    RemovesStrayLine(lLine,3,LVer,LHor);
+    RemovesStrayLine(lLine,7,LVer,LHor);
+    FreeList(lLine);
 
-    // printList(lLine,1);
+   // printf("LVERRRRRR\n");
+    RemoveFalseLines(LVer,s);
+   // printf("LHORRRRRR\n");
+    RemoveFalseLines(LHor,s);
+
 	// printf("vertical Line list\n");
     // printList(LVer,1);
 	// printf("horizontal Line list\n");
 	// printList(LHor,1);
 
 
-    FreeList(lLine);
     DrawLines(s,LVer,255,0,0);
     DrawLines(s,LHor,0,0,255);
 
@@ -57,6 +63,7 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
 
     if (lquad->length ==0)
     {
+        FreeList(lquad);
         printf("no quadrilateral found\n");
         return NULL;
     }

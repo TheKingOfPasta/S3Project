@@ -9,6 +9,5 @@ Src/gui/gui
 *.o
 #gui outputs
 Src/gui/*.png
-Src/neural/database/*
-Src/gui/temp*
-
+Src/gui/temp_split/
+Src/neural/database/
