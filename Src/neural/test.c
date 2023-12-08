@@ -6,8 +6,9 @@
 # include <string.h>
 # include <time.h>
 # include <mcheck.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+# include <SDL2/SDL.h>
+# include <SDL2/SDL_image.h>
+# include "mnist_reader.h"
 
 # include "Neural_Network/second_network.h"
 # include "Neural_Network/network_loader.h"
@@ -170,33 +171,65 @@ void test_digit()
         free(c);
     }*/
 
+
     clock_t t = clock();
     size_t neurons[] = {784, 32, 10};
 
     Network *network = new_Network(neurons, 3);
 
+    /*size_t n;
+    Tuple_m* data = Load_Images("database/training", &n, 5000);*/
+    /*size_t n_tests;
+    Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);*/
+    Tuple_m* data = malloc(60000 * sizeof(Tuple_m));
+    Tuple_m* tests = malloc(10000 * sizeof(Tuple_m));
+
+    printf("Loading MNIST data...\n");
+    load_mnist();
+    printf("Loading complete in %f\n", (double)(clock() - t)/1000000);
+    t = clock();
     printf("Loading training set...\n");
-    size_t n;
-    Tuple_m* data = Load_Images("database/training", &n, 5000);
+    for (size_t i = 0; i < 60000; i++)
+    {
+        Matrix* m = new_Matrix(1, 784);
+        for (size_t j = 0; j < 784; j++)
+            m->values[0][j] = train_image[i][j];
+        Matrix* res = new_Matrix(1, 10);
+        res->values[0][train_label[i]] = 1;
+
+        data[i].x = m;
+        data[i].y = res;
+    }
+
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
     printf("Loading test set...\n");
-    size_t n_tests;
-    Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);
+
+    for (size_t i = 0; i < 10000; i++)
+    {
+        Matrix* m = new_Matrix(1, 784);
+        for (size_t j = 0; j < 784; j++)
+            m->values[0][j] = test_image[i][j];
+        Matrix* res = new_Matrix(1, 10);
+        res->values[0][test_label[i]] = 1;
+
+        tests[i].x = m;
+        tests[i].y = res;
+    }
+
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
-    printf("Starting stochastic Gradient descent\n");
+
+    printf("Starting Stochastic Gradient Descent\n");
+
+    size_t n = 60000;
+    size_t n_tests = 10000;
 
     SGD(network, data, n, 30, 10, 1, tests, n_tests);
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
     Save_Network(network, "networko");
-
-    /*printf("Biases\n");
-    print_list_m(network->biases);
-    printf("\n\n\n\nWeights\n");
-    print_list_m(network->weights);*/
 
     Free_Network(network);
 
@@ -245,7 +278,7 @@ void train_load_digit(char *path)
     Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
-    printf("Starting stochastic Gradient descent\n");
+    printf("Starting Stochastic Gradient Descent\n");
 
     print_list_m(network->biases);
     printf("\n\n\n\n\n\n\n\nWeights\n\n\n");
