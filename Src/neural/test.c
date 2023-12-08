@@ -225,7 +225,11 @@ void test_digit()
     size_t n = 60000;
     size_t n_tests = 10000;
 
-    SGD(network, data, n, 30, 10, 1, tests, n_tests);
+    for (size_t i = 0; i < 30; i++)
+    {
+        SGD(network, data, n, 1, 10, 1, tests, n_tests);
+        Save_Network(network, "networko");
+    }
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
 
