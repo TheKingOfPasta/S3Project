@@ -7,7 +7,7 @@
 #include "../Utils/inverse.h"
 #include "../Grid_Detection/utils.h"
 
-Matrix* Inverse(Matrix* m);
+//Matrix* Inverse(Matrix* m);
 
 Matrix* CorrectMatrix(Matrix* m1, Matrix* m2);
 
