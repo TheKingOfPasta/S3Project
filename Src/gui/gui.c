@@ -319,18 +319,28 @@ gboolean DoNextFuncHat(GtkButton* btn, gpointer ptr)
     return TRUE;
 }
 
+    
 gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
 {
     btn = btn;
     widgets* h = ptr;
 
-    for (; i < 9;)
+    for (; i <= SOLVING_STEP;)
     {
         DoNextFunc(h->NextPageButton, h);
-    }
 
+        // since we are dealing with a heavy function,
+        // refresh the ui after each step
+        while (gtk_events_pending())
+        {
+            gtk_main_iteration();
+        }
+                
+    }
     return TRUE;
 }
+
+
 
 gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
 {
