@@ -87,12 +87,10 @@ Matrix* new_Random_Matrix(size_t w, size_t h)
 {
     Matrix* m = new_Matrix(w, h);
 
-    double half = ((double)(RAND_MAX/2)) / 0.01;
-
     for (size_t i = 0; i < w; i++)
     for (size_t j = 0; j < h; j++)
     {
-        m->values[i][j] = (rand() - (RAND_MAX/2)) / half;
+        m->values[i][j] = (rand() / (double)RAND_MAX) - 0.5;
     }
 
     return m;
