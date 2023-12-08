@@ -294,7 +294,7 @@ gboolean DoAllFunc(GtkButton* btn, gpointer ptr)
     btn = btn;
     widgets* h = ptr;
 
-    for (; i < 9;)
+    for (; i <= SOLVING_STEP;)
     {
         DoNextFunc(h->NextPageButton, h);
     }
