@@ -23,7 +23,7 @@ SDL_Surface* IMGA_Erosion(SDL_Surface* input){
 
 		Uint32* outpxl = (Uint32*)outPixels + j*output->w + i;
 
-		*outpxl = ( sumWhite< 4) ?
+		*outpxl = ( sumWhite< 5) ?
             SDL_MapRGB(output->format,   0,   0,   0) :
             SDL_MapRGB(output->format, 255, 255, 255);
 	}
@@ -54,7 +54,7 @@ SDL_Surface* IMGA_Erode(SDL_Surface* s, int size){
 		for (int k =i-midRange; k <=i+midRange; k++)
 		for (int l =j-midRange; l <=j+midRange; l++)
 		{
-			if(k<0 || l<0 || k>s->w || l>s->h) continue;
+			if(k<0 || l<0 || k>=s->w || l>=s->h) continue;
             int offset = l * s->pitch + k * format->BytesPerPixel;
     		SDL_GetRGB(( *(Uint32*)((Uint8*)inpPixels + offset)), format,
       			&gray, &gray, &gray);
@@ -90,9 +90,9 @@ SDL_Surface* IMGA_Dilate(SDL_Surface* s, int size){
 		for (int k =i-midRange; k <=i+midRange; k++)
 		for (int l =j-midRange; l <=j+midRange; l++)
 		{
-			if(k<0 || l<0 || k>s->w || l>s->h) continue;
+			if(k<0 || l<0 || k>=s->w || l>=s->h) continue;
             int offset = l * s->pitch + k * format->BytesPerPixel;
-    		SDL_GetRGB(( *(Uint32*)((Uint8*)inpPixels + offset)), format,
+			SDL_GetRGB(*(Uint32*)((Uint8*)inpPixels + offset), format,
       			&gray, &gray, &gray);
 			if(max < gray) max = gray;
 		}

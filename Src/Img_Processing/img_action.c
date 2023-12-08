@@ -54,25 +54,26 @@ int betterMain(char param, char one)
         printf("Resized width from %ix%i to %ix%i\n",
                 s->w, s->h, new_width, new_height);
 
-        int sizeFactor = s->w*s->h / 100000;
-
         s= IMGC_Grayscale(s);
-        //s = IMGC_Level_Colors(s,10);
-       // s= IMGC_Gamma_Correction(s,128);
-        s= IMGC_Contrast_Correction(s,32);
+        //s= IMGC_Gamma_Correction(s,128);
+        //s= IMGC_Contrast_Correction(s,60);
         s= IMGC_Normalize_Brigthness(s);
+        s = IMGC_Level_Colors(s,10);
 
         if(!blur(param))goto save;
-        s=IMGA_GaussianBlur(s,5, 1);
+        s=IMGA_GaussianBlur(s,3,1.5);
+        //s= IMGC_Contrast_Correction(s,60);
+        //s= IMGC_Gamma_Correction(s,128);
         //s= IMGA_Erode(s,9);
         //s= IMGA_Dilate(s,9);
 
         //s = IMGC_Level_Colors(s,10);
 
         if(!threshold(param)) goto save;
-        s=IMGA_Sauvola(s,sizeFactor,0.27);
+        s=IMGA_Sauvola(s,10,0.27);
         //s=IMGA_ApplyThreshold(s,AdaptiveThreshold,Splitsize);
-        s= IMGA_Erosion(CheckInvert(s));
+        s = CheckInvert(s);
+        s= IMGA_Erosion(IMGA_Erosion(s));
 
         if(!sobel(param))goto save;
         s = sobel_gradient(s);

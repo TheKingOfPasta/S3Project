@@ -1,6 +1,6 @@
 #include "Grid_Detection/hough.h"
 
-#define LINE_THRESHOLD 50// percent
+#define LINE_THRESHOLD 40// percent
 
 void spread_arr(int size, double min, double max, double step, double* array)
 {

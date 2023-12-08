@@ -1,5 +1,23 @@
 #include "Grid_Detection/square_detection.h"
 
+double Min4(double a,double b,double c,double d){
+	return (a < b ? (a < c ? (a < d ? a : d) : (c < d ? c : d)) :
+					(b < c ? (b < d ? b : d) : (c < d ? c : d)));
+}
+
+double Max4(double a,double b,double c,double d){
+	return (a > b ? (a > c ? (a > d ? a : d) : (c > d ? c : d)) :
+					(b > c ? (b > d ? b : d) : (c > d ? c : d)));
+}
+
+double Dist(Point p1, Point p2)
+{
+    double dX = p1.x - p2.x;
+    double dY = p1.y - p2.y;
+    return sqrt(dX*dX + dY*dY);
+}
+
+
 int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
 	//lines are not parallel
 	float cost1=cosf((l1->theta));
@@ -62,6 +80,7 @@ List* FindSquares(List* lHor, List* lVer,int width, int height){
 	printf( " Lver%i  Lhor%i \n",lVer->length,lHor->length);
 */
 
+
 	Point p1,p2,p3,p4;
 	List *lquad = InitList();
 
@@ -91,22 +110,6 @@ List* FindSquares(List* lHor, List* lVer,int width, int height){
 }
 
 
-double Min4(double a,double b,double c,double d){
-	return (a < b ? (a < c ? (a < d ? a : d) : (c < d ? c : d)) :
-					(b < c ? (b < d ? b : d) : (c < d ? c : d)));
-}
-
-double Max4(double a,double b,double c,double d){
-	return (a > b ? (a > c ? (a > d ? a : d) : (c > d ? c : d)) :
-					(b > c ? (b > d ? b : d) : (c > d ? c : d)));
-}
-
-double Dist(Point p1, Point p2)
-{
-    double dX = p1.x - p2.x;
-    double dY = p1.y - p2.y;
-    return sqrt(dX*dX + dY*dY);
-}
 
 // returns the best square among a quadrilateral list
 Quadrilateral* BestSquare(List *l){
