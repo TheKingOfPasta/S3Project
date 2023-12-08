@@ -181,8 +181,8 @@ void test_digit()
     Tuple_m* data = Load_Images("database/training", &n, 5000);*/
     /*size_t n_tests;
     Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);*/
-    Tuple_m* data = malloc(60000 * sizeof(Tuple_m));
-    Tuple_m* tests = malloc(10000 * sizeof(Tuple_m));
+    Tuple_m* data = malloc(68500 * sizeof(Tuple_m));
+    Tuple_m* tests = malloc(18500 * sizeof(Tuple_m));
 
     printf("Loading MNIST data...\n");
     load_mnist();
@@ -196,6 +196,21 @@ void test_digit()
             m->values[0][j] = train_image[i][j];
         Matrix* res = new_Matrix(1, 10);
         res->values[0][train_label[i]] = 1;
+
+        if (train_label[i] == 0)
+        {
+            for (size_t j = 0; j < 784; j++)
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][j] = 1;
+                else
+                    m->values[0][j] = 0;
+        }
+        else
+        {
+            for (size_t j = 0; j < 784; j++)
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][j] = 1;
+        }
 
         data[i].x = m;
         data[i].y = res;
@@ -213,6 +228,21 @@ void test_digit()
         Matrix* res = new_Matrix(1, 10);
         res->values[0][test_label[i]] = 1;
 
+        if (test_label[i] == 0)
+        {
+            for (size_t j = 0; j < 784; j++)
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][j] = 1;
+                else
+                    m->values[0][j] = 0;
+        }
+        else
+        {
+            for (size_t j = 0; j < 784; j++)
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][j] = 1;
+        }
+
         tests[i].x = m;
         tests[i].y = res;
     }
@@ -222,8 +252,61 @@ void test_digit()
 
     printf("Starting Stochastic Gradient Descent\n");
 
-    size_t n = 60000;
-    size_t n_tests = 10000;
+    size_t n = 68500;
+    size_t n_tests = 18500;
+
+    for (size_t j = 0; j < 10; j++)
+    for (size_t i = 0; i < 85; i++)
+    {
+        char* c;
+        if (asprintf(&c, "database/training_set/%zu/%zu.png", j, i) == -1)
+            errx(EXIT_FAILURE, "asprintf failed");
+
+        SDL_Surface* su = IMG_Load(c);
+        if (!su)
+            continue;
+
+        for (size_t l = 0; l < 10; l++)
+        {
+            Matrix* m = new_Matrix(1, 784);
+            for (size_t k = 0; k < 784; k++)
+            {
+                Uint32 v = (*(Uint32*)(su->pixels + k));
+                m->values[0][k] = v ? 1 : 0;
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][k] = 1;
+            }
+
+            Matrix* res = new_Matrix(1, 10);
+            res->values[0][j] = 1;
+
+            data[i*100 + l*10 + j + 60000].x = m;
+            data[i*100 + l*10 + j + 60000].y = res;
+        }
+
+        for (size_t l = 0; l < 10; l++)
+        {
+            Matrix* m = new_Matrix(1, 784);
+
+            for (size_t k = 0; k < 784; k++)
+            {
+                m->values[0][k] = (*(Uint32*)(su->pixels + k)) ? 1 : 0;
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][k] = 1;
+            }
+
+
+            Matrix* res = new_Matrix(1, 10);
+            res->values[0][j] = 1;
+
+            tests[i*100 + l*10 + j + 10000].x = m;
+            tests[i*100 + l*10 + j + 10000].y = res;
+            /* print_img(m);
+            printf("------>    %i\n\n\n\n\n", test_label[i]); */
+        }
+
+        SDL_FreeSurface(su);
+    }
 
     for (size_t i = 0; i < 30; i++)
     {

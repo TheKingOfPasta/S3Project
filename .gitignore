@@ -8,6 +8,7 @@ Src/Img_Processing/img_action
 Src/gui/gui
 *.o
 #gui outputs
-gui/*.png
-neural/database/*jpg
-gui/temp_split/
+Src/gui/*.png
+Src/neural/database/*
+Src/gui/temp*
+
