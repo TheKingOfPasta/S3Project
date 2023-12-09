@@ -4,6 +4,8 @@
 #include <SDL2/SDL_image.h>
 #include <err.h>
 #include <stdlib.h>
+#include "resize.h"
+#include "padding.h"
 
 SDL_Surface* DigitExtraction(SDL_Surface* s);
 void Split(SDL_Surface* surface, char* folder_out);

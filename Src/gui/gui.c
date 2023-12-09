@@ -297,6 +297,30 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             img_for_split = IMG_Load("temp_for_split.png");
             Split(img_for_split, "temp_split");
 
+            SDL_FreeSurface(img);
+            img = SDL_CreateRGBSurface(0,28*9,28*9,32,0,0,0,0);
+            Uint32* pixels = img->pixels;
+            for (int j = 0; j < 9; j++)
+            for (int k = 0; k < 9; k++)
+            {
+                char* name;
+                if (asprintf(&name, "temp_split/split_%02i_28x28.png", j * 9 + k + 1) == -1)
+                    errx(EXIT_FAILURE, "asprintf failed");
+
+                printf("Loading %s\n", name);
+
+                SDL_Surface* su = IMG_Load(name);
+                Uint32* suPixels = su->pixels;
+
+                for (int jj = 0; jj < 28; jj++)
+                for (int kk = 0; kk < 28; kk++)
+                {
+                    pixels[(j*28 + jj) * 28*9 + k*28 + kk] = suPixels[jj * 28 + kk];
+                }
+
+                SDL_FreeSurface(su);
+            }
+
             gtk_button_set_label(btn, "Next step (Digit recognition)");
 
             SDL_FreeSurface(img_for_split);
@@ -310,16 +334,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             for (int j = 1; j <= 81; j++)
             {
                 char* f;
-                if (asprintf(&f, "temp_split/split_%02i.png", j) == -1)
+                if (asprintf(&f, "temp_split/split_%02i_28x28.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
 
                 // put the pixels in a matrix
-                SDL_Surface *s_unknown_size = IMG_Load(f);
-                s_unknown_size = Padding(s_unknown_size, 10);
-                SDL_Surface *s = downscale_resize (s_unknown_size, 28, 28);
-
-                // downscale free it for now
-                //SDL_FreeSurface(s_unknown_size);
+                SDL_Surface *s = IMG_Load(f);
 
                 Uint32 *pixels = s->pixels;
                 int margin = 0;
@@ -350,7 +369,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 digits[(j - 1) % 9][(j - 1) / 9] = foundDigit;
 
                 SDL_FreeSurface(s);
-                //SDL_FreeSurface(s_unknown_size);//Freed by downscale_resize
                 free(f);
             }
 
