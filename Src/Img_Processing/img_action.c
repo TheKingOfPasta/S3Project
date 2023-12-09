@@ -76,15 +76,7 @@ void process(char* path_in, char* path_out, char param){
 
     if (!perspective(param)) goto save;
     printf("attempt at fixing perspective\n");
-    Quadrilateral* g = malloc(sizeof(Quadrilateral));
-    g->p1.x = 0;
-    g->p1.y = 0;
-    g->p2.x = s->w;
-    g->p2.y = 0;
-    g->p3.x = 0;
-    g->p3.y = s->h;
-    g->p4.x = s->w;
-    g->p4.y = s->h;
+
     if (grid) {
         int tempx = grid->p4.x;
         int tempy = grid->p4.y;
@@ -95,9 +87,9 @@ void process(char* path_in, char* path_out, char param){
         s = CorrectImage(s, grid);
         printf("fixed perspective\n");
     }
-    
-    
-    free(g);
+
+
+    // free(g);
     goto save;
     save:
     IMG_SavePNG(s, path_out);

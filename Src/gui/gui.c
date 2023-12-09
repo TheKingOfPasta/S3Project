@@ -1,8 +1,8 @@
 #include "GUI/gui.h"
 
-#define Blursize 13
-#define BlurIntensity 3
-#define AdaptiveThreshold 3
+#define Blursize 3
+#define BlurIntensity 1.5
+#define AdaptiveThreshold 0.27
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
@@ -166,8 +166,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     switch (i)
     {
-        case GRAYSCALE_STEP:
+                case GRAYSCALE_STEP:
             img = IMGC_Grayscale(img);
+            img= IMGC_Normalize_Brigthness(img);
+            img = IMGC_Level_Colors(img,10);
+
             gtk_button_set_label(btn, "Next step (Gaussian blur)");
             break;
         case GAUSSIAN_BLUR_STEP:
@@ -179,17 +182,18 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             if (h->resetSlider)
             {
                 gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
-                gtk_range_set_range(GTK_RANGE(h->Scale), 1.0, 6.0);
-                img = IMGA_ApplyThreshold(img, AdaptiveThreshold, Splitsize);
+                gtk_range_set_range(GTK_RANGE(h->Scale), 0.2, 0.5);
+                //TODO set range between 0.2 and 0.5 properly
+                img =IMGA_Sauvola(img,10,0.27);
             }
             else
             {
                 gint v = gtk_range_get_value(GTK_RANGE(h->Scale));
-                img = IMGA_ApplyThreshold(img, v, Splitsize);
+                img = IMGA_Sauvola(img,10,0.27);
             }
+
             img = CheckInvert(img);
-            img = IMGA_Erosion(img);
-            img = CheckInvert(img);
+            img = IMGA_Erosion(IMGA_Erosion(img));
 
             gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
@@ -206,8 +210,17 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
             break;
         case CORRECTION_STEP:
-		img = CorrectImage(img,quad);
-		gtk_button_set_label(btn, "Next step (Rotation)");
+            if(!quad) return EXIT_FAILURE; //TODO ACTUAL ERROR
+
+		    int tempx = quad->p4.x;
+            int tempy = quad->p4.y;
+            quad->p4.x = quad->p3.x;
+            quad->p4.y = quad->p3.y;
+            quad->p3.x = tempx;
+            quad->p3.y = tempy;
+
+            img = CorrectImage(img,quad);
+            gtk_button_set_label(btn, "Next step (Rotation)");
                 break;
         case ROTATION_STEP:
             img_for_split = IMG_Load("temp03.png");
@@ -229,7 +242,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             IMG_SavePNG(img_for_split, "temp_split05.png");
 
             gtk_button_set_label(btn, "Next step (Splitting)");
-            break;
+                break;
         case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
             img_for_split = IMG_Load("temp_split05.png");
@@ -427,33 +440,44 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
     h->path = "temp00.png";
 
     SDL_Surface *s = IMG_Load(path);
-    if (s->w > 1000)
-    {
-        const int new_width = 1000;
-        float ratio = (float)new_width / s->w;
-        int new_height = (int)ceil(s->h * ratio);
-        printf("Resizing width from %ix%i to %ix%i\n",
-                s->w, s->h, new_width, new_height);
 
-        SDL_Surface *r = downscale_resize(s, new_width, new_height);
+    const int new_width = 1000;
 
-        // for now downscale_resize free the input
-        //SDL_FreeSurface(s);
-        s = r;
-            }
-    else if (s->h > 1000)
-    {
-        const int new_height = 1000;
-        float ratio = (float)new_height / s->h;
-        int new_width = (int)ceil(s->w * ratio);
-        printf("Resizing height from %ix%i to %ix%i\n",
-                s->w, s->h, new_width, new_height);
+    int new_height = ceil((float)s->h * (float)new_width / s->w);
 
-        SDL_Surface *r = downscale_resize(s, new_width, new_height);
+    s = downscale_resize(s, new_width, new_height);
+    printf("Resized width from %ix%i to %ix%i\n",
+            s->w, s->h, new_width, new_height);
 
-        //SDL_FreeSurface(s);
-        s = r;
-    }
+    /* 
+        if (s->w > 1000)
+        {
+            const int new_width = 1000;
+            float ratio = (float)new_width / s->w;
+            int new_height = (int)ceil(s->h * ratio);
+            printf("Resizing width from %ix%i to %ix%i\n",
+                    s->w, s->h, new_width, new_height);
+
+            SDL_Surface *r = downscale_resize(s, new_width, new_height);
+
+            // for now downscale_resize free the input
+            //SDL_FreeSurface(s);
+            s = r;
+                }
+        else if (s->h > 1000)
+        {
+            const int new_height = 1000;
+            float ratio = (float)new_height / s->h;
+            int new_width = (int)ceil(s->w * ratio);
+            printf("Resizing height from %ix%i to %ix%i\n",
+                    s->w, s->h, new_width, new_height);
+
+            SDL_Surface *r = downscale_resize(s, new_width, new_height);
+
+            //SDL_FreeSurface(s);
+            s = r;
+        } */
+
     IMG_SavePNG(s, "temp00.png");
     SDL_FreeSurface(s);
 
