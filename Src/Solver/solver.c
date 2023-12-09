@@ -112,6 +112,15 @@ int SLV_is_Placeable(short g[9][9], int x, int y, short val) {
     return 1;
 }
 
+int IsGridCorrect(short grid[9][9]){
+    for(int i=0; i <9; i++)
+    for(int j=0; j <9; j++)
+        if (IsSolved(grid[i][j]) && !SLV_is_Placeable(grid,i,j,grid[i][j]))
+            return 0;
+
+    return 1;
+}
+
 void SLV_backtracking(short grid[9][9]){
     for (int i = 0; i < 9; ++i) {
         for (int j = 0; j < 9; ++j) {
@@ -150,19 +159,34 @@ void SLV_findRemainingCells(short g[9][9],short a[]){
     }
 }
 
+void FillZero(short grid[9][9]){
+    for(int i=0;i<9;i++)
+    for(int j=0;j<9;j++)
+        grid[i][j] = 0;
+}
+
 void SLV_solve(short grid[9][9]){
     remainingCell = 81;
     SLV_Clues_Collapsing(grid);
     if(remainingCell<1) return;
-    printf("brute forcing now..\n");
+    //printf("brute forcing now..\n");
+
+    if (! IsGridCorrect(grid)){
+        FillZero(grid);
+        return;
+    }
 
 
-    short remainingCellIndex[81] = {0}; //filled with zeros
+/*     short remainingCellIndex[81] = {0}; //filled with zeros
     SLV_findRemainingCells(grid ,remainingCellIndex);
     //SLV_sort(remainingCellIndex);
-
+ */
     //looking_for_one_occurrence(grid);
     SLV_backtracking(grid);
+
+    if (! IsGridCorrect(grid)){
+        FillZero(grid);
+    }
 }
 
 

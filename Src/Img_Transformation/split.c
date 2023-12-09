@@ -1,5 +1,36 @@
 #include "Img_Transformation/split.h"
 
+void RecursiveRemoval(SDL_Surface* s, int x, int y){
+	Uint32* pxls = s->pixels;
+	Uint8 gray;
+    int offset = y * s->pitch + x * s->format->BytesPerPixel;
+	SDL_GetRGB(( *(Uint32*)((Uint8*)pxls + offset)), s->format,
+			&gray, &gray, &gray);
+
+	pxls[x+s->w*y] = SDL_MapRGB(s->format, 0,0,0);
+
+	if (gray== 255){
+		if(x!=0) RecursiveRemoval(s,x-1,y);
+		if(x!=s->w-1) RecursiveRemoval(s,x+1,y);
+
+		if(y!=0) RecursiveRemoval(s,x,y-1);
+		if(y!=s->h-1) RecursiveRemoval(s,x,y+1);
+	}
+}
+
+void RemoveBorder(SDL_Surface* s){
+	double exclude = 20;
+	for(int i=0; i<s->w;i++){
+		if(i > s->w*(exclude/100) && i< s->w*(1-exclude/100)) continue;
+		RecursiveRemoval(s, i, 0);
+		RecursiveRemoval(s, i, s->h-1);
+	}
+	for(int j=0; j<s->h;j++){
+		if(j > s->h*(exclude/100) && j< s->h*(1-exclude/100)) continue;
+		RecursiveRemoval(s, 0, j);
+		RecursiveRemoval(s, s->w-1, j);
+	}
+}
 
 void RecursiveExtraction(SDL_Surface* s,int x, int y,
 					Uint8* l, Uint8* u, Uint8* r, Uint8* b){
@@ -9,7 +40,7 @@ void RecursiveExtraction(SDL_Surface* s,int x, int y,
 	SDL_GetRGB(( *(Uint32*)((Uint8*)pxls + offset)), s->format,
 			&gray, &gray, &gray);
 
-	pxls[x+s->w*y] = SDL_MapRGB(s->format, 50,0,0);
+	pxls[x+s->w*y] = SDL_MapRGB(s->format, 0,0,0);
 
 	if (x<*l) *l = x;
 	else if (x>*r) *r = x;
@@ -82,8 +113,8 @@ SDL_Surface* DigitExtraction(SDL_Surface* s){
 	}
 
 	SDL_FreeSurface(s);
-	res = SDL_CreateRGBSurface(0,28,28,32,0,0,0,0);
-	return res;
+
+	return SDL_CreateRGBSurface(0,28,28,32,0,0,0,0);
 
 	foundOrigin:
 	//printf("x:%i y:%i\n",x,y);
@@ -97,8 +128,7 @@ SDL_Surface* DigitExtraction(SDL_Surface* s){
 
 	int maxWH = newWidth > newHeight ? newWidth : newHeight;
 
-	res = SDL_CreateRGBSurface(0,maxWH,maxWH,
-											32,0,0,0,0);
+	res = SDL_CreateRGBSurface(0,maxWH,maxWH,32,0,0,0,0);
     Uint32* respxls = res->pixels;
 
 	for(int i = left, ii=(maxWH-newWidth)/2; i<=right;i++,ii++)
@@ -142,7 +172,6 @@ void Split(SDL_Surface* surface, char* folder_out)
                 newPixels[y * w9 + x] = pixels[(j + y) * surface->w + (i + x)];
             }
 
-            newS = DigitExtraction(newS);
 	    	char* str;
             if (asprintf(&str, "%s/split_%02i.png", folder_out, fileIndex) == -1)
                 errx(EXIT_FAILURE, "asprintf failed");
@@ -151,18 +180,22 @@ void Split(SDL_Surface* surface, char* folder_out)
 
             if (e == -1)
                 err(EXIT_FAILURE, "IMG_SavePNG");
+            free(str);
 
 			char* f;
 			if (asprintf(&f, "%s/split_%02i_28x28.png", folder_out, fileIndex) == -1)
 				errx(EXIT_FAILURE, "asprintf failed");
-            newS = Padding(newS, 20);
+
+
+			RemoveBorder(newS);
+            newS = DigitExtraction(newS);
+			newS = Padding(newS, 20);
             SDL_Surface *s = downscale_resize(newS, 28, 28);
 			IMG_SavePNG(s, f);
 
             fileIndex += 1;
 			SDL_FreeSurface(s);
 			free(f);
-            free(str);
         }
     }
 
