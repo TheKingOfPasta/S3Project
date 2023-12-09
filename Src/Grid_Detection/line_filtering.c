@@ -233,19 +233,20 @@ void RemoveFalseLines(List* l , SDL_Surface* surface, int dilateStrength, int se
     //IMG_SavePNG(s, "rmMe.png");
 
 	Node* curr = l->head;
-	while( curr && !CheckLine(((Line*)curr->data),s,segmentThreshold))
+	while( curr&& l->length >1 && !CheckLine(((Line*)curr->data),s,segmentThreshold))
 	{
 	    //printf("Removed line\n");
 		Tail(l);
 		curr = l->head;
 	}
-
-	while( curr->next){
-		if (!CheckLine((Line*)curr->next->data,s, segmentThreshold)){
-	    	//printf("Removed line\n");
-			RemoveNextNode(l,curr);
+	if(curr){
+		while( curr->next && l->length >1){
+			if (!CheckLine((Line*)curr->next->data,s, segmentThreshold)){
+				//printf("Removed line\n");
+				RemoveNextNode(l,curr);
+			}
+			else curr =curr->next;
 		}
-		else curr =curr->next;
 	}
     SDL_FreeSurface(s);
 }
