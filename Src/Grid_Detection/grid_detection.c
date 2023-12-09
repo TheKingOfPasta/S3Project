@@ -32,9 +32,9 @@ Quadrilateral* Find_Grid(SDL_Surface **s )
     FreeList(lLine);
 
    // printf("LVERRRRRR\n");
-    RemoveFalseLines(LVer,*s,9,9);
+    RemoveFalseLines(LVer,*s,9,10);
    // printf("LHORRRRRR\n");
-    RemoveFalseLines(LHor,*s,9,9);
+    RemoveFalseLines(LHor,*s,9,10);
 
 	// printf("vertical Line list\n");
     // printList(LVer,1);

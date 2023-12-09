@@ -558,12 +558,18 @@ void RefreshDisplay(widgets* h)
 
 gboolean Undo(GtkButton* btn, gpointer ptr)
 {
-    btn = btn;
+    btn = btn; 
     if (i == 0)
         return FALSE;
 
-    i -= 1;
     widgets* h = ptr;
+
+    i -= 1;
+    if( i==SPLIT_STEP){
+        gtk_image_set_from_file(h->ImageDisplay,"temp07UI.png");
+        return FALSE;
+    }
+
 
     gtk_widget_show(GTK_WIDGET(h->DoNextButton));
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
