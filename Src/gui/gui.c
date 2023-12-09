@@ -157,7 +157,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
-    SDL_Surface *img_for_split;
+    SDL_Surface *img_for_split = NULL;
 
     gtk_widget_hide(GTK_WIDGET(h->Scale));
     gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 10);
@@ -305,7 +305,9 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 digits[j % 9][j / 9] = foundDigit;
 
                 SDL_FreeSurface(s);
+                //SDL_FreeSurface(s_unknown_size);//Freed by downscale_resize
                 free(f);
+                free(f_out);
             }
 
             free_m(input);
@@ -322,6 +324,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             {
                 for (int k = 0; k < 9; k++)
                 {
+                    if (digits[k][j] >= 1 && digits[k][j] <= 9)
                     WriteDigit(new,
                             j * 44,//44 = 396 / 9 (396 = new->width)
                             k * 44,
@@ -350,6 +353,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     free(newFile);
     free(file);
     SDL_FreeSurface(img);
+    if (img_for_split)
+        SDL_FreeSurface(img_for_split);
 
     return TRUE;
 }
@@ -426,6 +431,7 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     //}
     printf("Saving\n");
     IMG_SavePNG(s, "temp00.png");
+    SDL_FreeSurface(s);
 
     gtk_progress_bar_set_fraction(h->ProgressBar, 0);
 
@@ -604,6 +610,8 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
         s = CheckInvert(s);
         s = IMGA_Erosion(s);
         IMG_SavePNG(s, "temp03.png");
+
+        SDL_FreeSurface(s);
     }
     else if (i - 1 == ROTATION_STEP)
     {

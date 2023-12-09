@@ -363,15 +363,13 @@ void test_digit()
 
     printf("Starting Stochastic Gradient Descent\n");
 
-    for (size_t i = 0; i < 30; i++)
+    while (1)
     {
         SGD(network, data, n, 1, 10, 1, tests, n_tests);
         Save_Network(network, "networko");
     }
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
-
-    Save_Network(network, "networko");
 
     Free_Network(network);
 
