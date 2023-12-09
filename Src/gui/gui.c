@@ -6,13 +6,14 @@
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
-# define GRAYSCALE_STEP                 0
-# define GAUSSIAN_BLUR_STEP             1
-# define ADAPTATIVE_THRESHOLDING_STEP   2
-# define SOBEL_GRADIENT_STEP            3
-# define HOUGH_TRANSFORM_STEP           4
-# define CORRECTION_STEP                5
-# define ROTATION_STEP                  6
+
+# define ROTATION_STEP                  0
+# define GRAYSCALE_STEP                 1
+# define GAUSSIAN_BLUR_STEP             2
+# define ADAPTATIVE_THRESHOLDING_STEP   3
+# define SOBEL_GRADIENT_STEP            4
+# define HOUGH_TRANSFORM_STEP           5
+# define CORRECTION_STEP                6
 # define SPLIT_STEP                     7
 # define NEURON_NETWORK_STEP            8
 # define SOLVING_STEP                   9
@@ -198,6 +199,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
         case SOBEL_GRADIENT_STEP:
+
+            IMG_SavePNG(img, "temp_split05.png");
             img = sobel_gradient(img);
 
             gtk_button_set_label(btn, "Next step (Hough transform)");
@@ -223,15 +226,12 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Rotation)");
                 break;
         case ROTATION_STEP:
-            img_for_split = IMG_Load("temp03.png");
+            img_for_split = IMG_Load("temp00.png");
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
-                double angle = FindAngle(quad,img->w,img->h);
-                img = IMGA_Rotate(img, angle);
-                img_for_split = IMGA_Rotate(img_for_split, angle);
                 gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
-                gtk_range_set_value(GTK_RANGE(h->Scale), angle);
+                gtk_range_set_value(GTK_RANGE(h->Scale), 0);
             }
             else
             {
@@ -239,9 +239,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 img = IMGA_Rotate(img, f);
                 img_for_split = IMGA_Rotate(img_for_split, f);
             }
-            IMG_SavePNG(img_for_split, "temp_split05.png");
 
-            gtk_button_set_label(btn, "Next step (Splitting)");
+            gtk_button_set_label(btn, "Next step (Grayscale)");
                 break;
         case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
@@ -397,7 +396,7 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
 
     gtk_image_set_from_file(h->ImageDisplay, h->path);
 
-    gtk_button_set_label(h->DoNextButton, "Next step (Grayscale)");
+    gtk_button_set_label(h->DoNextButton, "Next step (Rotation)");
 
     gtk_widget_show(GTK_WIDGET(h->DoNextButton));
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
@@ -601,6 +600,11 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
         s = CheckInvert(s);
         s = IMGA_Erosion(s);
         IMG_SavePNG(s, "temp03.png");
+    }
+    else if (i - 1 == ROTATION_STEP)
+    {
+        printf("rotating image\n");
+        IMG_SavePNG(IMGA_Rotate(IMG_Load("temp00.png"), v), "temp00.png");
     }
     else
         return TRUE;
