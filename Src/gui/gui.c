@@ -580,6 +580,7 @@ gboolean Undo(GtkButton* btn, gpointer ptr)
     i -= 1;
     if( i==SPLIT_STEP){
         gtk_image_set_from_file(h->ImageDisplay,"temp07UI.png");
+        gtk_button_set_label(h->DoNextButton, "Next step (Split image)");
         return FALSE;
     }
 
