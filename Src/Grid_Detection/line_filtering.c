@@ -191,15 +191,19 @@ int CheckLine(Line* l, SDL_Surface* s, int segmentThreshold){
 	Uint8 gray;
 	int whitePreviously = 0;
 	int whiteSegment =0;
+	int whiteCount = 0;
+	int pixelCount = 0;
 
     while (x1 != x2 || y1 != y2)
     {
         if (0 <= x1 && x1 < s->w && 0 <= y1 && y1 < s->h)
         {
+			pixelCount++;
 			int offset = y1 * s->pitch + x1 * format->BytesPerPixel;
 			SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
 				&gray, &gray, &gray);
 			if(gray){
+				whiteCount++;
 			 	if(!whitePreviously){
 					whitePreviously = 1;
 					whiteSegment++;
@@ -224,6 +228,7 @@ int CheckLine(Line* l, SDL_Surface* s, int segmentThreshold){
         }
     }
 
+	if((double)whiteCount/pixelCount<0.4) return 0;
 	return 1;
 }
 

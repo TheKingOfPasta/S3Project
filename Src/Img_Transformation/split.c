@@ -33,7 +33,7 @@ void RemoveBorder(SDL_Surface* s){
 }
 
 void RecursiveExtraction(SDL_Surface* s,int x, int y,
-					Uint8* l, Uint8* u, Uint8* r, Uint8* b){
+					Uint8* l, Uint8* u, Uint8* r, Uint8* b, int rec){
 	Uint32* pxls = s->pixels;
 	Uint8 gray;
     int offset = y * s->pitch + x * s->format->BytesPerPixel;
@@ -47,19 +47,24 @@ void RecursiveExtraction(SDL_Surface* s,int x, int y,
 	if (y<*u) *u = y;
 	else if (y>*b) *b = y;
 
-	if (gray== 255){
+	if(gray ==255)
+	{
+		rec = s->w >80 ? 3 : 1;
+	}
+
+	if (rec>0){
 		if(x!=0){
-			if(y!=0) RecursiveExtraction(s,x-1,y-1,l,u,r,b);
-			RecursiveExtraction(s,x-1,y,l,u,r,b);
-			if(y!=s->h-1) RecursiveExtraction(s,x-1,y+1,l,u,r,b);
+			if(y!=0) RecursiveExtraction(s,x-1,y-1,l,u,r,b,rec-1);
+			RecursiveExtraction(s,x-1,y,l,u,r,b,rec-1);
+			if(y!=s->h-1) RecursiveExtraction(s,x-1,y+1,l,u,r,b,rec-1);
 		}
 		if(x!=s->w-1){
-			if(y!=0) RecursiveExtraction(s,x+1,y-1,l,u,r,b);
-			RecursiveExtraction(s,x+1,y,l,u,r,b);
-			if(y!=s->h-1) RecursiveExtraction(s,x+1,y+1,l,u,r,b);
+			if(y!=0) RecursiveExtraction(s,x+1,y-1,l,u,r,b,rec-1);
+			RecursiveExtraction(s,x+1,y,l,u,r,b,rec-1);
+			if(y!=s->h-1) RecursiveExtraction(s,x+1,y+1,l,u,r,b,rec-1);
 		}
-		if(y!=0) RecursiveExtraction(s,x,y-1,l,u,r,b);
-		if(y!=s->h-1) RecursiveExtraction(s,x,y+1,l,u,r,b);
+		if(y!=0) RecursiveExtraction(s,x,y-1,l,u,r,b,rec-1);
+		if(y!=s->h-1) RecursiveExtraction(s,x,y+1,l,u,r,b,rec-1);
 	}
 }
 
@@ -118,7 +123,7 @@ SDL_Surface* DigitExtraction(SDL_Surface* s){
 
 	foundOrigin:
 	//printf("x:%i y:%i\n",x,y);
-	RecursiveExtraction(copy,x,y,&left,&upper,&right,&bottom);
+	RecursiveExtraction(copy,x,y,&left,&upper,&right,&bottom,1);
 	//printf("l:%i u:%i r:%i b:%i\n",left,upper,right,bottom);
 	//IMG_SavePNG(copy,"copy.png");
 	SDL_FreeSurface(copy);
