@@ -1,8 +1,7 @@
 CC = gcc -IIncludes -o Bin/gui
 CPPFLAGS =
-CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image gtk+-3.0` -fsanitize=address
-LDFLAGS = -fsanitize=address
-LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
+CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image gtk+-3.0` 
+LDFLAGS = LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
 
 SOURCE_DIR := ./Src
 
