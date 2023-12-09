@@ -136,12 +136,12 @@ gboolean Window2(GtkButton* btn, gpointer ptr)
     return FALSE;
 }
 
-gboolean ChangeInput(GtkEntry* e, gpointer ptr)
+gboolean ChangeInput(GtkEditable* self, gpointer ptr)
 {
     widgets* h = ptr;
     size_t j = 1;
     for (; j <= 81; j++) {
-        if (h->forceInputs[j - 1] == e) {
+        if (h->forceInputs[j - 1] == GTK_ENTRY(self)) {
             break;
         }
     }
@@ -149,7 +149,7 @@ gboolean ChangeInput(GtkEntry* e, gpointer ptr)
         return FALSE;
     printf("%zu\n", j);
     printf("----------------\n");
-    char c = gtk_entry_get_text(e)[0];
+    char c = gtk_entry_get_text(GTK_ENTRY(self))[0];
     initialDigits[(j - 1) % 9][(j - 1) / 9] = 0;
     if (c >= '1' && c <= '9') {
         digits[(j - 1) % 9][(j - 1) / 9] = c - '0';
@@ -595,7 +595,7 @@ OverrideWindow :
         if (asprintf(&s, "input%i", i + 1) == -1)
             errx(EXIT_FAILURE, "asprintf failed");
         h.forceInputs[i] = GTK_ENTRY(gtk_builder_get_object(builder, s));
-        g_signal_connect(h.forceInputs[i], "activate", G_CALLBACK(ChangeInput), &h);
+        g_signal_connect(h.forceInputs[i], "changed", G_CALLBACK(ChangeInput), &h);
         free(s);
     }
     g_signal_connect(h.OverrideWindowButton, "clicked", G_CALLBACK(Window3), &h);
