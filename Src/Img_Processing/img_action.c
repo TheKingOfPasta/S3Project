@@ -42,6 +42,7 @@ void process(char* path_in, char* path_out, char param){
     printf("Resized width from %ix%i to %ix%i\n",
             s->w, s->h, new_width, new_height);
 
+
     s= IMGC_Grayscale(s);
     //s= IMGC_Gamma_Correction(s,128);
     //s= IMGC_Contrast_Correction(s,60);
@@ -67,7 +68,7 @@ void process(char* path_in, char* path_out, char param){
     s = sobel_gradient(s);
     if(!detection(param)) goto save;
 
-    grid = Find_Grid(s);
+    grid = Find_Grid(&s);
     if(!grid) {
         printf("grid not found :(\n");
         goto save;
@@ -88,8 +89,6 @@ void process(char* path_in, char* path_out, char param){
         printf("fixed perspective\n");
     }
 
-
-    // free(g);
     goto save;
     save:
     IMG_SavePNG(s, path_out);
@@ -154,6 +153,5 @@ int main(int argc, char** argv)
     }
 
     process(path_in,path_out,param);
-
     return EXIT_SUCCESS;
 }

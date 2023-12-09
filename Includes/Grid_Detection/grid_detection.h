@@ -6,5 +6,7 @@
 #include "hough.h"
 #include "square_detection.h"
 #include "line_filtering.h"
+#include "../Img_Transformation/padding.h"
 
-Quadrilateral* Find_Grid(SDL_Surface *s );
+
+Quadrilateral* Find_Grid(SDL_Surface **s );
