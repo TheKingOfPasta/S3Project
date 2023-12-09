@@ -1,7 +1,7 @@
 #include "Utils/inverse.h"
 
 /*For calculating Determinant of the Matrix */
-double determinant(Matrix* m1)
+/*double determinant(Matrix* m1)
 {
     double s = 1, det = 0;
     Matrix* b = new_Matrix(m1->w-1, m1->h-1);
@@ -44,6 +44,38 @@ double determinant(Matrix* m1)
     }
 
     return (det);
+}*/
+double determinant(Matrix* mat) {
+    if (mat->w != mat->h) {
+        errx(EXIT_FAILURE,"Error: Input matrix must be square.\n");
+    }
+
+    if (mat->w == 1) {
+        return mat->values[0][0];
+    } else if (mat->w == 2) {
+        return mat->values[0][0] * mat->values[1][1] - mat->values[0][1] * mat->values[1][0];
+    } else {
+        double det = 0.0;
+        for (size_t i = 0; i < mat->w; ++i) {
+            // Calculate the cofactor
+            Matrix* subMat = new_Matrix(mat->w - 1, mat->h - 1);
+            for (size_t j = 1; j < mat->h; ++j) {
+                for (size_t k = 0; k < i; ++k) {
+                    subMat->values[j - 1][k] = mat->values[j][k];
+                }
+                for (size_t k = i + 1; k < mat->w; ++k) {
+                    subMat->values[j - 1][k - 1] = mat->values[j][k];
+                }
+            }
+
+            // Recursive call to compute the determinant
+            det += (i % 2 == 0 ? 1 : -1) * mat->values[0][i] * determinant(subMat);
+
+            // Free memory for the submatrix
+            free_m(subMat);
+        }
+        return det;
+    }
 }
 
 Matrix* cofactor(Matrix* m1)
@@ -106,7 +138,7 @@ Matrix* transpose(Matrix* m1, Matrix* m2)
     printf("\n\n\nThe inverse of matrix is : \n");
     return inverse;
 }
-
+/*
 Matrix* inverse(Matrix* m){
 	size_t k,i,j;
 	double temp;
@@ -130,11 +162,86 @@ Matrix* inverse(Matrix* m){
 		        if(i==k)
 		            break;
 		        m->values[i][j]-=m->values[k][j]*temp;
-		        I->values[i][j]-=I->values[k][j]*temp;
+	 	        I->values[i][j]-=I->values[k][j]*temp;
 		    }
 		}
         }
+	//free_m(m);
 	return I;
+}
+*/
+// Function to swap two rows of a matrix
+void swapRows(Matrix *mat, size_t row1, size_t row2) {
+    double *temp = mat->values[row1];
+    mat->values[row1] = mat->values[row2];
+    mat->values[row2] = temp;
+}
+
+// Function to perform Gaussian elimination to get an upper triangular matrix
+void gaussianElimination(Matrix *mat, Matrix *identity) {
+    size_t size = mat->w;
+
+    for (size_t i = 0; i < size; ++i) {
+        // Find the pivot row
+        size_t pivot = i;
+        for (size_t j = i + 1; j < size; ++j) {
+            if (fabs(mat->values[j][i]) > fabs(mat->values[pivot][i])) {
+                pivot = j;
+            }
+        }
+
+        // Swap rows to make the pivot the maximum element
+        swapRows(mat, i, pivot);
+        swapRows(identity, i, pivot);
+
+        // Make the diagonal element 1
+        double pivotValue = mat->values[i][i];
+        for (size_t j = 0; j < size; ++j) {
+            mat->values[i][j] /= pivotValue;
+            identity->values[i][j] /= pivotValue;
+        }
+
+        // Eliminate other elements in the column
+        for (size_t j = 0; j < size; ++j) {
+            if (j != i) {
+                double factor = mat->values[j][i];
+                for (size_t k = 0; k < size; ++k) {
+                    mat->values[j][k] -= factor * mat->values[i][k];
+                    identity->values[j][k] -= factor * identity->values[i][k];
+                }
+            }
+        }
+    }
+}
+
+// Function to compute the inverse of a matrix
+Matrix* inverse(Matrix* mat) {
+    if (mat->w != mat->h) {
+        errx(EXIT_FAILURE,"Error: Input matrix must be square.\n");
+    }
+
+    size_t size = mat->w;
+
+    // Create a copy of the input matrix and an identity matrix
+    Matrix* copy = new_Matrix(size, size);
+    Matrix* identity = new_Matrix(size,size);
+    for(size_t i = 0; i<size;i++){
+    	identity->values[i][i] = 1;
+    }
+    //print_m(identity);
+    for (size_t i = 0; i < size; ++i) {
+        for (size_t j = 0; j < size; ++j) {
+            copy->values[i][j] = mat->values[i][j];
+        }
+    }
+
+    // Perform Gaussian elimination to get an upper triangular matrix
+    gaussianElimination(copy, identity);
+
+    // Free memory for the copy matrix
+    free_m(copy);
+
+    return identity;
 }
 /*
 int main()
