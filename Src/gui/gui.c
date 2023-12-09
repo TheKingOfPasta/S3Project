@@ -46,11 +46,16 @@ typedef struct widgets
 int i = 0;
 Quadrilateral* quad;//The quad used by FindAngle and returned by FindGrid
 short digits[9][9];
+short initialDigits[9][9];
 
 Network *network;
 
 // Writes 'digit' on the surface at (x, y)
-void WriteDigit(SDL_Surface* s, int x, int y, int digit)
+void WriteDigit(SDL_Surface* s,
+        int x,
+        int y,
+        int digit,
+        int inRed)
 {
     char* file;
 
@@ -74,7 +79,11 @@ void WriteDigit(SDL_Surface* s, int x, int y, int digit)
 
     for (int j = 4; j < 36; j++)
     for (int k = 4; k < 36; k++)
-        pixels[x + k + (y + j) * 396] = inpPixels[k + j * 39];
+    {
+        Uint8 r, g, b;
+        SDL_GetRGB(inpPixels[k + j * 39], inp->format, &r, &g, &b);
+        pixels[x + k + (y + j) * 396] = SDL_MapRGB(s->format, r, g * (inRed ? 0 : 1), b * (inRed ? 0 : 1));
+    }
 
     free(file);
     SDL_UnlockSurface(inp);
@@ -170,10 +179,15 @@ gboolean ChangeInput(GtkEntry* e, gpointer ptr)
     printf("----------------\n");
 
     char c = gtk_entry_get_text(e)[0];
+    initialDigits[(j - 1) % 9][(j - 1) / 9] = 0;
     if (c >= '1' && c <= '9')
+    {
         digits[(j - 1) % 9][(j - 1) / 9] = c - '0';
+    }
     else if (c == ' ' || !c)
+    {
         digits[(j - 1) % 9][(j - 1) / 9] = DEFAULT_CELL_VALUE;
+    }
 
     print_digits();
 
@@ -365,7 +379,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
                 if (!foundDigit)
                     foundDigit = DEFAULT_CELL_VALUE;
-
+                else
+                    initialDigits[(j - 1) % 9][(j - 1) / 9] = 1;
                 digits[(j - 1) % 9][(j - 1) / 9] = foundDigit;
 
                 SDL_FreeSurface(s);
@@ -387,10 +402,13 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 for (int k = 0; k < 9; k++)
                 {
                     if (digits[k][j] >= 1 && digits[k][j] <= 9)
+                    {
                         WriteDigit(new,
                             j * 44,//44 = 396 / 9 (396 = new->width)
                             k * 44,
-                            digits[k][j]);
+                            digits[j][k],
+                            initialDigits[j][k]);
+                    }
                 }
             }
 
