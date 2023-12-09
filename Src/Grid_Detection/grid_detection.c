@@ -4,11 +4,11 @@ SDL_Surface* load_image(const char* path)
 {
     SDL_Surface* s = IMG_Load(path);
     if (s == NULL)
-	errx(EXIT_FAILURE, "%s", SDL_GetError());
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
     SDL_Surface* surface =
-			SDL_ConvertSurfaceFormat(s,SDL_PIXELFORMAT_RGB888,0);
+        SDL_ConvertSurfaceFormat(s,SDL_PIXELFORMAT_RGB888,0);
     if (surface == NULL)
-	errx(EXIT_FAILURE, "%s", SDL_GetError());
+        errx(EXIT_FAILURE, "%s", SDL_GetError());
     SDL_FreeSurface(s);
     return surface;
 }
@@ -19,76 +19,58 @@ Quadrilateral* Find_Grid(SDL_Surface **s )
     printf("Hough transform done\n");
     int w = (*s)->w;
     int h = (*s)->h;
-
     //DrawLines(*s,lLine,255,255,0);
     AveragesCloseLine(lLine,ceil(sqrt(w * w + h *h)),5, 0.015);
-
-
     ExcludeBorderLine(lLine, w, h, 0.015);
     List* LVer = InitList();
-	List* LHor = InitList();
-
+    List* LHor = InitList();
     RemovesStrayLine(lLine,10,LVer,LHor);
     FreeList(lLine);
-
-   // printf("LVERRRRRR\n");
+    // printf("LVERRRRRR\n");
     RemoveFalseLines(LVer,*s,9,10);
-   // printf("LHORRRRRR\n");
+    // printf("LHORRRRRR\n");
     RemoveFalseLines(LHor,*s,9,10);
-
-	// printf("vertical Line list\n");
+    // printf("vertical Line list\n");
     // printList(LVer,1);
-	// printf("horizontal Line list\n");
-	// printList(LHor,1);
-
-
+    // printf("horizontal Line list\n");
+    // printList(LHor,1);
     DrawLines(*s,LVer,255,0,0);
     DrawLines(*s,LHor,0,0,255);
-
     int nbLines = LVer->length + LHor->length;
-    if(nbLines >150){
+    if(nbLines >150) {
         printf("too many lines found -> preprocessing is at fault\n");
         FreeList(LVer);
         FreeList(LHor);
         return NULL;
     }
-    if(nbLines<4){
+    if(nbLines<4) {
         printf("not enough lines found\n");
         FreeList(LVer);
         FreeList(LHor);
         return NULL;
     }
-
     double paddingPercentage = 10;
-
     List* lquad =  FindSquares(LVer,LHor,w,h,paddingPercentage);
     FreeList(LVer);
     FreeList(LHor);
-
-    if (lquad->length ==0)
-    {
+    if (lquad->length ==0) {
         FreeList(lquad);
         printf("no quadrilateral found\n");
         return NULL;
     }
-
     // w = (*s)->w;
     // h = (*s)->h;
-
     //printf("found quad list\n");
     //printList(lLine,0);
-
     // Node* curr = lquad->head;
     // while (curr)
     // {
     //     DrawSquare(*s, curr->data, 0, 255, 0,0);
     //     curr = curr->next;
     // }
-
     *s= Padding(*s,paddingPercentage);
     Quadrilateral *bestSquare = BestSquare(lquad);
     //printf("found grid !\n");
-
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));
     grid->p1.x =bestSquare->p1.x + w*(paddingPercentage/200)+5;
     grid->p1.y =bestSquare->p1.y + h*(paddingPercentage/200)+5;
@@ -99,9 +81,7 @@ Quadrilateral* Find_Grid(SDL_Surface **s )
     grid->p4.x =bestSquare->p4.x + w*(paddingPercentage/200)+5;
     grid->p4.y =bestSquare->p4.y + h*(paddingPercentage/200);
     FreeList(lquad);
-
     DrawSquare(*s, grid, 255, 0, 255,1);
-
     return grid;
 }
 

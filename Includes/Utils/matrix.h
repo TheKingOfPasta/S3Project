@@ -5,53 +5,45 @@
 #include <err.h>
 #include <math.h>
 
-typedef struct Matrix
-{
+typedef struct Matrix {
     double** values;
     size_t w;
     size_t h;
 } Matrix;
 
-typedef struct Tuple_m
-{
+typedef struct Tuple_m {
     Matrix* x;
     Matrix* y;
 } Tuple_m;
 
-typedef struct Tuple
-{
+typedef struct Tuple {
     Matrix* x;
     size_t y;
 } Tuple;
 
-typedef struct Node_m
-{
+typedef struct Node_m {
     struct Node_m* next;
     Matrix* m;
 } Node_m;
 
-typedef struct List_m
-{
+typedef struct List_m {
     Node_m* head;
     Node_m* tail;
     size_t len;
 } List_m;
 
-typedef struct DoubleNode
-{
+typedef struct DoubleNode {
     struct DoubleNode* next;
     size_t d;
 } DoubleNode;
 
-typedef struct DoubleList
-{
+typedef struct DoubleList {
     DoubleNode* head;
     DoubleNode* tail;
     size_t len;
 } DoubleList;
 
-typedef struct ListTup
-{
+typedef struct ListTup {
     List_m* x;
     List_m* y;
 } ListTup;

@@ -8,8 +8,7 @@
 #include "../Utils/matrix.h"
 #include <time.h>
 
-typedef struct Network
-{
+typedef struct Network {
     size_t num_layers;
     DoubleList* sizes;
     //weights and biases = list of matrix pointers

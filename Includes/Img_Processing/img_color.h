@@ -3,7 +3,7 @@
 #include <SDL2/SDL_image.h>
 
 Uint32 IMGC_pixel_to_grayscale(Uint32 pixel_color,
-    const SDL_PixelFormat* format);
+                               const SDL_PixelFormat* format);
 
 SDL_Surface* IMGC_Grayscale(SDL_Surface* surface);
 SDL_Surface* IMGC_Gamma_Correction(SDL_Surface* surface, int gamma);

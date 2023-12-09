@@ -14,7 +14,7 @@
   * Return a new allocated resized surface
   */
 SDL_Surface* downscale_resize(SDL_Surface *surface, int new_width, int
-        new_height);
+                              new_height);
 
 SDL_Surface* Resize(SDL_Surface* surface, int newSize);
 
