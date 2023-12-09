@@ -17,6 +17,5 @@ SDL_Surface* Padding(SDL_Surface* s, double paddingPercentage) {
 
 	SDL_UnlockSurface(s);
     SDL_FreeSurface(s);
-    printf(" %i %i\n", newW,newH);
 	return pad;
 }
