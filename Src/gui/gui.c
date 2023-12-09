@@ -171,9 +171,9 @@ gboolean ChangeInput(GtkEntry* e, gpointer ptr)
 
     char c = gtk_entry_get_text(e)[0];
     if (c >= '1' && c <= '9')
-        digits[j / 9][j % 9] = c - '0';
+        digits[(j - 1) % 9][(j - 1) / 9] = c - '0';
     else if (c == ' ' || !c)
-        digits[j / 9][j % 9] = DEFAULT_CELL_VALUE;
+        digits[(j - 1) % 9][(j - 1) / 9] = DEFAULT_CELL_VALUE;
 
     print_digits();
 
