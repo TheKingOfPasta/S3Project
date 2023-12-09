@@ -222,7 +222,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             break;
         case GRAYSCALE_STEP:
             img = IMGC_Grayscale(img);
-            img= IMGC_Normalize_Brigthness(img);
+            img = IMGC_Normalize_Brigthness(img);
             img = IMGC_Level_Colors(img,10);
 
             gtk_button_set_label(btn, "Next step (Gaussian blur)");
@@ -235,7 +235,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
-                gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
+                gtk_range_set_value(GTK_RANGE(h->Scale), 0.27);
                 gtk_scale_set_digits(h->Scale, 2);
                 gtk_range_set_range(GTK_RANGE(h->Scale), 0.2, 0.5);
                 //TODO set range between 0.2 and 0.5 properly
@@ -407,7 +407,10 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     char* newFile;
     if (asprintf(&newFile, "temp%02i.png", i) == -1)
         errx(EXIT_FAILURE, "asprintf failed");
+    IMG_SavePNG(img, newFile);
 
+    if (asprintf(&newFile, "temp%02iUI.png", i) == -1)
+        errx(EXIT_FAILURE, "asprintf failed");
     const int new_width = 500;
     int new_height = ceil((float)img->h * (float)new_width / img->w);
     img = downscale_resize(img, new_width, new_height);
@@ -473,14 +476,20 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
 
     SDL_Surface *s = IMG_Load(h->path);
-    const int new_width = 500;
+
+    int new_width = 1000;
     int new_height = ceil((float)s->h * (float)new_width / s->w);
     s = downscale_resize(s, new_width, new_height);
     printf("Saving\n");
     IMG_SavePNG(s, "temp00.png");
-    SDL_FreeSurface(s);
 
-    gtk_image_set_from_file(h->ImageDisplay, "temp00.png");
+    new_width = 500;
+    new_height = ceil((float)s->h * (float)new_width / s->w);
+    s = downscale_resize(s, new_width, new_height);
+    IMG_SavePNG(s, "temp00UI.png");
+    SDL_FreeSurface(s);
+   
+    gtk_image_set_from_file(h->ImageDisplay, "temp00UI.png");
     gtk_progress_bar_set_fraction(h->ProgressBar, 0);
 
     return FALSE;
