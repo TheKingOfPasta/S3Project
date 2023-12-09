@@ -1246,7 +1246,7 @@
                     <property name="can-focus">True</property>
                     <property name="max-length">1</property>
                     <property name="width-chars">3</property>
-                    <property name="max-width-chars">0</property>
+                    <property name="max-width-chars">1</property>
                     <property name="overwrite-mode">True</property>
                     <property name="input-purpose">digits</property>
                   </object>
@@ -1620,163 +1620,182 @@
     <property name="default-width">1000</property>
     <property name="default-height">500</property>
     <child>
-      <object class="GtkBox">
+      <object class="GtkScrolledWindow">
         <property name="visible">True</property>
-        <property name="can-focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="baseline-position">top</property>
+        <property name="can-focus">True</property>
+        <property name="hscrollbar-policy">never</property>
+        <property name="shadow-type">in</property>
+        <property name="min-content-width">1000</property>
+        <property name="min-content-height">1000</property>
+        <property name="propagate-natural-width">True</property>
+        <property name="propagate-natural-height">True</property>
         <child>
-          <object class="GtkOverlay">
+          <object class="GtkViewport">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkImage" id="ImageDisplay">
-                <property name="name">DisplayImage</property>
+              <object class="GtkBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="orientation">vertical</property>
+                <property name="baseline-position">top</property>
+                <child>
+                  <object class="GtkOverlay">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkImage" id="ImageDisplay">
+                        <property name="name">DisplayImage</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                      <packing>
+                        <property name="index">-1</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkButton" id="CancelButton">
+                        <property name="label">gtk-cancel</property>
+                        <property name="name">CancelButton</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">end</property>
+                        <property name="valign">start</property>
+                        <property name="use-stock">True</property>
+                        <property name="always-show-image">True</property>
+                      </object>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkProgressBar" id="ProgressBar">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="valign">end</property>
+                        <property name="show-text">True</property>
+                      </object>
+                      <packing>
+                        <property name="index">1</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkButton" id="SaveButton">
+                        <property name="label">Save</property>
+                        <property name="name">CancelButton</property>
+                        <property name="width-request">70</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="image-position">right</property>
+                      </object>
+                      <packing>
+                        <property name="index">2</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkScale" id="Scale">
+                        <property name="width-request">300</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="tooltip-text" translatable="yes">Change</property>
+                        <property name="halign">center</property>
+                        <property name="valign">start</property>
+                        <property name="round-digits">0</property>
+                        <property name="digits">0</property>
+                      </object>
+                      <packing>
+                        <property name="index">3</property>
+                      </packing>
+                    </child>
+                    <child type="overlay">
+                      <object class="GtkButton" id="OverrideWindowButton">
+                        <property name="label">Override values</property>
+                        <property name="name">CancelButton</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                        <property name="margin-left">70</property>
+                        <property name="margin-start">70</property>
+                        <property name="image-position">right</property>
+                      </object>
+                      <packing>
+                        <property name="index">4</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <child>
+                      <object class="GtkButton" id="DoNext">
+                        <property name="label" translatable="yes">Next Step</property>
+                        <property name="height-request">50</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="DoAll">
+                        <property name="label" translatable="yes">Do all</property>
+                        <property name="width-request">150</property>
+                        <property name="height-request">50</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                        <property name="image-position">right</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="Undo">
+                        <property name="label" translatable="yes">Undo</property>
+                        <property name="height-request">50</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </object>
-              <packing>
-                <property name="index">-1</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkButton" id="CancelButton">
-                <property name="label">gtk-cancel</property>
-                <property name="name">CancelButton</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">end</property>
-                <property name="valign">start</property>
-                <property name="use-stock">True</property>
-                <property name="always-show-image">True</property>
-              </object>
-            </child>
-            <child type="overlay">
-              <object class="GtkProgressBar" id="ProgressBar">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="valign">end</property>
-                <property name="show-text">True</property>
-              </object>
-              <packing>
-                <property name="index">1</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkButton" id="SaveButton">
-                <property name="label">Save</property>
-                <property name="name">CancelButton</property>
-                <property name="width-request">70</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">start</property>
-                <property name="valign">start</property>
-                <property name="image-position">right</property>
-              </object>
-              <packing>
-                <property name="index">2</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkScale" id="Scale">
-                <property name="width-request">150</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="tooltip-text" translatable="yes">Change</property>
-                <property name="halign">center</property>
-                <property name="valign">start</property>
-                <property name="round-digits">0</property>
-                <property name="digits">0</property>
-              </object>
-              <packing>
-                <property name="index">3</property>
-              </packing>
-            </child>
-            <child type="overlay">
-              <object class="GtkButton" id="OverrideWindowButton">
-                <property name="label">Override values</property>
-                <property name="name">CancelButton</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">start</property>
-                <property name="valign">start</property>
-                <property name="margin-start">70</property>
-                <property name="image-position">right</property>
-              </object>
-              <packing>
-                <property name="index">4</property>
-              </packing>
             </child>
           </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox">
-            <property name="visible">True</property>
-            <property name="can-focus">False</property>
-            <child>
-              <object class="GtkButton" id="DoNext">
-                <property name="label" translatable="yes">Next Step</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="DoAll">
-                <property name="label" translatable="yes">Do all</property>
-                <property name="width-request">150</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="image-position">right</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="Undo">
-                <property name="label" translatable="yes">Undo</property>
-                <property name="height-request">50</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
         </child>
       </object>
     </child>

@@ -6,13 +6,14 @@
 #define Splitsize 75000
 #define DEFAULT_CELL_VALUE 0b0011001111111111
 
-# define GRAYSCALE_STEP                 0
-# define GAUSSIAN_BLUR_STEP             1
-# define ADAPTATIVE_THRESHOLDING_STEP   2
-# define SOBEL_GRADIENT_STEP            3
-# define HOUGH_TRANSFORM_STEP           4
-# define CORRECTION_STEP                5
-# define ROTATION_STEP                  6
+
+# define ROTATION_STEP                  0
+# define GRAYSCALE_STEP                 1
+# define GAUSSIAN_BLUR_STEP             2
+# define ADAPTATIVE_THRESHOLDING_STEP   3
+# define SOBEL_GRADIENT_STEP            4
+# define HOUGH_TRANSFORM_STEP           5
+# define CORRECTION_STEP                6
 # define SPLIT_STEP                     7
 # define NEURON_NETWORK_STEP            8
 # define SOLVING_STEP                   9
@@ -156,7 +157,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
-    SDL_Surface *img_for_split;
+    SDL_Surface *img_for_split = NULL;
 
     gtk_widget_hide(GTK_WIDGET(h->Scale));
     gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 10);
@@ -166,7 +167,25 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     switch (i)
     {
-                case GRAYSCALE_STEP:
+        case ROTATION_STEP:
+            img_for_split = IMG_Load(file);
+            gtk_widget_show(GTK_WIDGET(h->Scale));
+            if (h->resetSlider)
+            {
+                gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
+                gtk_range_set_value(GTK_RANGE(h->Scale), 0);
+            }
+            else
+            {
+                float f = (float)(gtk_range_get_value(GTK_RANGE(h->Scale)));
+                printf("%s\n", file);
+                img = IMGA_Rotate(img, f);
+                img_for_split = IMGA_Rotate(img_for_split, f);
+            }
+
+            gtk_button_set_label(btn, "Next step (Grayscale)");
+            break;
+        case GRAYSCALE_STEP:
             img = IMGC_Grayscale(img);
             img= IMGC_Normalize_Brigthness(img);
             img = IMGC_Level_Colors(img,10);
@@ -184,11 +203,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
                 gtk_range_set_range(GTK_RANGE(h->Scale), 0.2, 0.5);
                 //TODO set range between 0.2 and 0.5 properly
-                img =IMGA_Sauvola(img,10,0.27);
+                img = IMGA_Sauvola(img,10,0.27);
             }
             else
             {
-                gint v = gtk_range_get_value(GTK_RANGE(h->Scale));
+                //gint v = gtk_range_get_value(GTK_RANGE(h->Scale));
                 img = IMGA_Sauvola(img,10,0.27);
             }
 
@@ -198,6 +217,8 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             gtk_button_set_label(btn, "Next step (Sobel gradient)");
             break;
         case SOBEL_GRADIENT_STEP:
+
+            IMG_SavePNG(img, "temp_split05.png");
             img = sobel_gradient(img);
 
             gtk_button_set_label(btn, "Next step (Hough transform)");
@@ -220,28 +241,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             quad->p3.y = tempy;
 
             img = CorrectImage(img,quad);
-            gtk_button_set_label(btn, "Next step (Rotation)");
-                break;
-        case ROTATION_STEP:
-            img_for_split = IMG_Load("temp03.png");
-            gtk_widget_show(GTK_WIDGET(h->Scale));
-            if (h->resetSlider)
-            {
-                double angle = FindAngle(quad,img->w,img->h);
-                img = IMGA_Rotate(img, angle);
-                img_for_split = IMGA_Rotate(img_for_split, angle);
-                gtk_range_set_range(GTK_RANGE(h->Scale), -180, 180);
-                gtk_range_set_value(GTK_RANGE(h->Scale), angle);
-            }
-            else
-            {
-                float f = (float)(gtk_range_get_value(GTK_RANGE(h->Scale)));
-                img = IMGA_Rotate(img, f);
-                img_for_split = IMGA_Rotate(img_for_split, f);
-            }
-            IMG_SavePNG(img_for_split, "temp_split05.png");
-
-            gtk_button_set_label(btn, "Next step (Splitting)");
+            gtk_button_set_label(btn, "Next step (Split image)");
                 break;
         case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
@@ -305,7 +305,9 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 digits[j % 9][j / 9] = foundDigit;
 
                 SDL_FreeSurface(s);
+                //SDL_FreeSurface(s_unknown_size);//Freed by downscale_resize
                 free(f);
+                free(f_out);
             }
 
             free_m(input);
@@ -322,6 +324,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             {
                 for (int k = 0; k < 9; k++)
                 {
+                    if (digits[k][j] >= 1 && digits[k][j] <= 9)
                     WriteDigit(new,
                             j * 44,//44 = 396 / 9 (396 = new->width)
                             k * 44,
@@ -349,6 +352,9 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
 
     free(newFile);
     free(file);
+    SDL_FreeSurface(img);
+    if (img_for_split)
+        SDL_FreeSurface(img_for_split);
 
     return TRUE;
 }
@@ -397,7 +403,7 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
 
     gtk_image_set_from_file(h->ImageDisplay, h->path);
 
-    gtk_button_set_label(h->DoNextButton, "Next step (Grayscale)");
+    gtk_button_set_label(h->DoNextButton, "Next step (Rotation)");
 
     gtk_widget_show(GTK_WIDGET(h->DoNextButton));
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
@@ -425,6 +431,7 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     //}
     printf("Saving\n");
     IMG_SavePNG(s, "temp00.png");
+    SDL_FreeSurface(s);
 
     gtk_progress_bar_set_fraction(h->ProgressBar, 0);
 
@@ -579,6 +586,8 @@ gpointer MyQuit()
     if (i)//If you applied any function (a temp file was created => remove it)
         RemoveTemps();
 
+    Free_Network(network);
+
     gtk_main_quit();
 
     return FALSE;
@@ -601,6 +610,13 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
         s = CheckInvert(s);
         s = IMGA_Erosion(s);
         IMG_SavePNG(s, "temp03.png");
+
+        SDL_FreeSurface(s);
+    }
+    else if (i - 1 == ROTATION_STEP)
+    {
+        printf("rotating image\n");
+        IMG_SavePNG(IMGA_Rotate(IMG_Load("temp00.png"), v), "temp01.png");
     }
     else
         return TRUE;
@@ -673,6 +689,8 @@ int main ()
         backToSteps : GTK_BUTTON(gtk_builder_get_object(builder, "backToSteps")),
         OverrideWindow : GTK_WINDOW(gtk_builder_get_object(builder, "OverrideWindow")),
     };
+
+    g_signal_connect(h.backToSteps, "clicked", G_CALLBACK(Window2), &h);
 
     gtk_widget_hide(GTK_WIDGET(h.OverrideWindowButton));
 

@@ -181,8 +181,11 @@ void test_digit()
     Tuple_m* data = Load_Images("database/training", &n, 5000);*/
     /*size_t n_tests;
     Tuple_m* tests = Load_Images("database/testing", &n_tests, 10000);*/
-    Tuple_m* data = malloc(68500 * sizeof(Tuple_m));
-    Tuple_m* tests = malloc(18500 * sizeof(Tuple_m));
+
+    size_t n = 68500 + 2840;
+    size_t n_tests = 18500 + 2840;
+    Tuple_m* data = malloc(n * sizeof(Tuple_m));
+    Tuple_m* tests = malloc(n_tests * sizeof(Tuple_m));
 
     printf("Loading MNIST data...\n");
     load_mnist();
@@ -250,10 +253,8 @@ void test_digit()
     printf("Done in %fs\n", (double)(clock() - t)/1000000);
     t = clock();
 
-    printf("Starting Stochastic Gradient Descent\n");
+    printf("Loading additional datasets...\n");
 
-    size_t n = 68500;
-    size_t n_tests = 18500;
 
     for (size_t j = 0; j < 10; j++)
     for (size_t i = 0; i < 85; i++)
@@ -308,15 +309,67 @@ void test_digit()
         SDL_FreeSurface(su);
     }
 
-    for (size_t i = 0; i < 30; i++)
+    for (size_t i = 0; i < 10; i++)
+    {
+        for (size_t j = 0; j < 284; j++)
+        {
+            char* s;
+            if (asprintf(&s, "database/training2/%zu-%04zu.png", i, j) == -1)
+                errx(EXIT_FAILURE, "asprintf failed");
+
+            SDL_Surface* su = IMG_Load(s);
+            if (!su)
+            {
+                free(s);
+                break;
+            }
+            Matrix* m = new_Matrix(1, 784);
+            for (size_t k = 0; k < 784; k++)
+            {
+                Uint32 v = (*(Uint32*)(su->pixels + k));
+                m->values[0][k] = v ? 1 : 0;
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m->values[0][k] = 1;
+            }
+
+            Matrix* res = new_Matrix(1, 10);
+            res->values[0][i] = 1;
+
+            data[68500 + j * 10 + i].x = m;
+            data[68500 + j * 10 + i].y = res;
+
+            Matrix* m2 = new_Matrix(1, 784);
+            for (size_t k = 0; k < 784; k++)
+            {
+                Uint32 v = (*(Uint32*)(su->pixels + k));
+                m2->values[0][k] = v ? 1 : 0;
+                if (rand() / (double)RAND_MAX > 0.98)
+                    m2->values[0][k] = 1;
+            }
+
+            Matrix* res2 = new_Matrix(1, 10);
+            res2->values[0][i] = 1;
+
+            tests[18500 + j * 10 + i].x = m2;
+            tests[18500 + j * 10 + i].y = res2;
+
+            SDL_FreeSurface(su);
+            free(s);
+        }
+    }
+
+    printf("Extra sets loaded in %fs\n", (double)(clock() - t) / 1000000);
+    t = clock();
+
+    printf("Starting Stochastic Gradient Descent\n");
+
+    while (1)
     {
         SGD(network, data, n, 1, 10, 1, tests, n_tests);
         Save_Network(network, "networko");
     }
 
     printf("Calculated weights and biases in %fs\n", (double)(clock() - t)/1000000);
-
-    Save_Network(network, "networko");
 
     Free_Network(network);
 

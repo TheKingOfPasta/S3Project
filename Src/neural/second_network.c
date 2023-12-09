@@ -292,11 +292,12 @@ void SGD(Network* n,
             index += 1;
         }
 
+        size_t prev = -1;
         for (size_t i = 0; i < mini_b_len; i++)
         {
-            double count = 100 * (double)i / mini_b_len;
+            size_t count = (size_t)(100.0 * (double)i / mini_b_len);
 
-            if ((100 * i) % mini_b_len == 0)
+            if (count != prev)
             {
                 printf("\r");
                 printf("Progress : [");
@@ -304,8 +305,9 @@ void SGD(Network* n,
                     printf("-");
                 for (size_t j = count; j < 100 - 1; j++)
                     printf(" ");
-                printf("] %.0f %%", count);
+                printf("] %zu %%", count);
                 fflush(stdout);
+                prev = count;
             }
             update_mini_batch(n, mini_batches[i], mini_batch_size, eta);
         }
