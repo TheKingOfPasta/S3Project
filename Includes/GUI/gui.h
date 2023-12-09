@@ -26,3 +26,4 @@
 #include "../Solver/solver.h"
 #include "../Neural_Network/network_loader.h"
 #include "../Neural_Network/second_network.h"
+#include "../Img_Transformation/padding.h"

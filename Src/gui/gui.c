@@ -130,6 +130,16 @@ gboolean Window2(GtkButton* btn, gpointer ptr)
     return FALSE;
 }
 
+void print_digits()
+{
+    for (size_t j = 0; j < 9; j++)
+    {
+        for (size_t i = 0; i < 9; i++)
+            if (digits[i][j] == )//TODO
+            printf("%i");
+    }
+}
+
 gboolean ChangeInput(GtkEntry* e)
 {
     const char* name = gtk_widget_get_name(GTK_WIDGET(e));// input1-81
@@ -143,6 +153,8 @@ gboolean ChangeInput(GtkEntry* e)
         digits[index / 9][index % 9] = c - '0';
     else if (c == ' ')
         digits[index / 9][index % 9] = DEFAULT_CELL_VALUE;
+
+    print_digits();
 
     return FALSE;
 }
@@ -225,7 +237,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             break;
         case HOUGH_TRANSFORM_STEP:
 
-            quad = Find_Grid(img);
+            quad = Find_Grid(&img);
 
             gtk_button_set_label(btn, "Next step (Correction)");
 
@@ -240,9 +252,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             quad->p3.x = tempx;
             quad->p3.y = tempy;
 
-            img = CorrectImage(img,quad);
+            img = Padding(img,10);
+
+            img = CorrectImage(img, quad);
             gtk_button_set_label(btn, "Next step (Split image)");
-                break;
+            break;
         case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
             img_for_split = IMG_Load("temp_split05.png");
@@ -266,7 +280,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 if (asprintf(&f, "temp_split2/split_%02i.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
                 if (asprintf(&f_out, "temp_split/split_%02i_28x28.png", j) == -1)
-                    errx(EXIT_FAILURE, "asprint failed");
+                    errx(EXIT_FAILURE, "asprintf failed");
                 printf("%s\n", f);
 
                 // put the pixels in a matrix
@@ -325,7 +339,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 for (int k = 0; k < 9; k++)
                 {
                     if (digits[k][j] >= 1 && digits[k][j] <= 9)
-                    WriteDigit(new,
+                        WriteDigit(new,
                             j * 44,//44 = 396 / 9 (396 = new->width)
                             k * 44,
                             digits[k][j]);
