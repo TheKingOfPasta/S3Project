@@ -392,10 +392,10 @@ void test_digit()
 void load_digit(char* path)
 {
     Network* n = Load_Network(path);
-    printf("Biases =\n");
-    print_list_m(n->biases);
     printf("\n\n\n\n\n\nWeights = \n\n\n");
     print_list_m(n->weights);
+    printf("Biases =\n");
+    print_list_m(n->biases);
     printf("\n\n\nNetwork is\n{\n");
     print_list(n->sizes);
     printf("}\n");

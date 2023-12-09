@@ -4,21 +4,17 @@ EPITA S3 project (sudoku), presented by Nord En Face
 
 
 How to use:
- - Execute 'make' in the root folder (you can also use make in the gui, img_processing and solver folders to make specific folders only)
+ - Go in Src/gui and execute the 'make' command, then run ./gui
 
- - Using the command line : go in the solver/ folder, run the 'make' command, and launch ./solver {path}, with path being the path to a text file (assumed correct)
- 
- - To test the image processing functions, go in the img_processing/ folder, run 'make', and execute ./img_action
-   - ./img_action is used to apply all image transformations (rotate/rotate auto/adaptive thresholding/sobel/inverting)
-        - execute ./img_action without parameters to get a tutorial
-        - execute ./img_action with a single parameter (example: ./img_action -t) to get help on that function 
+ - Using the command line : go in the Src/Img_Processing folder and run 'make'
+    then you can do ./img_action without parameters to see the available parameters
 
- - Using the GUI : go in the gui/ folder, run the 'make' command, and launch ./gui
+ - as a usual rule, there are Makefiles in all Src/ subfolders which can be compiled
+    and run without parameters to see the available options
 
 
 
 Using the GUI:
- - On the left are the functions you can execute, on the right are the files of your system.
- - Simply click on a file to choose it, or click on a folder to go into the folder.
- - Folders are in blue and files in white
- - To go back, click on the .. button from the list
+ - Pick an image on the bottom
+ - The next window will show each step 1 by 1 or all at once
+ - The save button can be used to save the current image to output.png

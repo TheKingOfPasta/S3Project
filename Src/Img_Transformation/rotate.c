@@ -32,8 +32,9 @@ SDL_Surface* IMGA_Rotate(SDL_Surface* surface, double angle)
             if (surfaceX >= 0 && surfaceX < surface->w &&
                 surfaceY >= 0 && surfaceY < surface->h)
             {
-			    newPixels[y * newS->w + x] =
-                    pixels[surfaceY * surface->w + surfaceX];
+                Uint8 r, g, b;
+                SDL_GetRGB(pixels[surfaceY * surface->w + surfaceX], surface->format, &r, &g, &b);
+			    newPixels[y * newS->w + x] = SDL_MapRGB(newS->format, r, g, b);
             }
 			else //Out of bounds
             {
