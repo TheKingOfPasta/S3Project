@@ -321,8 +321,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 if (asprintf(&name, "temp_split/split_%02i_28x28.png", j * 9 + k + 1) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
 
-                printf("Loading %s\n", name);
-
                 SDL_Surface* su = IMG_Load(name);
                 Uint32* suPixels = su->pixels;
 
@@ -363,7 +361,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                         SDL_GetRGB(pixels[x * 28 + y], s->format, &gray, &gray, &gray);
                         input->values[0][x * 28 + y] = gray / 255.f;
                     }
-                print_image(input);
 
                 // compute the output from the network
                 Matrix *output = feedforward(network, input);
@@ -372,8 +369,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 short foundDigit = argmax_m(output);
 
                 // if you want to verify how sure he is, check the index
-                printf("Network of split_%02i.png: found %hi\n", j, foundDigit);
-                print_m(output);
 
                 free_m(output);
 
@@ -663,7 +658,6 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
     }
     else if (i - 1 == ROTATION_STEP)
     {
-        printf("rotating image\n");
         IMG_SavePNG(IMGA_Rotate(IMG_Load("temp00.png"), v), "temp01.png");
     }
     else

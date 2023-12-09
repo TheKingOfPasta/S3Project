@@ -167,7 +167,6 @@ void Split(SDL_Surface* surface, char* folder_out)
     {
         for (int i = 0; i < surface->w - w9; i += w9)
         {
-            printf("j: %i, i: %i\n", j, i);
             SDL_Surface* newS = SDL_CreateRGBSurface(0, w9, h9, 32, 0, 0, 0, 0);
             Uint32* newPixels = newS->pixels;
 
@@ -206,6 +205,4 @@ void Split(SDL_Surface* surface, char* folder_out)
 
     // free the input surface but later on we need it so commented out
     //SDL_FreeSurface(surface);
-
-    printf("done\n");
 }
