@@ -1,8 +1,8 @@
 CC = gcc -I../../Includes
 CPPFLAGS =
-CFLAGS = -lm -ldl -Wall -g -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image SDL2_ttf gtk+-3.0`
+CFLAGS = -lm -ldl -Wall -g -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image SDL2_ttf gtk+-3.0` -fsanitize=address
 LDFLAGS =
-LDLIBS = -lm -ldl `pkg-config --libs sdl2 SDL2_image SDL2_ttf gtk+-3.0`
+LDLIBS = -lm -ldl `pkg-config --libs sdl2 SDL2_image SDL2_ttf gtk+-3.0` -fsanitize=address
 
 SRC = $(shell find ../Img_Processing -name "*.c" ! -name "img_action.c" )	\
  	  $(shell find ../Img_Transformation -name "*.c" )		\
