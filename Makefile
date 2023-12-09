@@ -1,9 +1,10 @@
-CC = gcc -IIncludes -o Bin/gui
+CC = gcc 
 CPPFLAGS =
 CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image gtk+-3.0` 
 LDFLAGS = LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
 
 SOURCE_DIR := ./Src
+BIN_DIR := ./bin
 
 SRC = $(shell find $(SOURCE_DIR) -name "*.c" ! -name "img_action.c" ! -name "test.c")
 OBJ = $(SRC:.c=.o)
@@ -11,8 +12,9 @@ DEP = $(SRC:.c=.d)
 
 all:  gui
 
-gui: ${OBJ}
-	gcc  -IIncludes $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
+gui: 
+	cd Src/gui/ && make
+	cd Src/gui && ./gui
 
 .PHONY: clean
 
