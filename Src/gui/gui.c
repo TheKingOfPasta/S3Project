@@ -97,6 +97,19 @@ void print_image(Matrix *a)
     }
 }
 
+void print_digits()
+{
+    for (size_t j = 0; j < 9; j++)
+    {
+        for (size_t i = 0; i < 9; i++)
+            if (digits[i][j] >= 1 && digits[i][j] <= 9)
+                printf("%i ", digits[i][j]);
+            else
+                printf(". ");
+        printf("\n");
+    }
+}
+
 gboolean Window3(GtkButton* btn, gpointer ptr)
 {
     btn = btn;
@@ -109,17 +122,20 @@ gboolean Window3(GtkButton* btn, gpointer ptr)
     {
         char text[2];
 
-        if (digits[j / 9][j % 9] == DEFAULT_CELL_VALUE)
+        if (digits[j % 9][j / 9] >= 1 && digits[j % 9][j / 9] <= 9)
         {
-            text[0] = ' ';
+            text[0] = '0' + digits[j % 9][j / 9];
         }
         else
         {
-            text[0] = '0' + digits[j / 9][j % 9];
+            text[0] = ' ';
         }
+
         text[1] = '\0';
         gtk_entry_set_text(h->forceInputs[j], text);
     }
+
+    print_digits();
 
     return FALSE;
 }
@@ -133,19 +149,6 @@ gboolean Window2(GtkButton* btn, gpointer ptr)
     gtk_widget_hide(GTK_WIDGET(h->OverrideWindow));
 
     return FALSE;
-}
-
-void print_digits()
-{
-    for (size_t j = 0; j < 9; j++)
-    {
-        for (size_t i = 0; i < 9; i++)
-            if (digits[i][j] >= 1 && digits[i][j] <= 9)
-                printf("%i ", digits[i][j]);
-            else
-                printf(". ");
-        printf("\n");
-    }
 }
 
 gboolean ChangeInput(GtkEntry* e)
@@ -189,6 +192,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     {
         case ROTATION_STEP:
             img_for_split = IMG_Load(file);
+            gtk_scale_set_digits(h->Scale, 0);
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
             {
@@ -221,14 +225,16 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             if (h->resetSlider)
             {
                 gtk_range_set_value(GTK_RANGE(h->Scale), AdaptiveThreshold);
+                gtk_scale_set_digits(h->Scale, 2);
                 gtk_range_set_range(GTK_RANGE(h->Scale), 0.2, 0.5);
                 //TODO set range between 0.2 and 0.5 properly
-                img = IMGA_Sauvola(img,10,0.27);
+                img = IMGA_Sauvola(img, 10, 0.27);
             }
             else
             {
-                //gint v = gtk_range_get_value(GTK_RANGE(h->Scale));
-                img = IMGA_Sauvola(img,10,0.27);
+                double v = gtk_range_get_value(GTK_RANGE(h->Scale));
+                printf("%f <--\n", v);
+                img = IMGA_Sauvola(img, 10, v);
             }
 
             img = CheckInvert(img);
@@ -368,6 +374,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     if (asprintf(&newFile, "temp%02i.png", i) == -1)
         errx(EXIT_FAILURE, "asprintf failed");
 
+    const int new_width = 500;
+    int new_height = ceil((float)img->h * (float)new_width / img->w);
+    img = downscale_resize(img, new_width, new_height);
+    /*printf("Resized width from %ix%i to %ix%i\n",
+            img->w, img->h, new_width, new_height);*/
     IMG_SavePNG(img, newFile);
 
     gtk_image_set_from_file(ImageDisplay, newFile);
@@ -423,7 +434,6 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     gtk_widget_hide(GTK_WIDGET(h->w1));
     gtk_widget_show(GTK_WIDGET(h->w2));
 
-    gtk_image_set_from_file(h->ImageDisplay, h->path);
 
     gtk_button_set_label(h->DoNextButton, "Next step (Rotation)");
 
@@ -431,30 +441,14 @@ gboolean ChangeWindow(GtkButton* btn, gpointer ptr)
     gtk_widget_show(GTK_WIDGET(h->DoAllButton));
 
     SDL_Surface *s = IMG_Load(h->path);
-    //if (s->w > 1000)
-    //{
-    //    const int new_width = 1000;
-    //    float ratio = new_width / s->w;
-    //    int new_height = (int)ceil(s->h * ratio);
-    //    SDL_Surface *r = downscale_resize(s, new_width, new_height);
-    //    SDL_FreeSurface(s);
-    //    s = r;
-    //    printf("Resizing\n");
-    //}
-    //else if (s->h > 1000)
-    //{
-    //    const int new_height = 1000;
-    //    float ratio = new_height / s->h;
-    //    int new_width = (int)ceil(s->w * ratio);
-    //    SDL_Surface *r = downscale_resize(s, new_width, new_height);
-    //    SDL_FreeSurface(s);
-    //    s = r;
-    //    printf("Resizing\n");
-    //}
+    const int new_width = 500;
+    int new_height = ceil((float)s->h * (float)new_width / s->w);
+    s = downscale_resize(s, new_width, new_height);
     printf("Saving\n");
     IMG_SavePNG(s, "temp00.png");
     SDL_FreeSurface(s);
 
+    gtk_image_set_from_file(h->ImageDisplay, "temp00.png");
     gtk_progress_bar_set_fraction(h->ProgressBar, 0);
 
     return FALSE;
@@ -470,7 +464,7 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
 
     SDL_Surface *s = IMG_Load(path);
 
-    const int new_width = 1000;
+    const int new_width = 500;
 
     int new_height = ceil((float)s->h * (float)new_width / s->w);
 
@@ -481,7 +475,7 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
     /* 
         if (s->w > 1000)
         {
-            const int new_width = 1000;
+            const int new_width = 500;
             float ratio = (float)new_width / s->w;
             int new_height = (int)ceil(s->h * ratio);
             printf("Resizing width from %ix%i to %ix%i\n",
@@ -620,11 +614,7 @@ gboolean SliderAction(GtkRange* slider, gpointer user_data)
     widgets* h = user_data;
     gint v = gtk_range_get_value(slider);
 
-    if (i == 6)
-    {
-        IMG_SavePNG(IMGA_Rotate(IMG_Load("temp05.png"), v), "temp06.png");
-    }
-    else if (i == 3)
+    if (i - 1== ADAPTATIVE_THRESHOLDING_STEP)
     {
         //Thresholding
         SDL_Surface* s = IMG_Load("temp02.png");
