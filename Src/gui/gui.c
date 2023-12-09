@@ -60,6 +60,11 @@ void WriteDigit(SDL_Surface* s, int x, int y, int digit)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* inp = IMG_Load(file);
+    if (inp == NULL)
+    {
+        printf("%s loading failed\n", file);
+        return;
+    }
 
     SDL_LockSurface(inp);
     SDL_LockSurface(s);
@@ -294,7 +299,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 IMG_SavePNG(s, f_out);
 
                 Uint32 *pixels = s->pixels;
-                int margin = 5;
+                int margin = 0;
                 for (int x = margin; x < 28 - margin; ++x)
                     for (int y = margin; y < 28 - margin; ++y)
                     {
