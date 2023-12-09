@@ -135,8 +135,11 @@ void print_digits()
     for (size_t j = 0; j < 9; j++)
     {
         for (size_t i = 0; i < 9; i++)
-            if (digits[i][j] == )//TODO
-            printf("%i");
+            if (digits[i][j] >= 1 && digits[i][j] <= 9)
+                printf("%i ", digits[i][j]);
+            else
+                printf(". ");
+        printf("\n");
     }
 }
 
