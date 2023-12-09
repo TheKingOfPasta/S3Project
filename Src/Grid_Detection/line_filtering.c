@@ -1,7 +1,7 @@
 #include "Grid_Detection/line_filtering.h"
 
 //Removes all lines which are too close to each other
-void AveragesCloseLine(List* lLine, int diag_len)
+void AveragesCloseLine(List* lLine, int diag_len,int angleThreshold, double rhoThreshold)
 {
 	Node* curr;
     if (!(curr = lLine->head)) return;
@@ -21,8 +21,8 @@ void AveragesCloseLine(List* lLine, int diag_len)
 		while (curr2->next)
 		{
 			Line* currLine2 = curr2->next->data;
-			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(30)) &&
-				fabs(currLine2->rho - currLine->rho)/diag_len < 0.01)
+			if (CloseAngle(currLine->theta, currLine2->theta,ToRad(angleThreshold)) &&
+					fabs(currLine2->rho - currLine->rho)/diag_len < rhoThreshold)
 				//   ^ I removed a fabs here if something is broken
 			{
 				//printf("			%3i : theta %2.3f (deg %i) rho %5f\n",j,currLine2->theta,(int)((currLine2->theta)*180/M_PI),currLine->rho);
@@ -162,7 +162,7 @@ SDL_Surface* CopySurface(SDL_Surface* s)
     return res;
 }
 
-int CheckLine(Line* l, SDL_Surface* s){
+int CheckLine(Line* l, SDL_Surface* s, int segmentThreshold){
 	int diag_len = sqrt(s->w * s->w + s->h * s->h);
 
 	double co = (cos((l->theta)));
@@ -203,7 +203,7 @@ int CheckLine(Line* l, SDL_Surface* s){
 			 	if(!whitePreviously){
 					whitePreviously = 1;
 					whiteSegment++;
-					if(whiteSegment > 9) return 0;
+					if(whiteSegment > segmentThreshold) return 0;
 				}
 			}
 			else{
@@ -227,13 +227,13 @@ int CheckLine(Line* l, SDL_Surface* s){
 	return 1;
 }
 
-void RemoveFalseLines(List* l , SDL_Surface* surface){
+void RemoveFalseLines(List* l , SDL_Surface* surface, int dilateStrength, int segmentThreshold){
     SDL_Surface* s = CopySurface(surface);
-	s = IMGA_Dilate(s,11);
-    IMG_SavePNG(s, "rmMe.png");
+	s = IMGA_Dilate(s,dilateStrength);
+    //IMG_SavePNG(s, "rmMe.png");
 
 	Node* curr = l->head;
-	while( curr && !CheckLine(((Line*)curr->data),s))
+	while( curr && !CheckLine(((Line*)curr->data),s,segmentThreshold))
 	{
 	    //printf("Removed line\n");
 		Tail(l);
@@ -241,11 +241,11 @@ void RemoveFalseLines(List* l , SDL_Surface* surface){
 	}
 
 	while( curr->next){
-		if (!CheckLine((Line*)curr->next->data,s)){
+		if (!CheckLine((Line*)curr->next->data,s, segmentThreshold)){
 	    	//printf("Removed line\n");
 			RemoveNextNode(l,curr);
 		}
 		else curr =curr->next;
 	}
-    SDL_FreeSurface(s); // TODO PUT THAT AT THE END OF THE FUNC
+    SDL_FreeSurface(s);
 }

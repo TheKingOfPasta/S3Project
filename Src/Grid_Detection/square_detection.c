@@ -18,7 +18,7 @@ double Dist(Point p1, Point p2)
 }
 
 
-int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
+int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y , double padding){
 	//lines are not parallel
 	float cost1=cosf((l1->theta));
     float cost2=cosf((l2->theta));
@@ -28,13 +28,13 @@ int FindIntersection(Line* l1 ,Line* l2, int w, int h, int *x, int *y ){
     *x = (int)((sint2*l1->rho - sint1*l2->rho)/a);
 	*y = (int)((cost1*l2->rho - cost2*l1->rho)/a);
 	//check if the intersection is not out of bound
-	return *x >0 && *y >0 && *x<w && *y<h;
+	return *x >-w*padding && *y >-h*padding && *x<w*(1+padding) && *y<h*(1+padding);
 }
 
 
 
 //returns a list of the quadrilateral formed with the provided list of lines
-List* FindSquares(List* lHor, List* lVer,int width, int height){
+List* FindSquares(List* lHor, List* lVer,int width, int height, double paddingPercentage){
 
 	Point intersection[lVer->length][lHor->length];
 
@@ -50,7 +50,7 @@ List* FindSquares(List* lHor, List* lVer,int width, int height){
 		int innerIndex =0;
 		while(currHor){
 			if( FindIntersection(lineVer,(Line*)(currHor->data)
-			 		,width,height,&(p.x),&(p.y))){
+			 		,width,height,&(p.x),&(p.y), paddingPercentage/200)){
 				intersection[index][innerIndex] = p;
 			}
 			else {

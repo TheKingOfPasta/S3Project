@@ -13,16 +13,18 @@ SDL_Surface* load_image(const char* path)
     return surface;
 }
 
-Quadrilateral* Find_Grid(SDL_Surface *s )
+Quadrilateral* Find_Grid(SDL_Surface **s )
 {
-    List* lLine = HoughLine(s);
+    List* lLine = HoughLine(*s);
     printf("Hough transform done\n");
+    int w = (*s)->w;
+    int h = (*s)->h;
 
-    //DrawLines(s,lLine,50,0,0);
-    AveragesCloseLine(lLine,ceil(sqrt(s->w * s->w + s->h * s->h)));
+    AveragesCloseLine(lLine,ceil(sqrt(w * w + h *h)),5, 0.015);
+    //DrawLines(*s,lLine,100,0,0);
 
 
-    ExcludeBorderLine(lLine, s->w, s->h, 0.015);
+    ExcludeBorderLine(lLine, w, h, 0.015);
     List* LVer = InitList();
 	List* LHor = InitList();
 
@@ -30,9 +32,9 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
     FreeList(lLine);
 
    // printf("LVERRRRRR\n");
-    RemoveFalseLines(LVer,s);
+    RemoveFalseLines(LVer,*s,9,9);
    // printf("LHORRRRRR\n");
-    RemoveFalseLines(LHor,s);
+    RemoveFalseLines(LHor,*s,9,9);
 
 	// printf("vertical Line list\n");
     // printList(LVer,1);
@@ -40,8 +42,8 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
 	// printList(LHor,1);
 
 
-    DrawLines(s,LVer,255,0,0);
-    DrawLines(s,LHor,0,0,255);
+    DrawLines(*s,LVer,255,0,0);
+    DrawLines(*s,LHor,0,0,255);
 
     int nbLines = LVer->length + LHor->length;
     if(nbLines >150){
@@ -57,7 +59,9 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
         return NULL;
     }
 
-    List* lquad =  FindSquares(LVer,LHor,s->w,s->h);
+    double paddingPercentage = 10;
+
+    List* lquad =  FindSquares(LVer,LHor,w,h,paddingPercentage);
     FreeList(LVer);
     FreeList(LHor);
 
@@ -68,28 +72,36 @@ Quadrilateral* Find_Grid(SDL_Surface *s )
         return NULL;
     }
 
-
+    // w = (*s)->w;
+    // h = (*s)->h;
 
     //printf("found quad list\n");
     //printList(lLine,0);
 
-    Node* curr = lquad->head;
-    while (curr)
-    {
-        DrawSquare(s, curr->data, 0, 255, 0,0);
-        curr = curr->next;
-    }
+    // Node* curr = lquad->head;
+    // while (curr)
+    // {
+    //     DrawSquare(*s, curr->data, 0, 255, 0,0);
+    //     curr = curr->next;
+    // }
 
+    *s= Padding(*s,paddingPercentage);
     Quadrilateral *bestSquare = BestSquare(lquad);
     //printf("found grid !\n");
-    DrawSquare(s, bestSquare, 255, 0, 255,1);
 
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));
-    grid->p1 =bestSquare->p1;
-    grid->p2 =bestSquare->p2;
-    grid->p3 =bestSquare->p3;
-    grid->p4 =bestSquare->p4;
+    grid->p1.x =bestSquare->p1.x + w*(paddingPercentage/200);
+    grid->p1.y =bestSquare->p1.y + h*(paddingPercentage/200);
+    grid->p2.x =bestSquare->p2.x + w*(paddingPercentage/200);
+    grid->p2.y =bestSquare->p2.y + h*(paddingPercentage/200);
+    grid->p3.x =bestSquare->p3.x + w*(paddingPercentage/200);
+    grid->p3.y =bestSquare->p3.y + h*(paddingPercentage/200);
+    grid->p4.x =bestSquare->p4.x + w*(paddingPercentage/200);
+    grid->p4.y =bestSquare->p4.y + h*(paddingPercentage/200);
     FreeList(lquad);
+
+    DrawSquare(*s, grid, 255, 0, 255,1);
+
     return grid;
 }
 

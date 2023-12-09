@@ -9,7 +9,7 @@
 #include "visualization.h"
 #include "../Img_Processing/filter.h"
 
-void AveragesCloseLine(List* lLine, int diag);
+void AveragesCloseLine(List* lLine, int diag_len,int angleThreshold, double rhoThreshold);
 void ExcludeBorderLine(List* list, int w, int h, double exthres);
 void RemovesStrayLine(List *l,int thresholdDeg, List* ver, List* hor);
-void RemoveFalseLines(List* l , SDL_Surface* surface);
+void RemoveFalseLines(List* l , SDL_Surface* surface, int dilateStrength, int segmentThreshold);
