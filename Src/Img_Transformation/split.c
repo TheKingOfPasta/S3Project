@@ -143,15 +143,25 @@ void Split(SDL_Surface* surface, char* folder_out)
             }
 
             newS = DigitExtraction(newS);
-            char* str;
+	    	char* str;
             if (asprintf(&str, "%s/split_%02i.png", folder_out, fileIndex) == -1)
                 errx(EXIT_FAILURE, "asprintf failed");
-            printf("saving\n");
+
             int e = IMG_SavePNG(newS, str);
-            printf("done saving\n");
+
             if (e == -1)
                 err(EXIT_FAILURE, "IMG_SavePNG");
+
+			char* f;
+			if (asprintf(&f, "%s/split_%02i_28x28.png", folder_out, fileIndex) == -1)
+				errx(EXIT_FAILURE, "asprintf failed");
+            newS = Padding(newS, 20);
+            SDL_Surface *s = downscale_resize(newS, 28, 28);
+			IMG_SavePNG(s, f);
+
             fileIndex += 1;
+			SDL_FreeSurface(s);
+			free(f);
             free(str);
         }
     }

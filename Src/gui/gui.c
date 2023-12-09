@@ -115,7 +115,6 @@ gboolean Window3(GtkButton* btn, gpointer ptr)
     btn = btn;
     widgets* h = ptr;
 
-    gtk_widget_hide(h->w2);
     gtk_widget_show(GTK_WIDGET(h->OverrideWindow));
 
     for (int j = 0; j < 81; j++)
@@ -145,25 +144,36 @@ gboolean Window2(GtkButton* btn, gpointer ptr)
     btn = btn;
     widgets* h = ptr;
 
-    gtk_widget_show(h->w2);
     gtk_widget_hide(GTK_WIDGET(h->OverrideWindow));
 
     return FALSE;
 }
 
-gboolean ChangeInput(GtkEntry* e)
+gboolean ChangeInput(GtkEntry* e, gpointer ptr)
 {
-    const char* name = gtk_widget_get_name(GTK_WIDGET(e));// input1-81
-    int index;
-    index = name[5] - '0';
-    if (name[6])
-        index = index * 10 + name[6] - '0';
+    widgets* h = ptr;
+    size_t j = 1;
+
+    for (; j <= 81; j++)
+    {
+        if (h->forceInputs[j - 1] == e)
+        {
+            break;
+        }
+    }
+
+    if (j == 82)
+        return FALSE;
+
+
+    printf("%zu\n", j);
+    printf("----------------\n");
 
     char c = gtk_entry_get_text(e)[0];
     if (c >= '1' && c <= '9')
-        digits[index / 9][index % 9] = c - '0';
-    else if (c == ' ')
-        digits[index / 9][index % 9] = DEFAULT_CELL_VALUE;
+        digits[j / 9][j % 9] = c - '0';
+    else if (c == ' ' || !c)
+        digits[j / 9][j % 9] = DEFAULT_CELL_VALUE;
 
     print_digits();
 
@@ -180,7 +190,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
         errx(EXIT_FAILURE, "asprintf failed");
 
     SDL_Surface* img = IMG_Load(file);
-    SDL_Surface *img_for_split = NULL;
 
     gtk_widget_hide(GTK_WIDGET(h->Scale));
     gtk_progress_bar_set_fraction(h->ProgressBar, (float)(i + 1) / 10);
@@ -188,10 +197,12 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     if (i == NEURON_NETWORK_STEP - 1 || i == NEURON_NETWORK_STEP + 1)
         gtk_widget_hide(GTK_WIDGET(h->OverrideWindowButton));
 
+    SDL_Surface* img_for_split;
+
     switch (i)
     {
         case ROTATION_STEP:
-            img_for_split = IMG_Load(file);
+            //img_for_split = IMG_Load(file);
             gtk_scale_set_digits(h->Scale, 0);
             gtk_widget_show(GTK_WIDGET(h->Scale));
             if (h->resetSlider)
@@ -204,7 +215,7 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 float f = (float)(gtk_range_get_value(GTK_RANGE(h->Scale)));
                 printf("%s\n", file);
                 img = IMGA_Rotate(img, f);
-                img_for_split = IMGA_Rotate(img_for_split, f);
+                //img_for_split = IMGA_Rotate(img_for_split, f);
             }
 
             gtk_button_set_label(btn, "Next step (Grayscale)");
@@ -266,20 +277,53 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             quad->p3.x = tempx;
             quad->p3.y = tempy;
 
-            img = Padding(img,10);
-
-            img = CorrectImage(img, quad);
+            Quadrilateral* copy = malloc(sizeof(Quadrilateral));
+            copy->p1 = quad->p1;
+            copy->p2 = quad->p2;
+            copy->p3 = quad->p3;
+            copy->p4 = quad->p4;
+            img_for_split = CorrectImage(Padding(IMG_Load("temp04.png"), 10), copy);
             gtk_button_set_label(btn, "Next step (Split image)");
+
+            IMG_SavePNG(img_for_split, "temp_for_split.png");
+
+            SDL_FreeSurface(img);
+            img = IMG_Load("temp_for_split.png");
+            SDL_FreeSurface(img_for_split);
+            free(copy);
             break;
         case SPLIT_STEP:
             mkdir("temp_split", S_IRWXU);
-            img_for_split = IMG_Load("temp_split05.png");
+            img_for_split = IMG_Load("temp_for_split.png");
+            Split(img_for_split, "temp_split");
 
-            Split(img, "temp_split");
-            mkdir("temp_split2", S_IRWXU);
-            Split(img_for_split, "temp_split2");
+            SDL_FreeSurface(img);
+            img = SDL_CreateRGBSurface(0,28*9,28*9,32,0,0,0,0);
+            Uint32* pixels = img->pixels;
+            for (int j = 0; j < 9; j++)
+            for (int k = 0; k < 9; k++)
+            {
+                char* name;
+                if (asprintf(&name, "temp_split/split_%02i_28x28.png", j * 9 + k + 1) == -1)
+                    errx(EXIT_FAILURE, "asprintf failed");
+
+                printf("Loading %s\n", name);
+
+                SDL_Surface* su = IMG_Load(name);
+                Uint32* suPixels = su->pixels;
+
+                for (int jj = 0; jj < 28; jj++)
+                for (int kk = 0; kk < 28; kk++)
+                {
+                    pixels[(j*28 + jj) * 28*9 + k*28 + kk] = suPixels[jj * 28 + kk];
+                }
+
+                SDL_FreeSurface(su);
+            }
 
             gtk_button_set_label(btn, "Next step (Digit recognition)");
+
+            SDL_FreeSurface(img_for_split);
             break;
         case NEURON_NETWORK_STEP:
             printf("Starting step 7");
@@ -290,19 +334,11 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
             for (int j = 1; j <= 81; j++)
             {
                 char* f;
-                char *f_out;
-                if (asprintf(&f, "temp_split2/split_%02i.png", j) == -1)
+                if (asprintf(&f, "temp_split/split_%02i_28x28.png", j) == -1)
                     errx(EXIT_FAILURE, "asprintf failed");
-                if (asprintf(&f_out, "temp_split/split_%02i_28x28.png", j) == -1)
-                    errx(EXIT_FAILURE, "asprintf failed");
-                printf("%s\n", f);
 
                 // put the pixels in a matrix
-                SDL_Surface *s_unknown_size = IMG_Load(f);
-                SDL_Surface *s = downscale_resize (s_unknown_size, 28, 28);
-                // downscale free it for now
-                //SDL_FreeSurface(s_unknown_size);
-                IMG_SavePNG(s, f_out);
+                SDL_Surface *s = IMG_Load(f);
 
                 Uint32 *pixels = s->pixels;
                 int margin = 0;
@@ -322,20 +358,18 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
                 short foundDigit = argmax_m(output);
 
                 // if you want to verify how sure he is, check the index
-                printf("Network of split_%02i.png: found %hi %f%%\n", j,
-                        foundDigit, output->values[0][foundDigit]);
+                printf("Network of split_%02i.png: found %hi\n", j, foundDigit);
+                print_m(output);
 
                 free_m(output);
 
                 if (!foundDigit)
                     foundDigit = DEFAULT_CELL_VALUE;
 
-                digits[j % 9][j / 9] = foundDigit;
+                digits[(j - 1) % 9][(j - 1) / 9] = foundDigit;
 
                 SDL_FreeSurface(s);
-                //SDL_FreeSurface(s_unknown_size);//Freed by downscale_resize
                 free(f);
-                free(f_out);
             }
 
             free_m(input);
@@ -386,8 +420,6 @@ gboolean DoNextFunc(GtkButton* btn, gpointer ptr)
     free(newFile);
     free(file);
     SDL_FreeSurface(img);
-    if (img_for_split)
-        SDL_FreeSurface(img_for_split);
 
     return TRUE;
 }
@@ -472,35 +504,6 @@ gboolean ShowImage(GtkFileChooser* file_picker, gpointer ptr)
     printf("Resized width from %ix%i to %ix%i\n",
             s->w, s->h, new_width, new_height);
 
-    /* 
-        if (s->w > 1000)
-        {
-            const int new_width = 500;
-            float ratio = (float)new_width / s->w;
-            int new_height = (int)ceil(s->h * ratio);
-            printf("Resizing width from %ix%i to %ix%i\n",
-                    s->w, s->h, new_width, new_height);
-
-            SDL_Surface *r = downscale_resize(s, new_width, new_height);
-
-            // for now downscale_resize free the input
-            //SDL_FreeSurface(s);
-            s = r;
-                }
-        else if (s->h > 1000)
-        {
-            const int new_height = 1000;
-            float ratio = (float)new_height / s->h;
-            int new_width = (int)ceil(s->w * ratio);
-            printf("Resizing height from %ix%i to %ix%i\n",
-                    s->w, s->h, new_width, new_height);
-
-            SDL_Surface *r = downscale_resize(s, new_width, new_height);
-
-            //SDL_FreeSurface(s);
-            s = r;
-        } */
-
     IMG_SavePNG(s, "temp00.png");
     SDL_FreeSurface(s);
 
@@ -565,7 +568,7 @@ gboolean Undo(GtkButton* btn, gpointer ptr)
 void RemoveTemps()
 {
     remove("accumulator.png");
-    for (int j = 0; j < 9; j++)
+    for (int j = 0; j <= SOLVING_STEP; j++)
     {
         char* removing;
         if (asprintf(&removing, "temp%02i.png", j) == -1)
@@ -714,7 +717,7 @@ int main ()
 
         h.forceInputs[i] = GTK_ENTRY(gtk_builder_get_object(builder, s));
 
-        g_signal_connect(h.forceInputs[i], "activate", G_CALLBACK(ChangeInput), NULL);
+        g_signal_connect(h.forceInputs[i], "activate", G_CALLBACK(ChangeInput), &h);
 
         free(s);
     }
