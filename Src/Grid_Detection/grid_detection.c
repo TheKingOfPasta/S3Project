@@ -20,15 +20,15 @@ Quadrilateral* Find_Grid(SDL_Surface **s )
     int w = (*s)->w;
     int h = (*s)->h;
 
+    //DrawLines(*s,lLine,255,255,0);
     AveragesCloseLine(lLine,ceil(sqrt(w * w + h *h)),5, 0.015);
-    //DrawLines(*s,lLine,100,0,0);
 
 
     ExcludeBorderLine(lLine, w, h, 0.015);
     List* LVer = InitList();
 	List* LHor = InitList();
 
-    RemovesStrayLine(lLine,7,LVer,LHor);
+    RemovesStrayLine(lLine,10,LVer,LHor);
     FreeList(lLine);
 
    // printf("LVERRRRRR\n");
@@ -90,13 +90,13 @@ Quadrilateral* Find_Grid(SDL_Surface **s )
     //printf("found grid !\n");
 
     Quadrilateral *grid = malloc(sizeof(Quadrilateral));
-    grid->p1.x =bestSquare->p1.x + w*(paddingPercentage/200);
-    grid->p1.y =bestSquare->p1.y + h*(paddingPercentage/200);
+    grid->p1.x =bestSquare->p1.x + w*(paddingPercentage/200)+5;
+    grid->p1.y =bestSquare->p1.y + h*(paddingPercentage/200)+5;
     grid->p2.x =bestSquare->p2.x + w*(paddingPercentage/200);
-    grid->p2.y =bestSquare->p2.y + h*(paddingPercentage/200);
+    grid->p2.y =bestSquare->p2.y + h*(paddingPercentage/200)+5;
     grid->p3.x =bestSquare->p3.x + w*(paddingPercentage/200);
     grid->p3.y =bestSquare->p3.y + h*(paddingPercentage/200);
-    grid->p4.x =bestSquare->p4.x + w*(paddingPercentage/200);
+    grid->p4.x =bestSquare->p4.x + w*(paddingPercentage/200)+5;
     grid->p4.y =bestSquare->p4.y + h*(paddingPercentage/200);
     FreeList(lquad);
 

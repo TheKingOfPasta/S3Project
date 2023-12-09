@@ -86,8 +86,8 @@ SDL_Surface* IMGC_Normalize_Brigthness(SDL_Surface* surface)
 	SDL_LockSurface(surface);
 
 	Uint8 gray,max =0 , min = 255;
-	for (int i = 0; i < surface->w; ++i)
-	for (int j = 0; j < surface->h; ++j)
+	for (int i = 2; i < surface->w-2; ++i)
+	for (int j = 2; j < surface->h-2; ++j)
 	{
 		int offset = j * surface->pitch + i * format->BytesPerPixel;
 		SDL_GetRGB(( *(Uint32*)((Uint8*)pixels + offset)), format,
