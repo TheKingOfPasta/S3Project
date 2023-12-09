@@ -1,28 +1,26 @@
-CC = gcc -IIncludes
+CC = gcc -IIncludes -o Bin/gui
 CPPFLAGS =
 CFLAGS = -lm -ldl -Wall -Wextra -O3 `pkg-config --cflags sdl2 SDL2_image gtk+-3.0` -fsanitize=address
 LDFLAGS = -fsanitize=address
 LDLIBS = -lm `pkg-config --libs sdl2 SDL2_image gtk+-3.0`
 
-SOURCE_DIR := Src
-SRC = $(shell find Src/Img_Processing -name "*.c" ! -name "Src/Img_Processing/img_action.c") \
-	  $(shell find Src/Img_Transformation -name "*.c" ) \
-	  $(shell find Src/Grid_Detection -name "*.c" )	\
-OBJ = ${SRC:.c=.o}
-EXE = img_action gui networkTest
+SOURCE_DIR := ./Src
 
-all:  ${EXE}
+SRC = $(shell find $(SOURCE_DIR) -name "*.c" ! -name "img_action.c" ! -name "test.c")
+OBJ = $(SRC:.c=.o)
+DEP = $(SRC:.c=.d)
 
-img_action: ${OBJ} Src/Img_Processing/img_action.o
+all:  gui
 
-gui: $(shell find Src/Solver -name "*.o") Src/gui/gui.o \
-	Src/neural/second_network.o Src/neural/network_loader.o Src/Utils/matrix.o
+gui: ${OBJ}
+	gcc  -IIncludes $(CFLAGS) $^ $(LDLFLAGS) $(LDLIBS)
 
-networkTest: Src/neural/second_network.o Src/neural/test.o Src/neural/network_loader.o Src/Utils/matrix.o
 .PHONY: clean
 
 clean:
-	rm ****.o
-	rm Src/gui/gui
-	rm Src/Img_Processing/img_action
-	rm Src/neural/networkTest
+	rm Src/gui/*.o
+	rm Src/Img_Processing/*.o
+	rm Src/Img_Transformation/*.o
+	rm Src/neural/*.o
+	rm Src/Grid_Detection/*.o
+	rm Src/Solver/*.o
